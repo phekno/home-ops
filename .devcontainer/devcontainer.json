@@ -2,10 +2,28 @@
   "$schema": "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json",
   "name": "Phekno Home Ops",
   "image": "ghcr.io/phekno/home-ops/devcontainer:base",
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
+  ],
   "postCreateCommand": {
     "setup": "bash ${containerWorkspaceFolder}/.devcontainer/postCreateCommand.sh"
   },
   "postStartCommand": {
     "git": "git config --global --add safe.directory ${containerWorkspaceFolder}"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "albert.TabOut",
+        "fcrespo82.markdown-table-formatter",
+        "BriteSnow.vscode-toggle-quotes",
+        "mikestead.dotenv",
+        "mitchdenny.ecdc",
+        "Gruntfuggly.todo-tree",
+        "EditorConfig.EditorConfig",
+        "signageos.signageos-vscode-sops",
+        "redhat.ansible"
+      ]
+    }
   }
 }
