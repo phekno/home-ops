@@ -9,7 +9,7 @@ tasks:
 
   age-keygen:
     desc: Initialize Age Key for Sops
-    cmd: age-keygen --output {{.AGE_FILE}}
+    cmd: age --output {{.AGE_FILE}}
     status:
       - test -f "{{.AGE_FILE}}"
 
