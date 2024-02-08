@@ -41,7 +41,7 @@ spec:
   # cluster when recovering from an existing cnpg cluster
   bootstrap:
     recovery:
-      source: clusterBackup
+      source: &previousCluster postgres-v1
   externalClusters:
     - name: *previousCluster
       barmanObjectStore:
