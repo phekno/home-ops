@@ -43,12 +43,12 @@ spec:
     - name: postgres-v1
       barmanObjectStore:
         destinationPath: s3://phekno-home-k8s-pg/postgres-v1
-      s3Credentials:
-        accessKeyId:
-          name: cloudnative-pg-secret
-          key: aws-access-key-id
-        secretAccessKey:
-          name: cloudnative-pg-secret
-          key: aws-secret-access-key
+        s3Credentials:
+          accessKeyId:
+            name: cloudnative-pg-secret
+            key: aws-access-key-id
+          secretAccessKey:
+            name: cloudnative-pg-secret
+            key: aws-secret-access-key
         wal:
           maxParallel: 8
