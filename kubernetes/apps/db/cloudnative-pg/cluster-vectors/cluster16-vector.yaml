@@ -24,12 +24,14 @@ spec:
     enablePodMonitor: true
   backup:
     retentionPolicy: 7d
-    barmanObjectStore:
+    barmanObjectStore: &barmanObjectStore
       wal:
         compression: bzip2
         maxParallel: 8
       destinationPath: s3://phekno-home-k8s-pg/
-      serverName: &currentCluster cluster16-vector-v1
+      # Note: serverName version needs to be incremented or changed
+      # when recovering from an existing cnpg cluster
+      serverName: &currentCluster cluster16-vector-v2
       s3Credentials:
         accessKeyId:
           name: cloudnative-pg-secret
@@ -37,21 +39,13 @@ spec:
         secretAccessKey:
           name: cloudnative-pg-secret
           key: aws-secret-access-key
-            # bootstrap:
-    #recovery:
-    #  source: &previousCluster postgres-vector-v1
-  #externalClusters:
-  #  - name: *previousCluster
-  #    barmanObjectStore:
-  #      wal:
-  #        compression: bzip2
-  #        maxParallel: 8
-  #      destinationPath: s3://cnpg-main/
-  #      endpointURL: https://s3.skym.fi
-  #      s3Credentials:
-  #        accessKeyId:
-  #          name: cloudnative-pg-secret
-  #          key: aws-access-key-id
-  #        secretAccessKey:
-  #          name: cloudnative-pg-secret
-  #          key: aws-secret-access-key
+  # Note: previousCluster needs to be set to the name of the previous
+  # cluster when recovering from an existing cnpg cluster
+  bootstrap:
+    recovery:
+      source: &previousCluster cluster16-vector-v1
+  externalClusters:
+    - name: *previousCluster
+      barmanObjectStore:
+        <<: *barmanObjectStore
+        serverName: *previousCluster
