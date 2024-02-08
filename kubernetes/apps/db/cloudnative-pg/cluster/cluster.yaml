@@ -3,7 +3,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: postgres
+  name: postgres-restore
 spec:
   instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:14
@@ -36,9 +36,9 @@ spec:
           name: cloudnative-pg-secret
           key: aws-secret-access-key
   # Note: needed when recovering from an existing cnpg cluster
-  # bootstrap:
-  #   recovery:
-  #     source: postgres-v1
+  bootstrap:
+    recovery:
+      source: postgres-v1
   externalClusters:
     - name: postgres-v1
       barmanObjectStore:
