@@ -36,9 +36,9 @@ spec:
           name: cloudnative-pg-secret
           key: aws-secret-access-key
   # Note: needed when recovering from an existing cnpg cluster
-  bootstrap:
-    recovery:
-      source: postgres-v1
+  # bootstrap:
+  #   recovery:
+  #     source: postgres-v1
   externalClusters:
     - name: postgres-v1
       barmanObjectStore:
