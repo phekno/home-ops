@@ -3,7 +3,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: postgres-restore
+  name: postgres
 spec:
   instances: 1
   imageName: ghcr.io/cloudnative-pg/postgresql:14
@@ -43,6 +43,7 @@ spec:
     - name: postgres-v1
       barmanObjectStore:
         destinationPath: s3://phekno-home-k8s-pg/
+        serverName: postgres-v1
         s3Credentials:
           accessKeyId:
             name: cloudnative-pg-secret
