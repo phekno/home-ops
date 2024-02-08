@@ -42,7 +42,7 @@ spec:
   externalClusters:
     - name: postgres-v1
       barmanObjectStore:
-        destinationPath: s3://phekno-home-k8s-pg/postgres-v1
+        destinationPath: s3://phekno-home-k8s-pg
         s3Credentials:
           accessKeyId:
             name: cloudnative-pg-secret
