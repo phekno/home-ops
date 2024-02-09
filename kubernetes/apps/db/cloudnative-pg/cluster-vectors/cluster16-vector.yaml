@@ -31,7 +31,7 @@ spec:
       destinationPath: s3://phekno-home-k8s-pg/
       # Note: serverName version needs to be incremented or changed
       # when recovering from an existing cnpg cluster
-      serverName: &currentCluster cluster16-vector-v2
+      serverName: &currentCluster cluster16-vector-v1
       s3Credentials:
         accessKeyId:
           name: cloudnative-pg-secret
@@ -41,11 +41,11 @@ spec:
           key: aws-secret-access-key
   # Note: previousCluster needs to be set to the name of the previous
   # cluster when recovering from an existing cnpg cluster
-  bootstrap:
-    recovery:
-      source: &previousCluster cluster16-vector-v1
-  externalClusters:
-    - name: *previousCluster
-      barmanObjectStore:
-        <<: *barmanObjectStore
-        serverName: *previousCluster
+  # bootstrap:
+  #   recovery:
+  #     source: &previousCluster cluster16-vector-v1
+  # externalClusters:
+  #   - name: *previousCluster
+  #     barmanObjectStore:
+  #       <<: *barmanObjectStore
+  #       serverName: *previousCluster
