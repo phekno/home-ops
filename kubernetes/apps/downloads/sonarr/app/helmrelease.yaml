@@ -29,14 +29,14 @@ spec:
       main:
         annotations:
           reloader.stakater.com/auto: "true"
-        initContainers:
-          init-db:
-            image:
-              repository: ghcr.io/onedr0p/postgres-init
-              tag: 16
-            envFrom: &envFrom
-              - secretRef:
-                  name: sonarr-secret
+        # initContainers:
+        #   init-db:
+        #     image:
+        #       repository: ghcr.io/onedr0p/postgres-init
+        #       tag: 16
+        #     envFrom: &envFrom
+        #       - secretRef:
+        #           name: sonarr-secret
         containers:
           main:
             image:
@@ -101,7 +101,9 @@ spec:
     persistence:
       config:
         enabled: true
-        existingClaim: sonarr-config
+        type: nfs
+        server: 10.100.50.5
+        path: /tank/sonarr
       media:
         enabled: true
         type: nfs
