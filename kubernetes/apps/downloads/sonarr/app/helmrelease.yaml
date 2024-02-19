@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
-  name: &app sonarr
+  name: sonarr
 spec:
   interval: 30m
   chart:
@@ -14,7 +14,6 @@ spec:
         kind: HelmRepository
         name: bjw-s
         namespace: flux-system
-  maxHistory: 2
   install:
     remediation:
       retries: 3
@@ -24,6 +23,9 @@ spec:
       retries: 3
   uninstall:
     keepHistory: false
+  dependsOn:
+    - name: rook-ceph-cluster
+      namespace: rook-ceph
   values:
     controllers:
       main:
@@ -43,17 +45,16 @@ spec:
               repository: ghcr.io/onedr0p/sonarr-develop
               tag: 4.0.1.1131@sha256:dab8a943fb50f161a09a8c2e2e7c17a2e230545c5797fc6893f9363b590028af
             env:
-              TZ: "${TIMEZONE}"
+              COMPlus_EnableDiagnostics: "0"
               PUSHOVER_DEBUG: "false"
               SONARR__AUTHENTICATION_METHOD: External
               SONARR__AUTHENTICATION_REQUIRED: DisabledForLocalAddresses
               SONARR__INSTANCE_NAME: Sonarr
-              SONARR__PORT: &port 8080
+              SONARR__PORT: &port 80
               SONARR__LOG_LEVEL: info
               SONARR__THEME: dark
-            envFrom:
-              - secretRef:
-                  name: sonarr-secret
+              TZ: "${TIMEZONE}"
+            # envFrom: *envFrom
             probes:
               liveness: &probes
                 enabled: true
@@ -62,25 +63,30 @@ spec:
                   httpGet:
                     path: /ping
                     port: *port
-                  initialDelaySeconds: 10
+                  initialDelaySeconds: 30
                   periodSeconds: 30
-                  timeoutSeconds: 10
+                  timeoutSeconds: 30
                   failureThreshold: 3
               readiness: *probes
               startup:
                 enabled: false
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
             resources:
               requests:
                 cpu: 10m
-                memory: 256M
               limits:
-                memory: 1Gi
+                memory: 2Gi
         pod:
           securityContext:
             runAsUser: 1000
             runAsGroup: 1000
+            runAsNonRoot: true
             fsGroup: 1000
             fsGroupChangePolicy: OnRootMismatch
+            supplementalGroups: [10000]
     service:
       main:
         ports:
@@ -103,9 +109,9 @@ spec:
     persistence:
       config:
         enabled: true
-        type: nfs
-        server: 10.100.50.5
-        path: /tank/sonarr
+        existingClaim: sonarr-config
+      tmp:
+        type: emptyDir
       media:
         enabled: true
         type: nfs

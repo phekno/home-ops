@@ -8,7 +8,7 @@ metadata:
 spec:
   dependsOn:
     - name: external-secrets-stores
-    # - name: rook-ceph-cluster
+    - name: longhorn
   path: ./kubernetes/apps/downloads/sonarr/app
   prune: true
   sourceRef:
