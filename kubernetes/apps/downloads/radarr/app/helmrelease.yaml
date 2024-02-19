@@ -105,9 +105,7 @@ spec:
     persistence:
       config:
         enabled: true
-        type: nfs
-        server: 10.100.50.5
-        path: /tank/radarr
+        type: longhorn
       media:
         enabled: true
         type: nfs
