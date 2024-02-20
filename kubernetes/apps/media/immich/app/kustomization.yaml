@@ -6,8 +6,9 @@ namespace: media
 resources:
   - ./externalsecret.yaml
   - ./configmap.yaml
-  - ./nfs-pvc.yaml
+  # - ./nfs-pvc.yaml
   # - ./gatus.yaml
+  - ./pvc.yaml
   - ./server
   - ./microservices
   - ./machine-learning
