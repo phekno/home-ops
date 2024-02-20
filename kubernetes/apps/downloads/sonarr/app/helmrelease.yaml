@@ -51,7 +51,7 @@ spec:
               SONARR__LOG_LEVEL: info
               SONARR__THEME: dark
               TZ: "${TIMEZONE}"
-            # envFrom: *envFrom
+            envFrom: *envFrom
             probes:
               liveness: &probes
                 enabled: true
