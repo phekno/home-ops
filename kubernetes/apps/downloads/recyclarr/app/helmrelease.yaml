@@ -68,9 +68,7 @@ spec:
     persistence:
       config:
         enabled: true
-        type: nfs
-        server: 10.100.50.5
-        path: /tank/recyclarr
+        existingClaim: recyclarr
       config-file:
         type: configMap
         name: recyclarr-configmap

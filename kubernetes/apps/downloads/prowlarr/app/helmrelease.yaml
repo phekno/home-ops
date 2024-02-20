@@ -31,15 +31,15 @@ spec:
       main:
         annotations:
           reloader.stakater.com/auto: "true"
-        # initContainers:
-        #   init-db:
-        #     image:
-        #       repository: ghcr.io/auricom/postgres-init
-        #       tag: 15.5@sha256:21f7472b7feffe8c53a287fd9611f6690336793afc7e827a0121e74b4ad2db4e
-        #       pullPolicy: IfNotPresent
-        #     envFrom: &envFrom
-        #       - secretRef:
-        #           name: prowlarr-secret
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/auricom/postgres-init
+              tag: 15.5@sha256:21f7472b7feffe8c53a287fd9611f6690336793afc7e827a0121e74b4ad2db4e
+              pullPolicy: IfNotPresent
+            envFrom: &envFrom
+              - secretRef:
+                  name: prowlarr-secret
         containers:
           main:
             image:
@@ -89,6 +89,4 @@ spec:
     persistence:
       config:
         enabled: true
-        type: nfs
-        server: 10.100.50.5
-        path: /tank/prowlarr
+        existingClaim: prowlarr
