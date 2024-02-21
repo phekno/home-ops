@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://kubernetes-schemas.devbu.io/helm.toolkit.fluxcd.io/helmrelease_v2beta1.json
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2beta2.json
 apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
@@ -48,18 +48,18 @@ spec:
       main:
         strategy: RollingUpdate
         annotations:
-          configmap.reloader.stakater.com/reload: &configMap immich-configmap
-          secret.reloader.stakater.com/reload: &secret immich-secret
+          configmap.reloader.stakater.com/reload: immich-configmap
+          secret.reloader.stakater.com/reload: immich-secret
         initContainers:
           init-db:
-            image: 
+            image:
               repository: ghcr.io/onedr0p/postgres-init
               tag: 16
             envFrom: &envFrom
               - configMapRef:
-                  name: &configMap immich-configmap
+                  name: immich-configmap
               - secretRef:
-                  name: &secret immich-secret
+                  name: immich-secret
         containers:
           main:
             image:
@@ -68,7 +68,7 @@ spec:
             args: ["start-server.sh"]
             envFrom: *envFrom
             env:
-              IMMICH_MEDIA_LOCATION: &mediaLocation /usr/src/app/upload
+              IMMICH_MEDIA_LOCATION: /usr/src/app/upload
               SERVER_PORT: &port 3001
             resources:
               requests:
@@ -98,10 +98,10 @@ spec:
         enabled: true
         type: configMap
         name: immich-server-config
-        globalMounts: 
+        globalMounts:
           - path: /config
       library:
-        existingClaim: immich-nfs
+        existingClaim: immich
         globalMounts:
           - path: /usr/src/app/upload
       geocoding-dump:
