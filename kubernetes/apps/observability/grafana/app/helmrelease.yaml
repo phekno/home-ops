@@ -23,9 +23,6 @@ spec:
       retries: 3
   uninstall:
     keepHistory: false
-  # dependsOn:
-  #   - name: rook-ceph-cluster
-  #     namespace: rook-ceph
   values:
     deploymentStrategy:
       type: Recreate
@@ -34,11 +31,46 @@ spec:
     env:
       GF_EXPLORE_ENABLED: true
       GF_SERVER_ROOT_URL: "https://grafana.${SECRET_DOMAIN}"
+      GF_AUTH_GENERIC_OAUTH_API_URL: https://auth.${SECRET_DOMAIN}/api/oidc/userinfo
+      GF_AUTH_GENERIC_OAUTH_AUTH_URL: https://auth.${SECRET_DOMAIN}/api/oidc/authorization
+      GF_AUTH_GENERIC_OAUTH_CLIENT_ID: grafana
+      GF_AUTH_GENERIC_OAUTH_TOKEN_URL: https://auth.${SECRET_DOMAIN}/api/oidc/token
+      GF_DATE_FORMATS_USE_BROWSER_LOCALE: true
+      GF_FEATURE_TOGGLES_ENABLE: publicDashboards
+      GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: natel-discrete-panel,pr0ps-trackmap-panel,panodata-map-panel
+      GF_SECURITY_COOKIE_SAMESITE: grafana
+    envFromSecrets:
+      - name: *secret
     grafana.ini:
       analytics:
         check_for_updates: false
         check_for_plugin_updates: false
         reporting_enabled: false
+      auth:
+        oauth_auto_login: true
+        oauth_allow_insecure_email_lookup: true
+      auth.generic_oauth:
+        enabled: true
+        name: Authelia
+        icon: signin
+        scopes: openid profile email groups
+        empty_scopes: false
+        login_attribute_path: preferred_username
+        groups_attribute_path: groups
+        name_attribute_path: name
+        use_pkce: true
+      auth.generic_oauth.group_mapping:
+        org_id: 1
+        role_attribute_path: |
+          contains(groups[*], 'admins') && 'Admin' || contains(groups[*], 'people') && 'Viewer'
+      auth.basic:
+        enabled: true
+      auth.anonymous:
+        enabled: false
+        # org_id: 1
+        # org_role: Viewer
+      news:
+        news_feed_enabled: false
     dashboardProviders:
       dashboardproviders.yaml:
         apiVersion: 1
@@ -51,14 +83,6 @@ spec:
             editable: true
             options:
               path: /var/lib/grafana/dashboards/default
-          # - name: ceph
-          #   orgId: 1
-          #   folder: Ceph
-          #   type: file
-          #   disableDeletion: false
-          #   editable: true
-          #   options:
-          #     path: /var/lib/grafana/dashboards/ceph
           - name: flux
             orgId: 1
             folder: Flux
@@ -165,22 +189,6 @@ spec:
         kubernetes-pods:
           url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-pods.json
           datasource: Prometheus
-      # ceph:
-      #   ceph-cluster:
-      #     # renovate: depName="Ceph Cluster"
-      #     gnetId: 2842
-      #     revision: 17
-      #     datasource: Prometheus
-      #   ceph-osd:
-      #     # renovate: depName="Ceph - OSD (Single)"
-      #     gnetId: 5336
-      #     revision: 9
-      #     datasource: Prometheus
-      #   ceph-pools:
-      #     # renovate: depName="Ceph - Pools"
-      #     gnetId: 5342
-      #     revision: 9
-      #     datasource: Prometheus
       nginx:
         nginx:
           url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/grafana/dashboards/nginx.json
