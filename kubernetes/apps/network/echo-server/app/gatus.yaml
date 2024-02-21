@@ -10,7 +10,7 @@ data:
   config.yaml: |
     endpoints:
       - name: echo-server-internal
-        group: external
+        group: internal
         url: https://echo-server-internal.phekno.io
         interval: 1m
         client:
@@ -19,7 +19,7 @@ data:
           - "[STATUS] == 200"
         alerts:
           - type: pushover
-      - name: echo-server-internal
+      - name: echo-server-external
         group: external
         url: https://echo-server-external.phekno.io
         interval: 1m
