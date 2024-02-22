@@ -5,8 +5,8 @@ resources:
   - ./namespace.yaml
   # - ./alertmanager/ks.yaml
   - ./gatus/ks.yaml
-  - ./grafana/ks.yaml
-  - ./kube-prometheus-stack/ks.yaml
-  - ./loki/ks.yaml
+  # - ./grafana/ks.yaml
+  # - ./kube-prometheus-stack/ks.yaml
+  # - ./loki/ks.yaml
   - ./unpoller/ks.yaml
   - ./vector/ks.yaml

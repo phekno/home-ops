@@ -245,6 +245,6 @@ spec:
             - *host
     persistence:
       enabled: true
-      storageClassName: nfs
+      storageClassName: longhorn
     testFramework:
       enabled: false
