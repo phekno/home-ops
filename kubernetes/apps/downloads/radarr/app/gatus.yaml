@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: radarr-gatus-ep
-  namespace: radarr
+  namespace: downloads
   labels:
     gatus.io/enabled: "true"
 data:
