@@ -6,6 +6,6 @@ resources:
   - ./namespace.yaml
   # Flux-Kustomizations
   - ./immich/ks.yaml
-  # - ./jellyfin/ks.yaml
+  - ./jellyfin/ks.yaml
   - ./jellyseerr/ks.yaml
-  # - ./wizarr/ks.yaml
+  - ./wizarr/ks.yaml
