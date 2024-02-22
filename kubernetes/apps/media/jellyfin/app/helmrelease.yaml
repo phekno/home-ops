@@ -85,7 +85,6 @@ spec:
         className: external
         annotations:
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
-          external-dns.alpha.kubernetes.io/hostname: "jellyfin.${SECRET_DOMAIN}"
         hosts:
           - host: &host "jellyfin.${SECRET_DOMAIN}"
             paths:
