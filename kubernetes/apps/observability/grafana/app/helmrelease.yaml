@@ -115,6 +115,14 @@ spec:
             editable: true
             options:
               path: /var/lib/grafana/dashboards/unifi
+          - name: storage
+            orgId: 1
+            folder: Storage
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/storage
     datasources:
       datasources.yaml:
         apiVersion: 1
@@ -217,8 +225,8 @@ spec:
           gnetId: 11312
           revision: 9
           datasource: Prometheus
-      longhorn:
-        longhorn-things:
+      storage:
+        longhorn:
           gnetId: 16888
           revision: 8
           datasource: Prometheus
