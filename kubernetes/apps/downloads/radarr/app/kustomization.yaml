@@ -7,6 +7,7 @@ resources:
   - ./pvc.yaml
   - ./externalsecret.yaml
   - ./helmrelease.yaml
+  - ./gatus.yaml
   # - ./volsync.yaml
 # configMapGenerator:
 #   - name: radarr-configmap

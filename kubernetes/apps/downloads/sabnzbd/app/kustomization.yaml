@@ -5,6 +5,7 @@ namespace: downloads
 resources:
   - ./pvc.yaml
   - ./helmrelease.yaml
+  - ./gatus.yaml
   - ./externalsecret.yaml
 commonLabels:
   app.kubernetes.io/name: sabnzbd
