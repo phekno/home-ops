@@ -226,7 +226,7 @@ spec:
           revision: 9
           datasource: Prometheus
       longhorn:
-        longhorn:
+        longhorn-things:
           gnetId: 16888
           revision: 8
           datasource: Prometheus
