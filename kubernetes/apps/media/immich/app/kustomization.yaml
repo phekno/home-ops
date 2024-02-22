@@ -10,5 +10,5 @@ resources:
   - ./gatus.yaml
   - ./pvc.yaml
   - ./server
-  - ./microservices
-  - ./machine-learning
+  # - ./microservices
+  # - ./machine-learning
