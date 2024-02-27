@@ -1,0 +1,108 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2beta2.json
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: &name gitea
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: app-template
+      version: 2.6.0
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-charts
+        namespace: flux-system
+      interval: 5m
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: "OnRootMismatch"
+        capabilities:
+          add:
+            - SYS_CHROOT
+    controllers:
+      main:
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/onedr0p/postgres-init
+              tag: 16
+            envFrom: &envFrom
+              - secretRef:
+                  name: gitea-secret
+        containers:
+          main:
+            image:
+              repository: gitea/gitea
+              tag: 1.21.7-rootless
+            env:
+              TZ: "${TIMEZONE}"
+              USER_UID: 1000
+              USER_GID: 1000
+              GITEA__ACTIONS__ENABLED: "True"
+              GITEA__database__DB_TYPE: "postgres"
+              GITEA__MAILER__ENABLED: "True"
+              GITEA__MAILER__PROTOCOL: "SMTP"
+              GITEA__MAILER__FROM: "gitea@${SECRET_DOMAIN}"
+              GITEA__REPOSITORY__ENABLE_PUSH_CREATE_USER: "True"
+              GITEA__REPOSITORY__DEFAULT_BRANCH: "main"
+              GITEA__SECURITY__INSTALL_LOCK: "True"
+              GITEA__SERVER__DOMAIN: "gitea.${SECRET_DEFAULT_DOMAIN}"
+              GITEA__SERVER__ROOT_URL: "https://gitea.${SECRET_DOMAIN}"
+              GITEA__SERVER__SSH_DOMAIN: "ssh.${SECRET_DOMAIN}"
+              GITEA__SERVER__SSH_PORT: 22
+            envFrom: *envFrom
+            resources:
+              requests:
+                memory: 250Mi
+                cpu: 100m
+              limits:
+                memory: 2Gi
+    service:
+      main:
+        ports:
+          http:
+            port: 3000
+      ssh:
+        enabled: true
+        type: LoadBalancer
+        controller: main
+        externalTrafficPolicy: Local
+        ports:
+          ssh:
+            enabled: true
+            port: 22
+            targetPort: 2222
+            protocol: TCP
+    ingress:
+      main:
+        enabled: true
+        className: internal
+        hosts:
+          - host: &host "{{ .Release.Name }}.${SECRET_DOMAIN}"
+            paths:
+              - path: /
+                service:
+                  name: main
+                  port: http
+        tls:
+          - hosts:
+              - *host
+    persistence:
+      config:
+        enabled: true
+        existingClaim: gitea
+        globalMounts:
+          - path: /var/lib/gitea
