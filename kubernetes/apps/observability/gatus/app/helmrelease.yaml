@@ -42,7 +42,7 @@ spec:
             order: 2
             image: &configSyncImage
               repository: ghcr.io/kiwigrid/k8s-sidecar
-              tag: 1.25.4@sha256:cccfe4f9eaf2e2c63762e4ac261a3f353e38253da77027485178978e08df95d0
+              tag: 1.26.0@sha256:5b85530b0f28d1f407855b653eb4ab2f4ca1c83716257d7ad8dd746edb2dab1d
             env: &configSyncEnv
               FOLDER: /config
               LABEL: gatus.io/enabled
