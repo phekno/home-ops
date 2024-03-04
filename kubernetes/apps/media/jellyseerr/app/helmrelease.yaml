@@ -45,10 +45,10 @@ spec:
               LOG_LEVEL: "debug"
             resources:
               requests:
-                cpu: 10m
-                memory: 250Mi
-              limits:
+                cpu: 100m
                 memory: 500Mi
+              limits:
+                memory: 2Gi
             probes:
               liveness: &probes
                 enabled: true
