@@ -46,9 +46,9 @@ spec:
             resources:
               requests:
                 cpu: 100m
-                memory: 500Mi
+                memory: 1Gi
               limits:
-                memory: 2Gi
+                memory: 3Gi
             probes:
               liveness: &probes
                 enabled: true
@@ -57,9 +57,9 @@ spec:
                   httpGet:
                     path: /health
                     port: *port
-                  initialDelaySeconds: 0
-                  periodSeconds: 10
-                  timeoutSeconds: 1
+                  initialDelaySeconds: 15
+                  periodSeconds: 30
+                  timeoutSeconds: 5
                   failureThreshold: 3
               readiness: *probes
               startup:
