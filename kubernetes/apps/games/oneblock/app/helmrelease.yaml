@@ -34,8 +34,8 @@ spec:
     deploymentAnnotations:
       secret.reloader.stakater.com/reload: &secret oneblock-secret
     image:
-      repository: ghcr.io/itzg/minecraft-server
-      tag: java17
+      repository: phekno/oneblock-minecraft
+      tag: latest
     resources:
       requests:
         cpu: 2000m
