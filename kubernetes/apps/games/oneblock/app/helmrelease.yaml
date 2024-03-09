@@ -62,8 +62,8 @@ spec:
       difficulty: easy
       pvp: false
       onlineMode: true
-      whitelist: "quinnyf,quinnyf13,harpyf13"
-      ops: "quinnyf"
+      whitelist: "phekno,quinnyf13,harpyf13"
+      ops: "phekno"
       viewDistance: 12
       rcon:
         enabled: true
