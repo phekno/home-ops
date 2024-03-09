@@ -1,0 +1,99 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2beta2.json
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: &app oneblock
+spec:
+  interval: 30m
+  chart:
+    spec:
+      # renovate: registryUrl=https://itzg.github.io/minecraft-server-charts/
+      chart: minecraft
+      version: 4.15.0
+      sourceRef:
+        kind: HelmRepository
+        name: minecraft
+        namespace: flux-system
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    podSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+    deploymentAnnotations:
+      secret.reloader.stakater.com/reload: &secret oneblock-secret
+    image:
+      repository: ghcr.io/itzg/minecraft-server
+      tag: java17
+    resources:
+      requests:
+        cpu: 2000m
+      limits:
+        memory: 8Gi
+    livenessProbe:
+      enabled: false
+    readinessProbe:
+      enabled: false
+    startupProbe:
+      enabled: false
+    extraEnv:
+      TZ: "${TIMEZONE}"
+    persistence:
+      dataDir:
+        existingClaim: oneblock
+        enabled: true
+    serviceAnnotations:
+      io.cilium/lb-ipam-ips: "10.100.50.206"
+    minecraftServer:
+      eula: true
+      version: "1.20.1"
+      memory: 8192M
+      difficulty: easy
+      pvp: false
+      onlineMode: true
+      whitelist: "quinnyf,quinnyf13,harpyf13"
+      ops: "quinnyf"
+      viewDistance: 12
+      rcon:
+        enabled: true
+        serviceType: ClusterIP
+      serviceType: LoadBalancer
+        # fileId: "4757258"
+      # extraPorts:
+      #   - name: map
+      #     containerPort: 8123
+      #     protocol: TCP
+      #     service:
+      #       enabled: true
+      #       embedded: false
+      #       port: 8123
+      #     ingress:
+      #       ingressClassName: external
+      #       enabled: true
+      #       hosts:
+      #         - name: &host "mc-vanilla.${SECRET_DOMAIN}"
+      #           path: /
+      #           pathType: Prefix
+      #       tls:
+      #         - hosts:
+      #             - *host
+  valuesFrom:
+    - kind: Secret
+      name: *secret
+      valuesKey: rcon_password
+      targetPath: minecraftServer.rcon.password
+    # - kind: Secret
+    #   name: *secret
+    #   valuesKey: cf_api_key
+    #   targetPath: minecraftServer.autoCurseForge.apiKey.key
