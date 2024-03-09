@@ -63,7 +63,7 @@ spec:
       pvp: false
       onlineMode: true
       whitelist: "phekno,quinnyf13,harpyf13"
-      ops: "phekno"
+      ops: "phekno,quinnyf13,harpyf13"
       viewDistance: 12
       rcon:
         enabled: true
