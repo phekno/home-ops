@@ -81,6 +81,19 @@ identity_providers:
           - "app.immich:/"
           - "https://photos.phekno.io/api/oauth/mobile-redirect"
         userinfo_signed_response_alg: none
+      - id: gitea
+        description: Gitea
+        public: false
+        secret: "${GITEA_OAUTH_CLIENT_SECRET_HASH}"
+        authorization_policy: two_factor
+        pre_configured_consent_duration: 1y
+        scopes:
+          - openid
+          - profile
+          - email
+        redirect_uris:
+          - "https://gitea.example.com/user/oauth2/authelia/callback"
+        userinfo_signed_response_alg: none
 
 notifier:
   disable_startup_check: true
