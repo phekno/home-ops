@@ -92,7 +92,7 @@ identity_providers:
           - profile
           - email
         redirect_uris:
-          - "https://gitea.example.com/user/oauth2/authelia/callback"
+          - "https://gitea.phekno.io/user/oauth2/authelia/callback"
         userinfo_signed_response_alg: none
 
 notifier:
