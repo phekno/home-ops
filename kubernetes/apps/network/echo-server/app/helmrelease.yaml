@@ -29,7 +29,7 @@ spec:
       echo-server:
         strategy: RollingUpdate
         containers:
-          main:
+          app:
             image:
               repository: ghcr.io/mendhak/http-https-echo
               tag: 32

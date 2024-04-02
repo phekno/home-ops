@@ -1,16 +1,15 @@
 ---
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2beta2.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2beta2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
-  name: vector-agent
+  name: &app vector-agent
 spec:
   interval: 30m
-  timeout: 15m
   chart:
     spec:
       chart: app-template
-      version: 2.6.0
+      version: 3.0.4
       sourceRef:
         kind: HelmRepository
         name: bjw-s
@@ -21,6 +20,7 @@ spec:
   upgrade:
     cleanupOnFail: true
     remediation:
+      strategy: uninstall
       retries: 3
   uninstall:
     keepHistory: false
@@ -28,13 +28,13 @@ spec:
     - name: vector-aggregator
   values:
     controllers:
-      main:
+      vector-agent:
         type: daemonset
         strategy: RollingUpdate
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
-          main:
+          app:
             image:
               repository: docker.io/timberio/vector
               tag: 0.37.0-debian@sha256:a5b5af9f6d3e89e03aef357cc2dfc75a38075061d978078bfb5ccd67bd9af249
@@ -60,7 +60,8 @@ spec:
             securityContext:
               privileged: true
     service:
-      main:
+      app:
+        controller: *app
         enabled: false
     serviceAccount:
       create: true

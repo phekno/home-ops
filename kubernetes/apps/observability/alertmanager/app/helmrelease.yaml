@@ -1,27 +1,37 @@
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2beta2.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2beta2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
-  name: alertmanager
+  name: &app alertmanager
 spec:
   interval: 30m
   chart:
     spec:
       chart: app-template
-      version: 2.6.0
+      version: 3.0.4
       interval: 30m
       sourceRef:
         kind: HelmRepository
         name: bjw-s
         namespace: flux-system
+  maxHistory: 2
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: uninstall
+      retries: 3
+  uninstall:
+    keepHistory: false
   values:
     controllers:
-      main:
+      alertmanager:
         type: statefulset
         annotations:
           reloader.stakater.com/auto: "true"
-
         statefulset:
           volumeClaimTemplates:
             - name: storage
@@ -30,38 +40,36 @@ spec:
               storageClass: longhorn
               globalMounts:
                 - path: /alertmanager
-
         containers:
-          main:
+          app:
             image:
               repository: quay.io/prometheus/alertmanager
               tag: v0.27.0
             ports:
               - name: http
-                containerPort: 9093
+                containerPort: &port 9093
             resources:
               requests:
                 cpu: 11m
                 memory: 50M
               limits:
                 memory: 99M
-
     service:
-      main:
+      app:
+        controller: *app
         ports:
           http:
-            port: 9093
-
+            port: *port
     ingress:
       main:
         enabled: true
         className: internal
         hosts:
-          - host: &host alertmanager.phekno.io
+          - host: &host alertmanager.${SECRET_DOMAIN}
             paths:
               - path: /
                 service:
-                  name: main
+                  identifier: app
                   port: http
         tls:
           - hosts:
