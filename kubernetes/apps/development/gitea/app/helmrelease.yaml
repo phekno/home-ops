@@ -79,17 +79,6 @@ spec:
         ports:
           http:
             port: 3000
-      ssh:
-        enabled: true
-        type: LoadBalancer
-        controller: main
-        externalTrafficPolicy: Local
-        ports:
-          ssh:
-            enabled: true
-            port: 22
-            targetPort: 2222
-            protocol: TCP
     ingress:
       app:
         enabled: true
