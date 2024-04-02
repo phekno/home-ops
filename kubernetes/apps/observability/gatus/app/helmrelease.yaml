@@ -106,7 +106,7 @@ spec:
         controller: *app
         ports:
           http:
-            port: *port
+            port: http
     serviceMonitor:
       app:
         serviceName: *app
