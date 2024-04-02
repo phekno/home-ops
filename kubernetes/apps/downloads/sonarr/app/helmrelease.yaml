@@ -21,7 +21,7 @@ spec:
   upgrade:
     cleanupOnFail: true
     remediation:
-      strategy: uninstall
+      strategy: rollback
       retries: 3
   uninstall:
     keepHistory: false
@@ -54,7 +54,7 @@ spec:
               SONARR__AUTHENTICATION_METHOD: External
               SONARR__AUTHENTICATION_REQUIRED: DisabledForLocalAddresses
               SONARR__INSTANCE_NAME: Sonarr
-              SONARR__PORT: &port 8080
+              SONARR__PORT: &port 80
               SONARR__APPLICATION_URL: "https://{{ .Release.Name }}.${SECRET_DOMAIN}"
               SONARR__LOG_LEVEL: info
               SONARR__THEME: dark

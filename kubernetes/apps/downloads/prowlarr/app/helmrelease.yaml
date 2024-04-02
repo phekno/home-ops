@@ -1,54 +1,52 @@
 ---
-# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2beta2.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2beta2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: &app prowlarr
-  namespace: default
 spec:
   interval: 30m
   chart:
     spec:
       chart: app-template
-      version: 2.6.0
+      version: 3.0.4
       sourceRef:
         kind: HelmRepository
         name: bjw-s
         namespace: flux-system
   maxHistory: 2
   install:
-    createNamespace: true
     remediation:
       retries: 3
   upgrade:
     cleanupOnFail: true
     remediation:
+      strategy: uninstall
       retries: 3
   uninstall:
     keepHistory: false
   values:
     controllers:
-      main:
+      prowlarr:
         annotations:
           reloader.stakater.com/auto: "true"
         initContainers:
           init-db:
             image:
-              repository: ghcr.io/auricom/postgres-init
-              tag: 15.6@sha256:e5dfcf4d53d4dfe3bf996ba02fec5145e0c4f0a3d5f14a0f529e1f8830157d20
-              pullPolicy: IfNotPresent
+              repository: ghcr.io/onedr0p/postgres-init
+              tag: 16
             envFrom: &envFrom
               - secretRef:
                   name: prowlarr-secret
         containers:
-          main:
+          app:
             image:
               repository: ghcr.io/onedr0p/prowlarr-nightly
-              tag: 1.16.0.4363@sha256:9e06434921ee637bd5ba328c04ab1efb1a74558f1d074d7ae5fa8076c41f9e0d
+              tag: 1.16.0.4382@sha256:377eabffac5d10506f6a2d44d1f34df81eb1a0bfc3a5da67fcb2629b492f1bb2
             env:
               TZ: "${TIMEZONE}"
               PROWLARR__INSTANCE_NAME: Prowlarr
-              PROWLARR__PORT: &port 8080
+              PROWLARR__PORT: &port 80
               PROWLARR__LOG_LEVEL: info
               PROWLARR__AUTHENTICATION_METHOD: External
               PROWLARR__THEME: dark
@@ -56,22 +54,17 @@ spec:
             resources:
               requests:
                 cpu: 100m
-                memory: 500Mi
+                memory: 100Mi
               limits:
-                memory: 2Gi
-        pod:
-          securityContext:
-            runAsUser: 1000
-            runAsGroup: 1000
-            fsGroup: 1000
-            fsGroupChangePolicy: OnRootMismatch
+                memory: 500Mi
     service:
-      main:
+      app:
+        controller: *app
         ports:
           http:
             port: *port
     ingress:
-      main:
+      app:
         enabled: true
         className: internal
         hosts:
@@ -79,7 +72,7 @@ spec:
             paths:
               - path: /
                 service:
-                  name: main
+                  identifier: app
                   port: http
         tls:
           - hosts:
@@ -87,4 +80,4 @@ spec:
     persistence:
       config:
         enabled: true
-        existingClaim: prowlarr
+        type: emptyDir
