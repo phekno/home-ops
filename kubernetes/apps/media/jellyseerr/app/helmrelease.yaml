@@ -3,13 +3,13 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
-  name: jellyseerr
+  name: &app jellyseerr
 spec:
   interval: 15m
   chart:
     spec:
       chart: app-template
-      version: 2.6.0
+      version: 3.0.4
       sourceRef:
         kind: HelmRepository
         name: bjw-s
@@ -20,6 +20,7 @@ spec:
   upgrade:
     cleanupOnFail: true
     remediation:
+      strategy: uninstall
       retries: 3
   uninstall:
     keepHistory: false
@@ -31,11 +32,11 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: "OnRootMismatch"
     controllers:
-      main:
+      jellyseerr:
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
-          main:
+          app:
             image:
               repository: docker.io/fallenbagel/jellyseerr
               tag: 1.7.0
@@ -57,15 +58,16 @@ spec:
                   httpGet:
                     path: /health
                     port: *port
-                  initialDelaySeconds: 15
-                  periodSeconds: 30
-                  timeoutSeconds: 5
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
                   failureThreshold: 3
               readiness: *probes
               startup:
                 enabled: false
     service:
-      main:
+      app:
+        controller: *app
         ports:
           http:
             port: *port
@@ -80,7 +82,7 @@ spec:
             paths:
               - path: /
                 service:
-                  name: main
+                  identifier: app
                   port: http
         tls:
           - hosts:
