@@ -1,0 +1,23 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: vector-aggregator
+spec:
+  values:
+    initContainers:
+      init-geoip:
+        image: ghcr.io/maxmind/geoipupdate:v6.1@sha256:cdd36d36c2e1d353a990a48e5a36d42ee75089d5d9064d80d36d90c147fd2606
+        env:
+          - name: GEOIPUPDATE_EDITION_IDS
+            value: GeoLite2-City
+          - name: GEOIPUPDATE_FREQUENCY
+            value: "0"
+          - name: GEOIPUPDATE_VERBOSE
+            value: "true"
+        envFrom:
+          - secretRef:
+              name: vector-aggregator-secret
+        volumeMounts:
+          - name: geoip
+            mountPath: /usr/share/GeoIP
