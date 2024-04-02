@@ -31,9 +31,9 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
-        capabilities:
-          add:
-            - SYS_CHROOT
+        # capabilities:
+        #   add:
+        #     - SYS_CHROOT
     controllers:
       gitea:
         initContainers:
