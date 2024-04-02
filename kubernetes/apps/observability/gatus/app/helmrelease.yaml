@@ -111,6 +111,8 @@ spec:
       app:
         serviceName: *app
         enabled: true
+        endpoints:
+          - port: *port
     ingress:
       main:
         enabled: true
