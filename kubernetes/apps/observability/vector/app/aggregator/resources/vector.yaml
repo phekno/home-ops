@@ -5,9 +5,9 @@ api:
   address: 0.0.0.0:8686
 
 enrichment_tables:
-  type:
-    geoip:
-      path: /usr/share/GeoIP/GeoLite2-City.mmdb
+  geoip:
+    path: /usr/share/GeoIP/GeoLite2-City.mmdb
+  type: geoip
 
 #
 # Sources

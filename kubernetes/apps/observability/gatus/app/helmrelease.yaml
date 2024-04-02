@@ -106,13 +106,13 @@ spec:
         controller: *app
         ports:
           http:
-            port: http
+            port: *port
     serviceMonitor:
       app:
         serviceName: *app
         enabled: true
         endpoints:
-          - port: *port
+          - port: http
     ingress:
       main:
         enabled: true
