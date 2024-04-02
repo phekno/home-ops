@@ -3,14 +3,13 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
-  name: gitea
-  namespace: development
+  name: &app gitea
 spec:
   interval: 30m
   chart:
     spec:
       chart: app-template
-      version: 2.6.0
+      version: 3.0.4
       sourceRef:
         kind: HelmRepository
         name: bjw-s
@@ -23,10 +22,20 @@ spec:
   upgrade:
     cleanupOnFail: true
     remediation:
+      strategy: uninstall
       retries: 3
   values:
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        capabilities:
+          add:
+            - SYS_CHROOT
     controllers:
-      main:
+      gitea:
         initContainers:
           init-db:
             image:
@@ -36,7 +45,7 @@ spec:
               - secretRef:
                   name: gitea-secret
         containers:
-          main:
+          app:
             image:
               repository: gitea/gitea
               tag: 1.21.10-rootless
@@ -52,8 +61,9 @@ spec:
               GITEA__REPOSITORY__ENABLE_PUSH_CREATE_USER: "True"
               GITEA__REPOSITORY__DEFAULT_BRANCH: "main"
               GITEA__SECURITY__INSTALL_LOCK: "True"
-              GITEA__SERVER__DOMAIN: "gitea.${SECRET_DOMAIN}"
-              GITEA__SERVER__ROOT_URL: "https://gitea.${SECRET_DOMAIN}"
+              GITEA__SERVER__DOMAIN: "{{ .Release.Name }}.${SECRET_DOMAIN}"
+              GITEA__SERVER__ROOT_URL: "https://{{ .Release.Name }}.${SECRET_DOMAIN}"
+              # GITEA__SERVER__ROOT_URL: "https://gitea.${SECRET_DOMAIN}"
               GITEA__SERVER__SSH_DOMAIN: "ssh.${SECRET_DOMAIN}"
               GITEA__SERVER__SSH_PORT: 22
             envFrom: *envFrom
@@ -63,17 +73,9 @@ spec:
                 cpu: 100m
               limits:
                 memory: 4Gi
-        pod:
-          securityContext:
-            runAsUser: 1000
-            runAsGroup: 1000
-            fsGroup: 1000
-            fsGroupChangePolicy: "OnRootMismatch"
-            capabilities:
-              add:
-                - SYS_CHROOT
     service:
-      main:
+      app:
+        controller: *app
         ports:
           http:
             port: 3000
@@ -89,7 +91,7 @@ spec:
             targetPort: 2222
             protocol: TCP
     ingress:
-      main:
+      app:
         enabled: true
         className: internal
         hosts:
