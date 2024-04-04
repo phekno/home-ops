@@ -11,7 +11,7 @@ data:
     endpoints:
       - name: calibre
         group: internal
-        url: https://books.phekno.io
+        url: https://calibre.phekno.io
         interval: 1m
         client:
           dns-resolver: tcp://10.100.50.2:53
