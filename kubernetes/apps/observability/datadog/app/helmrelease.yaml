@@ -24,4 +24,4 @@ spec:
   uninstall:
     keepHistory: false
   values:
-    apiKeyExistingSecret: datadog-secret
+    apiKeyExistingSecret: datadog
