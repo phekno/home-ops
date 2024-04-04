@@ -11,7 +11,7 @@ spec:
       apiSecret:
         secretName: datadog-secret
         keyName: api-key
-  # features:
-  #   logCollection:
-  #     enabled: true
-  #     containerCollectAll: true
+  features:
+    logCollection:
+      enabled: true
+      containerCollectAll: true
