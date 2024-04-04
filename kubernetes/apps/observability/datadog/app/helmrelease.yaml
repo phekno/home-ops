@@ -24,9 +24,5 @@ spec:
       retries: 3
   uninstall:
     keepHistory: false
-  valuesFrom:
-    - targetPath: apiKey
-      kind: Secret
-      name: datadog
-      valuesKey: api_key
-
+  values:
+    apiKeyExistingSecret: datadog-secret
