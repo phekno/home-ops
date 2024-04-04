@@ -7,12 +7,12 @@ metadata:
   namespace: flux-system
 spec:
   targetNamespace: observability
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: *app
-      app.kubernetes.io/managed-by: Helm
-      meta.helm.sh/release-name: *app
-      meta.helm.sh/release-namespace: observability
+  # commonMetadata:
+  #   labels:
+  #     app.kubernetes.io/name: *app
+  #     app.kubernetes.io/managed-by: Helm
+  #     meta.helm.sh/release-name: *app
+  #     meta.helm.sh/release-namespace: observability
   dependsOn:
     - name: external-secrets-stores
   path: ./kubernetes/apps/observability/datadog/app
