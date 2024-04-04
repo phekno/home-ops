@@ -9,3 +9,4 @@ namespace: observability
 #   meta.helm.sh/release-namespace: observability
 resources:
   - ./agent.yaml
+  - ./externalsecret.yaml
