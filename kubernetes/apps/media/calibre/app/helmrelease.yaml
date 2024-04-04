@@ -36,8 +36,8 @@ spec:
               tag: version-v7.7.0@sha256:64d565ae4792cf366e1a9dc420ecb7aa2408e97f25c6e72f6eacf430daf0f8e6
             env:
               TZ: "${TIMEZONE}"
-              PUID: "1000"
-              PGID: "1000"
+              PUID: 1000
+              PGID: 1000
             resources:
               requests:
                 cpu: 15m
@@ -49,21 +49,32 @@ spec:
         controller: *app
         ports:
           http:
-            port: 8080
+            port: 8081
+      content-server:
+        enabled: true
+        controller: *app
+        primary: false
+        ports:
+          content-server:
+            enabled: true
+            port: 8081
+            protocol: TCP
+            targetPort: 8081
+        type: ClusterIP
     ingress:
       app:
         enabled: true
         className: internal
         hosts:
-          - host: &host "books.${SECRET_DOMAIN}"
+          - host: &host "{{ .Release.Name }}.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:
                   identifier: app
                   port: http
-        tls:
-          - hosts:
-              - *host
+        # tls:
+        #   - hosts:
+        #       - *host
     persistence:
       config:
         enabled: true
