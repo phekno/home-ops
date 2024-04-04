@@ -4,21 +4,13 @@ kind: DatadogAgent
 metadata:
   name: datadog
 spec:
-  features:
-    logCollection:
-      enabled: true
-      containerCollectAll: true
-    # liveContainerCollection:
-    #   enabled: true
-    # orchestratorExplorer:
-    #   enabled: false
-    # processAgent:
-    #   enabled: true
-    #   processCollection: true
   global:
     clusterName: home-ops
-    site: datadoghq.com
     credentials:
       apiSecret:
         secretName: datadog-secret
         keyName: api-key
+  features:
+    logCollection:
+      enabled: true
+      containerCollectAll: true
