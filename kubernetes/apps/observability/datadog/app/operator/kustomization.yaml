@@ -5,8 +5,7 @@ kind: Kustomization
 namespace: observability
 commonAnnotations:
   app.kubernetes.io/managed-by: Helm
-  meta.helm.sh/release-name: datadog
+  meta.helm.sh/release-name: datadog-operator
   meta.helm.sh/release-namespace: observability
 resources:
-  - ./externalsecret.yaml
   - ./helmrelease.yaml
