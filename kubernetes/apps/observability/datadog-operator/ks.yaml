@@ -13,9 +13,9 @@ spec:
   #     app.kubernetes.io/managed-by: Helm
   #     meta.helm.sh/release-name: *app
   #     meta.helm.sh/release-namespace: observability
-  dependsOn:
-    - name: external-secrets-stores
-  path: ./kubernetes/apps/observability/datadog/app
+  # dependsOn:
+  #   - name: external-secrets-stores
+  path: ./kubernetes/apps/observability/datadog-operator/app
   prune: true
   sourceRef:
     kind: GitRepository
