@@ -8,26 +8,13 @@ spec:
     logCollection:
       enabled: true
       containerCollectAll: true
-    liveContainerCollection:
-      enabled: true
-    orchestratorExplorer:
-      enabled: true
-    processAgent:
-      enabled: true
-      processCollection: true
+    # liveContainerCollection:
+    #   enabled: true
+    # orchestratorExplorer:
+    #   enabled: false
+    # processAgent:
+    #   enabled: true
+    #   processCollection: true
   global:
+    clusterName: home-ops
     site: datadoghq.com
-  #   credentials:
-  #     apiSecret:
-  #       secretName: datadog-secret
-  #       keyName: api-key
-  #     appSecret:
-  #       secretName: datadog-secret
-  #       keyName: app-key
-  # override:
-  #   clusterAgent:
-  #     image:
-  #       name: gcr.io/datadoghq/cluster-agent:7.48.0
-  #   nodeAgent:
-  #     image:
-  #       name: gcr.io/datadoghq/agent:7
