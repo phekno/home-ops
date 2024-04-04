@@ -5,6 +5,7 @@ metadata:
   name: datadog
 spec:
   global:
+    site: us5.datadoghq.com
     clusterName: home-ops
     credentials:
       apiSecret:
