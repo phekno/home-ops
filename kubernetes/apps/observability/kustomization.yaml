@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - ./namespace.yaml
   - ./alertmanager/ks.yaml
+  - ./datadog-agent/ks.yaml
   - ./datadog-operator/ks.yaml
   - ./gatus/ks.yaml
   - ./grafana/ks.yaml
