@@ -18,3 +18,7 @@ spec:
   global:
     clusterName: home-ops
     site: datadoghq.com
+    credentials:
+      apiSecret:
+        secretName: datadog-secret
+        keyName: api-key
