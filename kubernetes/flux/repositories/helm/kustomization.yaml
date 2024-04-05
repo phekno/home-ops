@@ -9,7 +9,7 @@ resources:
   - ./cloudnative-pg.yaml
   - ./coredns.yaml
   - ./csi-driver-nfs.yaml
-  - ./datadog.yaml
+  # - ./datadog.yaml
   - ./descheduler.yaml
   - ./external-dns.yaml
   - ./external-secrets.yaml
@@ -27,5 +27,6 @@ resources:
   - ./piraeus.yaml
   - ./prometheus-community.yaml
   - ./rook-ceph.yaml
+  - ./spegel.yaml
   - ./stakater.yaml
   - ./weave-gitops.yaml
