@@ -15,6 +15,17 @@ spec:
         kind: HelmRepository
         name: bjw-s
         namespace: flux-system
+  maxHistory: 2
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  uninstall:
+    keepHistory: false
   values:
     controllers:
       home-assistant:
@@ -49,10 +60,10 @@ spec:
                 enabled: false
             resources:
               requests:
-                cpu: 47m
+                cpu: 1
                 memory: 2Gi
               limits:
-                memory: 2Gi
+                memory: 4Gi
     service:
       app:
         controller: *app
@@ -76,14 +87,13 @@ spec:
         tls:
           - hosts:
               - *host
-
-    persistence:
-      config:
-        existingClaim: home-assistant-config
-        advancedMounts:
-          home-assistant:
-            app:
-              - path: /config
+    # persistence:
+    #   config:
+    #     existingClaim: home-assistant-config
+    #     advancedMounts:
+    #       home-assistant:
+    #         app:
+    #           - path: /config
       # deploy-key:
       #   type: secret
       #   name: home-assistant-secret
