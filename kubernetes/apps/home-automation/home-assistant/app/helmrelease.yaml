@@ -48,6 +48,9 @@ spec:
             image:
               repository: ghcr.io/home-assistant/home-assistant
               tag: 2024.4.2
+            env:
+              SECRET_EXTERNAL_URL: https://hass.phekno.io
+              SECRET_TRUSTED_PROXIES_1: 10.69.0.0/16
             # envFrom:
             #   - secretRef:
             #       name: home-assistant-secret
