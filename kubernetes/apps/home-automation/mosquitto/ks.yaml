@@ -9,7 +9,7 @@ spec:
   targetNamespace: default
   dependsOn:
     - name: external-secrets-stores
-  path: ./kubernetes/main/apps/home-automation/mosquitto/app
+  path: ./kubernetes/apps/home-automation/mosquitto/app
   prune: true
   sourceRef:
     kind: GitRepository
