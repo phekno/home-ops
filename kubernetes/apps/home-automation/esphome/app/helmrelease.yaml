@@ -46,10 +46,10 @@ spec:
                 enabled: false
             resources:
               requests:
-                cpu: 5m
-                memory: 1374M
+                cpu: 1
+                memory: 2Gi
               limits:
-                memory: 2048M
+                memory: 4Gi
     service:
       app:
         controller: esphome
