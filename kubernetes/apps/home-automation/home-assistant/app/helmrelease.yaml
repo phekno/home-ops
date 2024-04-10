@@ -49,8 +49,9 @@ spec:
               repository: ghcr.io/home-assistant/home-assistant
               tag: 2024.4.2
             env:
-              SECRET_EXTERNAL_URL: https://hass.phekno.io
-              SECRET_TRUSTED_PROXIES_1: 10.69.0.0/16
+              TZ: ${TIMEZONE}
+              HOME_ASSISTANT_EXTERNAL_URL: https://hass.${SECRET_DOMAIN}
+              HOME_ASSISTANT_TRUSTED_PROXIES: "${CLUSTER_CIDR}"
             # envFrom:
             #   - secretRef:
             #       name: home-assistant-secret
@@ -90,13 +91,15 @@ spec:
         tls:
           - hosts:
               - *host
-    # persistence:
-    #   config:
-    #     existingClaim: home-assistant-config
-    #     advancedMounts:
-    #       home-assistant:
-    #         app:
-    #           - path: /config
+    persistence:
+      config:
+        existingClaim: home-assistant-config
+      logs:
+        type: emptyDir
+        globalMounts:
+          - path: /config/logs
+      tmp:
+        type: emptyDir
       # deploy-key:
       #   type: secret
       #   name: home-assistant-secret
