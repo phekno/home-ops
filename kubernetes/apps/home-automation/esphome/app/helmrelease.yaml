@@ -26,11 +26,15 @@ spec:
         #     egress.home.arpa/world: allow
         #     egress.home.arpa/kubedns: allow # FIXME: Remove when clusterNetworkPolicy is in place
           annotations:
+              #           [{
+              #   "name":"multus-iot",
+              #   "namespace": "network",
+              #   "ips": ["10.100.30.234/24"]
+              # }]
             k8s.v1.cni.cncf.io/networks: |
               [{
                 "name":"multus-iot",
-                "namespace": "network",
-                "ips": ["10.100.30.234/24"]
+                "namespace": "network"
               }]
         containers:
           app:
