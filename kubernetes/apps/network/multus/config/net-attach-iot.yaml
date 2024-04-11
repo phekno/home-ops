@@ -17,7 +17,10 @@ spec:
             "ips": true
           },
           "ipam": {
-            "type": "static",
+            "type": "dhcp",
+            "subnet": "10.100.30.0/24",
+            "rangeStart": "10.100.30.90",
+            "rangeEnd": "10.100.30.100",
             "routes": [
               { "dst": "0.0.0.0/0" }
             ],
