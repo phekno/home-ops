@@ -19,7 +19,7 @@ spec:
     controllers:
       esphome:
         annotations:
-          secret.reloader.stakater.com/reload: esphome-secrets,
+          secret.reloader.stakater.com/reload: esphome-secrets
         pod:
         #   labels:
         #     ingress.home.arpa/nginx-internal: allow
