@@ -45,18 +45,18 @@ spec:
             envFrom: &envFrom
               - secretRef:
                   name: home-assistant-secret
-        # pod:
+        pod:
           # labels:
           #   ingress.home.arpa/nginx-external: allow
           #   egress.home.arpa/world: allow
           #   egress.home.arpa/kubedns: allow # FIXME: Remove when clusterNetworkPolicy is in place
-          # annotations:
-          #   k8s.v1.cni.cncf.io/networks: |
-          #     [{
-          #       "name":"multus-iot",
-          #       "namespace": "network",
-          #       "ips": ["10.1.3.151/24"]
-          #     }]
+          annotations:
+            k8s.v1.cni.cncf.io/networks: |
+              [{
+                "name":"multus-iot",
+                "namespace": "network",
+                "ips": ["10.100.30.11/24"]
+              }]
         containers:
           app:
             image:
