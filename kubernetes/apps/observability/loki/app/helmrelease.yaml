@@ -28,15 +28,15 @@ spec:
   #   - name: rook-ceph-cluster
   #     namespace: rook-ceph
   valuesFrom:
-    - targetPath: loki.storage.s3.bucketnames.chunks
+    - targetPath: loki.storage.bucketNames.chunks
       kind: Secret
       name: loki
       valuesKey: bucket
-    - targetPath: loki.storage.s3.access_key_id
+    - targetPath: loki.storage.s3.accessKeyId
       kind: Secret
       name: loki
       valuesKey: access_key
-    - targetPath: loki.storage.s3.secret_access_key
+    - targetPath: loki.storage.s3.secretAccessKey
       kind: Secret
       name: loki
       valuesKey: secret_key
