@@ -128,10 +128,6 @@ spec:
       replicas: 3
       persistence:
         storageClass: longhorn
-    backend:
-      replicas: 3
-      persistence:
-        storageClass: longhorn
     monitoring:
       dashboards:
         annotations:
