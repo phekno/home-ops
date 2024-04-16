@@ -64,7 +64,7 @@ spec:
       schemaConfig:
         configs:
           - from: "2022-01-11" # quote
-            store: boltdb-shipper
+            store: tsdb
             object_store: s3
             schema: v13
             index:
