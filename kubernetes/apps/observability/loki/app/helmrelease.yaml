@@ -28,7 +28,7 @@ spec:
   #   - name: rook-ceph-cluster
   #     namespace: rook-ceph
   valuesFrom:
-    - targetPath: loki.storage.s3.bucketnames
+    - targetPath: loki.storage.s3.bucketnames.chunks
       kind: Secret
       name: loki
       valuesKey: bucket
