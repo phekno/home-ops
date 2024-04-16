@@ -61,12 +61,12 @@ spec:
           s3: null
           # insecure: true
           # s3forcepathstyle: true
-      schema_config:
+      schemaConfig:
         configs:
           - from: "2022-01-11" # quote
             store: boltdb-shipper
             object_store: s3
-            schema: v12
+            schema: v13
             index:
               prefix: loki_index_
               period: 24h
