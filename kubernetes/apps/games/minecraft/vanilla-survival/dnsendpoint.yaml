@@ -8,4 +8,4 @@ spec:
   endpoints:
     - dnsName: "ipv4.${SECONDARY_DOMAIN}"
       recordType: CNAME
-      targets: ["create.${SECRET_DOMAIN}"]
+      targets: ["vanilla-survival.${SECRET_DOMAIN}"]
