@@ -12,7 +12,7 @@ spec:
       version: 4.16.0
       sourceRef:
         kind: HelmRepository
-        name: itzg-charts
+        name: minecraft
         namespace: flux-system
   install:
     remediation:
