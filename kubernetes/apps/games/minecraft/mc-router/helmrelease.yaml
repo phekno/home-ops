@@ -8,11 +8,12 @@ spec:
   interval: 30m
   chart:
     spec:
+      # renovate: registryUrl=https://itzg.github.io/minecraft-server-charts/
       chart: mc-router
       version: 1.1.0
       sourceRef:
         kind: HelmRepository
-        name: itzg-charts
+        name: minecraft
         namespace: flux-system
   install:
     remediation:

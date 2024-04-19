@@ -22,7 +22,6 @@ resources:
   - ./k8s-gateway.yaml
   - ./kubernetes-dashboard.yaml
   - ./longhorn.yaml
-  - ./mc-router.yaml
   - ./metrics-server.yaml
   - ./minecraft.yaml
   - ./piraeus.yaml
