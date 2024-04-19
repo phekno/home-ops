@@ -155,7 +155,3 @@ spec:
           multicluster:
             etcd:
               enabled: true
-  # valuesFrom:
-  #   - name: kube-prometheus-stack-values
-  #     kind: ConfigMap
-  #     valuesKey: values.yaml
