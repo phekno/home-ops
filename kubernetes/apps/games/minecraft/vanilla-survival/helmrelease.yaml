@@ -112,5 +112,5 @@ spec:
   valuesFrom:
   - kind: Secret
     name: vanilla-survival-secret
-    valuesKey: RCON_PASSWORD
+    valuesKey: rcon_password
     targetPath: minecraftServer.rcon.password
