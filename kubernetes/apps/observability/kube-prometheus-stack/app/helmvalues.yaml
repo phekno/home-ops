@@ -98,6 +98,15 @@ data:
           - hosts:
               - "prometheus.${SECRET_DOMAIN}"
       prometheusSpec:
+        alertingEndpoints:
+          - namespace: observability
+            name: alertmanager
+            port: 9093
+            apiVersion: v2
+        enableFeatures:
+          - auto-gomaxprocs
+          - memory-snapshot-on-shutdown
+          - new-service-discovery-manager
         ruleSelectorNilUsesHelmValues: false
         serviceMonitorSelectorNilUsesHelmValues: false
         podMonitorSelectorNilUsesHelmValues: false
