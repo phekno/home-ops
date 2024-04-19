@@ -46,7 +46,7 @@ spec:
               readOnlyRootFilesystem: true
               capabilities: {drop: [ALL]}
     serviceAccount:
-      create: true
+      create: false
       name: capacitor
     service:
       app:
