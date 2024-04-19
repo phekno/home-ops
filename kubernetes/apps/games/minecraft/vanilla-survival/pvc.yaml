@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vanilla-survival
+  namespace: games
+  labels:
+    app.kubernetes.io/name: &name vanilla-survival
+    app.kubernetes.io/instance: *name
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: longhorn
