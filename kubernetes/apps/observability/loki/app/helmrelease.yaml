@@ -127,6 +127,7 @@ spec:
       replicas: 3
       persistence:
         storageClass: longhorn
+        size: 100Gi
     sidecar:
       image:
         repository: ghcr.io/kiwigrid/k8s-sidecar
