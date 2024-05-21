@@ -124,8 +124,7 @@ radarr:
             score: 0
           - name: SD
             score: 0
----
-# yaml-language-server: $schema=https://raw.githubusercontent.com/recyclarr/recyclarr/master/schemas/config-schema.json
+
 sonarr:
   sonarr_anime:
     base_url: http://sonarr-anime.downloads.svc.cluster.local:80
