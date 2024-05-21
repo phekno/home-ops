@@ -126,7 +126,7 @@ radarr:
             score: 0
 ---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/recyclarr/recyclarr/master/schemas/config-schema.json
-sonarr-anime:
+sonarr:
   sonarr-anime:
     base_url: http://sonarr-anime.downloads.svc.cluster.local:80
     api_key: !env_var SONARR_API_KEY
