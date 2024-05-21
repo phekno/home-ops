@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
-  name: &app recyclarr
+  name: &app recyclarr-anime
 spec:
   interval: 30m
   chart:
@@ -39,7 +39,7 @@ spec:
               TZ: ${TIMEZONE}
             envFrom:
               - secretRef:
-                  name: recyclarr-secret
+                  name: recyclarr-anime-secret
             resources:
               requests:
                 cpu: 10m
@@ -59,10 +59,10 @@ spec:
     persistence:
       config:
         enabled: true
-        existingClaim: recyclarr
+        existingClaim: recyclarr-anime
       config-file:
         type: configMap
-        name: recyclarr-configmap
+        name: recyclarr-anime-configmap
         globalMounts:
           - path: /config/recyclarr.yml
             subPath: recyclarr.yml

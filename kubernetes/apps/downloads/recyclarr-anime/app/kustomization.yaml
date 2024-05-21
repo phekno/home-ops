@@ -9,7 +9,7 @@ resources:
   - ./helmrelease.yaml
   # - ./volsync.yaml
 configMapGenerator:
-  - name: recyclarr-configmap
+  - name: recyclarr-anime-configmap
     files:
       - recyclarr.yml=./config/recyclarr.yml
 generatorOptions:
