@@ -91,7 +91,7 @@ spec:
         enabled: true
         className: internal
         hosts:
-          - host: &host "sonar-anime.${SECRET_DOMAIN}"
+          - host: &host "sonarr-anime.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:
