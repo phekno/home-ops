@@ -33,7 +33,7 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
     controllers:
-      sonarr:
+      sonarr-anime:
         annotations:
           reloader.stakater.com/auto: "true"
         initContainers:
