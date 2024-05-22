@@ -1,5 +1,5 @@
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
 kind: HelmRelease
 metadata:
   name: &app downloads-gateway
@@ -73,7 +73,6 @@ spec:
       VPN_TRAFFIC_PORT: "1637"
       VXLAN_ID: 43
       VXLAN_IP_NETWORK: 172.16.1
-
     webhook:
       gatewayAnnotation: setGateway
       gatewayDefault: false
