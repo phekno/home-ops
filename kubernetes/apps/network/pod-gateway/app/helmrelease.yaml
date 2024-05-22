@@ -78,4 +78,4 @@ spec:
       gatewayAnnotation: setGateway
       gatewayLabel: setGateway
       namespaceSelector:
-        label: routed-gateway
+        label: downloads
