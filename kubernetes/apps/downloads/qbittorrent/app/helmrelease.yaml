@@ -56,7 +56,7 @@ spec:
                 ${CLUSTER_CIDR}, 10.100.0.0/16
               QBT_Preferences__WebUI__LocalHostAuth: false
               QBT_BitTorrent__Session__Interface: vxlan0
-              QBT_BitTorrent__Session__InterfaceAddress: "0.0.0.0"
+              # QBT_BitTorrent__Session__InterfaceAddress: "0.0.0.0"
                 # valueFrom:
                 #   fieldRef:
                 #     fieldPath: status.podIP

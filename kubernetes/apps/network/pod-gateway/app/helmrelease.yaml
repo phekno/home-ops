@@ -53,7 +53,16 @@ spec:
             add:
               - NET_ADMIN
         networkPolicy:
-          enabled: false
+          enabled: true
+          egress:
+            - to:
+                - ipBlock:
+                    cidr: 0.0.0.0/0
+              ports:
+                - port: 51820
+                  protocol: UDP
+            - to:
+                - namespaceSelector: {}
       netshoot:
         enabled: true
     podAnnotations:
@@ -70,7 +79,10 @@ spec:
     routed_namespaces:
       - downloads
     settings:
-      NOT_ROUTED_TO_GATEWAY_CIDRS: "10.0.0.0/8 192.168.0.0/16"
+      NOT_ROUTED_TO_GATEWAY_CIDRS: "10.0.0.0/8 172.16.0.0/12 192.168.0.0/16"
+      VPN_LOCAL_CIDRS: "10.0.0.0/8 172.16.0.0/12 192.168.0.0/16"
+      IPTABLES_NFT: "yes"
+      # NOT_ROUTED_TO_GATEWAY_CIDRS: "10.0.0.0/8 192.168.0.0/16"
       VPN_BLOCK_OTHER_TRAFFIC: true
       VPN_INTERFACE: wg0
       # VPN_LOCAL_CIDRS: 10.0.0.0/8 192.168.0.0/16
