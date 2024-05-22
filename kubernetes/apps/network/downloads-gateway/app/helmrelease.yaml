@@ -40,7 +40,7 @@ spec:
           # DOT: off
           # HEALTH_VPN_DURATION_INITIAL: 30s
           # SERVER_COUNTRIES: United States
-          # FIREWALL_VPN_INPUT_PORTS: 1637,28163
+          FIREWALL_VPN_INPUT_PORTS: 1637,28163
         envFrom:
         - secretRef:
             name: downloads-gateway
@@ -48,8 +48,8 @@ spec:
           capabilities:
             add:
               - NET_ADMIN
-        # networkPolicy:
-        #   enabled: false # Using my own Cilium-based Network Policies
+        networkPolicy:
+          enabled: false # Using my own Cilium-based Network Policies
       netshoot:
         enabled: true
     podAnnotations:
