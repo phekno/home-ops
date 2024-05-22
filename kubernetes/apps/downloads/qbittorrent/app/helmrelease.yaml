@@ -49,21 +49,18 @@ spec:
               TZ: "${TIMEZONE}"
               QBITTORRENT__PORT: &port 80
               QBITTORRENT__BT_PORT: &bittorrentPort 28163
-              # QBT_Application__MemoryWorkingSetLimit:
-              #   valueFrom:
-              #     resourceFieldRef:
-              #       containerName: app
-              #       resource: limits.memory
-              #       divisor: 1Mi
+              QBT_Application__MemoryWorkingSetLimit: 6144
+              QBT_Preferences__WebUI__AlternativeUIEnabled: false
               QBT_Preferences__WebUI__AuthSubnetWhitelistEnabled: true
               QBT_Preferences__WebUI__AuthSubnetWhitelist: |-
                 ${CLUSTER_CIDR}, 10.100.0.0/16
               QBT_Preferences__WebUI__LocalHostAuth: false
               QBT_BitTorrent__Session__Interface: vxlan0
               QBT_BitTorrent__Session__InterfaceAddress: "0.0.0.0"
+                # valueFrom:
+                #   fieldRef:
+                #     fieldPath: status.podIP
               QBT_BitTorrent__Session__InterfaceName: vxlan0
-              QBT_Preferences__WebUI__AlternativeUIEnabled: false
-              QBT_Preferences__WebUI__RootFolder: /add-ons/VueTorrent
             probes:
               liveness: &probes
                 enabled: true
