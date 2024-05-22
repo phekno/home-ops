@@ -130,12 +130,12 @@ spec:
           qbittorrent:
             app:
               - path: /config
-      # empty-config:
-      #   type: emptyDir
-      #   advancedMounts:
-      #     qbittorrent:
-      #       port-forward:
-      #         - path: /config
+      empty-config:
+        type: emptyDir
+        advancedMounts:
+          qbittorrent:
+            port-forward:
+              - path: /config
       media:
         type: nfs
         server: 10.100.50.5
