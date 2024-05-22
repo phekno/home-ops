@@ -34,9 +34,9 @@ spec:
           VPN_TYPE: wireguard
           VPN_INTERFACE: wg0
           VPN_ENDPOINT_PORT: 51820
-          # VPN_PORT_FORWARDING: on
+          VPN_PORT_FORWARDING: on
           VPN_PORT_FORWARDING_PROVIDER: protonvpn
-          # FIREWALL: off
+          FIREWALL: off
           # DOT: off
           # HEALTH_VPN_DURATION_INITIAL: 30s
           # SERVER_COUNTRIES: United States
