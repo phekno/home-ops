@@ -6,4 +6,4 @@ namespace: network
 resources:
 - ./helmrelease.yaml
 - ./externalsecret.yaml
-# - ./networkpolicy.yaml
+- ./networkpolicy.yaml
