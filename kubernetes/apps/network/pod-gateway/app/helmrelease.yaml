@@ -53,7 +53,25 @@ spec:
             add:
               - NET_ADMIN
         networkPolicy:
-          enabled: false # Using my own Cilium-based Network Policies
+          enabled: true
+          egress:
+            - to:
+                - ipBlock:
+                    cidr: 0.0.0.0/0
+                - ipBlock:
+                    cidr: ::/0 # Allow IPv6 to VPN servers
+              ports:
+                # VPN traffic
+                - port: 51820
+                  protocol: UDP
+                - port: 1637
+                  protocol: UDP
+                - port: 53
+                  protocol: UDP
+            - to:
+                - namespaceSelector: {}
+        # networkPolicy:
+        #   enabled: true # Using my own Cilium-based Network Policies
       netshoot:
         enabled: true
     podAnnotations:
