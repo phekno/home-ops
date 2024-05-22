@@ -99,7 +99,7 @@ spec:
       app:
         className: internal
         hosts:
-          - host: "qb.${SECRET_DOMAIN}"
+          - host: &host "qb.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:
