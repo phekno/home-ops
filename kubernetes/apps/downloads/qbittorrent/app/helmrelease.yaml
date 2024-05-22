@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: qbittorrent
+  name: &app qbittorrent
 spec:
   interval: 30m
   chart:
@@ -23,6 +23,8 @@ spec:
       strategy: rollback
       retries: 3
   dependsOn:
+    - name: longhorn
+      namespace: storage
     - name: downloads-gateway
       namespace: network
   values:
@@ -31,7 +33,6 @@ spec:
         setGateway: "true"
       annotations:
         setGateway: "true"
-
     controllers:
       qbittorrent:
         annotations:
@@ -45,7 +46,7 @@ spec:
               repository: ghcr.io/onedr0p/qbittorrent-beta
               tag: 4.6.4@sha256:f541287a4d1b3f6dbc4ab660a7a7eaedbb14da1e3f8b50a3c4942b54c500abcf
             env:
-              TZ: America/Los_Angeles
+              TZ: "${TIMEZONE}"
               QBITTORRENT__PORT: &port 80
               QBITTORRENT__BT_PORT: &bittorrentPort 28163
               # QBT_Application__MemoryWorkingSetLimit:
@@ -56,12 +57,12 @@ spec:
               #       divisor: 1Mi
               QBT_Preferences__WebUI__AuthSubnetWhitelistEnabled: true
               QBT_Preferences__WebUI__AuthSubnetWhitelist: |-
-                ${CLUSTER_CIDR}, ${NODE_CIDR}, 192.168.0.0/24
+                ${CLUSTER_CIDR}, 10.100.0.0/16
               QBT_Preferences__WebUI__LocalHostAuth: false
               QBT_BitTorrent__Session__Interface: vxlan0
               QBT_BitTorrent__Session__InterfaceAddress: "0.0.0.0"
               QBT_BitTorrent__Session__InterfaceName: vxlan0
-              QBT_Preferences__WebUI__AlternativeUIEnabled: true
+              QBT_Preferences__WebUI__AlternativeUIEnabled: false
               QBT_Preferences__WebUI__RootFolder: /add-ons/VueTorrent
             probes:
               liveness: &probes
@@ -85,22 +86,6 @@ spec:
                 cpu: 100m
               limits:
                 memory: 8Gi
-          vuetorrent:
-            dependsOn: app
-            image:
-              repository: registry.k8s.io/git-sync/git-sync
-              tag: v4.2.3
-            args:
-              - --repo=https://github.com/WDaan/VueTorrent
-              - --ref=latest-release
-              - --period=86400s
-              - --root=/add-ons
-            resources:
-              requests:
-                cpu: 10m
-                memory: 25Mi
-              limits:
-                memory: 50Mi
         pod:
           securityContext:
             runAsUser: 568
@@ -108,13 +93,13 @@ spec:
             fsGroup: 568
             fsGroupChangePolicy: OnRootMismatch
             supplementalGroups: [10000]
-          hostname: qbittorrent
+          hostname: qb
     service:
       app:
         controller: qbittorrent
         type: LoadBalancer
         annotations:
-          io.cilium/lb-ipam-ips: 10.10.10.32
+          io.cilium/lb-ipam-ips: 10.100.50.207
         ports:
           http:
             port: *port
@@ -140,12 +125,13 @@ spec:
         existingClaim: qbittorrent
       media:
         type: nfs
-        server: nas.cleeb.net
-        path: /mnt/Hellabooties/Downloads/qbit
+        server: 10.100.50.5
+        path: /tank/video
+        globalMounts:
+          - path: /mnt/media
+      downloads:
+        type: nfs
+        server: 10.100.50.5
+        path: /tank/nzbget_downloads
         globalMounts:
           - path: /downloads
-      add-ons:
-        enabled: true
-        type: emptyDir
-        globalMounts:
-          - path: /add-ons
