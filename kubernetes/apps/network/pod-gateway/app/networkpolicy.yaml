@@ -24,6 +24,11 @@ spec:
               protocol: UDP
     - toEntities:
         - cluster
+  ingress:
+    - icmps:
+      - fields:
+        - type: 8
+          family: IPv4
 
 ---
 apiVersion: cilium.io/v2
