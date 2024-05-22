@@ -47,7 +47,7 @@ sonarr:
           # Unwanted
           - 32b367365729d530ca1c124a0b180c64 # Bad Dual Groups
           - 85c61753df5da1fb2aab6f2a47426b09 # BR-DISK
-          - 9c14d194486c4014d422adc64092d794 # Dubs Only
+          # - 9c14d194486c4014d422adc64092d794 # Dubs Only
           - 9c11cd3f07101cdba90a2d81cf0e56b4 # LQ
           - 82d40da2bc6923f41e14394075dd4b03 # No-RlsGroup
           - e1a997ddb54e3ecbfe06341ad323c458 # Obfuscated
