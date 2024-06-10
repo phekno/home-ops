@@ -32,7 +32,7 @@ spec:
       secret.reloader.stakater.com/reload: vanilla-survival-secret
     image:
       repository: ghcr.io/itzg/minecraft-server
-      tag: java17@sha256:28cf1499d3df393b29ec1d2585d752574b57daf1284428f461e6ff641f9f119b
+      tag: java17@sha256:fcfea9ddc246f7e51e98e1c2cb55e3fb1297ac1f059bb6769a98f377357d609e
     resources:
       requests:
         cpu: 500m
