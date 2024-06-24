@@ -38,6 +38,10 @@ spec:
       persistence:
         enabled: false
       disableCommands:
+      resources:
+        requests:
+          cpu: 1
+          memory: 1024Mi
     replica:
       persistence:
         enabled: false
