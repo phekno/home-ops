@@ -25,9 +25,8 @@ spec:
         - secretRef:
             name: *secret
     authentik:
-      redis:
-        host: redis.db.svc.cluster.local
-        db: 19
+        # host: redis.db.svc.cluster.local
+        # db: 19
     server:
       initContainers:
         - name: init-db
@@ -35,6 +34,8 @@ spec:
           envFrom:
             - secretRef:
                 name: *secret
+      redis:
+        enabled: true
       metrics:
         enabled: true
         serviceMonitor:
