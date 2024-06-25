@@ -25,7 +25,8 @@ spec:
         - secretRef:
             name: *secret
     authentik:
-        # host: redis.db.svc.cluster.local
+      redis:
+        host: redis.db.svc.cluster.local
         # db: 19
     server:
       initContainers:
