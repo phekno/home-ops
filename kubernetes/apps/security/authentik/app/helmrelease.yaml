@@ -27,7 +27,7 @@ spec:
     authentik:
       redis:
         host: redis.db.svc.cluster.local
-        db: 1
+        db: 19
     server:
       initContainers:
         - name: init-db
