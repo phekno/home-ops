@@ -34,8 +34,6 @@ spec:
           envFrom:
             - secretRef:
                 name: *secret
-      redis:
-        enabled: true
       metrics:
         enabled: true
         serviceMonitor:
@@ -48,6 +46,8 @@ spec:
         hosts:
           - sso.${SECRET_DOMAIN}
         https: false
+    redis:
+      enabled: true
     prometheus:
       rules:
         enabled: true
