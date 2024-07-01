@@ -34,6 +34,13 @@ spec:
       getMasterTimeout: 10
       startupProbe:
         failureThresholds: 2
+      resources:
+        requests:
+          cpu: 1024m
+          memory: 1Gi
+        limits:
+          cpu: 2048m
+          memory: 2Gi
     master:
       persistence:
         enabled: false
