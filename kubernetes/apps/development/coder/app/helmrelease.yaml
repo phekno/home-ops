@@ -38,7 +38,7 @@ spec:
       envFrom: *envFrom
       env:
         - name: CODER_ACCESS_URL
-          value: https://coder.phekno.io
+          value: http://coder.phekno.io
         - name: CODER_WILDCARD_ACCESS_URL
           value: "*.coder.phekno.io"
         # OIDC
