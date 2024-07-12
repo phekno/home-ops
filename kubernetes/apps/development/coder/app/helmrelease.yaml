@@ -52,5 +52,4 @@ spec:
         host: &host "{{ .Release.Name }}.${SECRET_DOMAIN}"
         wildcardHost: "*.{{ .Release.Name }}.${SECRET_DOMAIN}"
         tls:
-          - hosts:
-              - *host
+          enabled: false
