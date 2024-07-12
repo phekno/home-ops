@@ -49,7 +49,7 @@ spec:
       ingress:
         enable: true
         className: internal
-        host: &host "{{ .Release.Name }}.${SECRET_DOMAIN}"
-        wildcardHost: "*.{{ .Release.Name }}.${SECRET_DOMAIN}"
+        host: "coder.${SECRET_DOMAIN}"
+        wildcardHost: "*.coder.${SECRET_DOMAIN}"
         tls:
           enabled: false
