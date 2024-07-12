@@ -36,14 +36,11 @@ spec:
             - secretRef:
                 name: coder-secret
       envFrom: *envFrom
-      env:
-        - name: CODER_ACCESS_URL
-          value: http://coder.phekno.io
-        - name: CODER_WILDCARD_ACCESS_URL
-          value: "*.coder.phekno.io"
-        # OIDC
-        - name: CODER_OIDC_SIGN_IN_TEXT
-          value: "Sign in with SSO"
+      # env:
+        # - name: CODER_ACCESS_URL
+        #   value: http://coder.phekno.io
+        # - name: CODER_WILDCARD_ACCESS_URL
+        #   value: "*.coder.phekno.io"
       ingress:
         enable: true
         className: internal
