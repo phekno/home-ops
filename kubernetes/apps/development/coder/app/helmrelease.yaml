@@ -33,7 +33,7 @@ spec:
         - name: init-db
           image: ghcr.io/onedr0p/postgres-init:16.3
           imagePullPolicy: IfNotPresent
-          envFrom:
+          envFrom: &envFrom
             - secretRef:
                 name: coder-secret
       envFrom: *envFrom
