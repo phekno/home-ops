@@ -2,6 +2,9 @@
   "$schema": "https://raw.githubusercontent.com/devcontainers/spec/main/schemas/devContainer.schema.json",
   "name": "Phekno Home Ops",
   "image": "ghcr.io/phekno/home-ops/devcontainer:base",
+  "remoteUser": "vscode",
+  "runArgs": ["--userns=keep-id"],
+  "containerUser": "vscode", // the value needs to match the value of "remoteUser"
   "mounts": [
     "source=${localEnv:HOME}/.ssh,target=/home/vscode/.ssh,type=bind,consistency=cached"
   ],
