@@ -29,7 +29,7 @@ spec:
       replicaCount: 1
       service:
         annotations:
-          io.cilium/lb-ipam-ips: "{{ cloudflare.ingress_vip }}"
+          lbipam.cilium.io/ips: "{{ cloudflare.ingress_vip }}"
         externalTrafficPolicy: Cluster
       ingressClassResource:
         name: internal

@@ -28,4 +28,4 @@ spec:
       minecraft:
         type: LoadBalancer
         annotations:
-          io.cilium/lb-ipam-ips: ${SVC_MINECRAFT_ADDR}
+          lbipam.cilium.io/ips: ${SVC_MINECRAFT_ADDR}

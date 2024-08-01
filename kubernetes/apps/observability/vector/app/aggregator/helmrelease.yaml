@@ -62,7 +62,7 @@ spec:
         type: LoadBalancer
         annotations:
           external-dns.alpha.kubernetes.io/hostname: vector.phekno.io
-          io.cilium/lb-ipam-ips: 10.100.50.204
+          lbipam.cilium.io/ips: 10.100.50.204
         ports:
           http:
             port: 8686

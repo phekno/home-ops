@@ -6,7 +6,7 @@ metadata:
   namespace: db
   annotations:
     # coredns.io/hostname: postgres.phekno.io
-    io.cilium/lb-ipam-ips: ${SVC_POSTGRES_ADDR}
+    lbipam.cilium.io/ips: ${SVC_POSTGRES_ADDR}
 spec:
   type: LoadBalancer
   externalTrafficPolicy: Cluster

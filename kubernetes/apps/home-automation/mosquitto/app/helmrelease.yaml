@@ -68,7 +68,7 @@ spec:
         type: LoadBalancer
         annotations:
           external-dns.alpha.kubernetes.io/hostname: "mqtt.${SECRET_DOMAIN}"
-          io.cilium/lb-ipam-ips: 10.100.50.210
+          lbipam.cilium.io/ips: 10.100.50.210
         # externalTrafficPolicy: Local
         ports:
           mqtt:
