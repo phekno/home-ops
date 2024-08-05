@@ -32,14 +32,14 @@ spec:
         strategy: RollingUpdate
         annotations:
           reloader.stakater.com/auto: "true"
-        pod:
-          topologySpreadConstraints:
-            - maxSkew: 1
-              topologyKey: kubernetes.io/hostname
-              whenUnsatisfiable: DoNotSchedule
-              labelSelector:
-                matchLabels:
-                  app.kubernetes.io/name: *app
+        # pod:
+        #   topologySpreadConstraints:
+        #     - maxSkew: 1
+        #       topologyKey: kubernetes.io/hostname
+        #       whenUnsatisfiable: DoNotSchedule
+        #       labelSelector:
+        #         matchLabels:
+        #           app.kubernetes.io/name: *app
         initContainers:
           01-init-geoip:
             image:
