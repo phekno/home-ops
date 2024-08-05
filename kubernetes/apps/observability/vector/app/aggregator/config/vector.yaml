@@ -14,10 +14,10 @@ api:
 #
 
 sources:
-  journald_source:
-    type: vector
-    version: "2"
-    address: 0.0.0.0:6000
+  # journald_source:
+  #   type: vector
+  #   version: "2"
+  #   address: 0.0.0.0:6000
 
   kubernetes_source:
     type: vector
@@ -43,16 +43,16 @@ transforms:
 #
 
 sinks:
-  journald:
-    inputs: ["journald_source"]
-    type: loki
-    endpoint: http://loki-gateway.observability.svc.cluster.local
-    encoding: { codec: json }
-    out_of_order_action: accept
-    remove_label_fields: true
-    remove_timestamp: true
-    labels:
-      hostname: '{{ host }}'
+  # journald:
+  #   inputs: ["journald_source"]
+  #   type: loki
+  #   endpoint: http://loki-gateway.observability.svc.cluster.local
+  #   encoding: { codec: json }
+  #   out_of_order_action: accept
+  #   remove_label_fields: true
+  #   remove_timestamp: true
+  #   labels:
+  #     hostname: '{{ host }}'
 
   kubernetes:
     inputs: ["kubernetes_remap"]
