@@ -4,7 +4,7 @@ data_dir: /vector-data-dir
 sources:
   journald_source:
     type: journald
-    # journal_directory: /var/log/journal
+    journal_directory: /var/log/journal
 
   kubernetes_source:
     type: kubernetes_logs
