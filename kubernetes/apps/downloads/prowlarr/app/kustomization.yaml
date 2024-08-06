@@ -6,6 +6,6 @@ namespace: downloads
 resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
-  - ./pvc.yaml
+  # - ./pvc.yaml
   - ./gatus.yaml
   # - ./volsync.yaml
