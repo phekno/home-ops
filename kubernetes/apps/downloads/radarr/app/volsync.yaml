@@ -35,7 +35,7 @@ spec:
     pruneIntervalDays: 10
     repository: radarr-restic-secret
     cacheCapacity: 2Gi
-    volumeSnapshotClassName: longhorn
+    volumeSnapshotClassName: longhorn-snapclass
     moverSecurityContext:
       runAsUser: 1000
       runAsGroup: 1000
