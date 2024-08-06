@@ -6,7 +6,7 @@ metadata:
   name: postgres
 spec:
   instances: 2
-  imageName:  ghcr.io/cloudnative-pg/postgresql:16.2-3
+  imageName:  ghcr.io/cloudnative-pg/postgresql:16.3-10
   enableSuperuserAccess: true
   primaryUpdateStrategy: unsupervised
   storage:
@@ -21,8 +21,10 @@ spec:
   monitoring:
     enablePodMonitor: true
   backup:
-    retentionPolicy: 7d
+    retentionPolicy: 15d
     barmanObjectStore: &barmanObjectStore
+      data:
+        compression: bzip2
       wal:
         compression: bzip2
         maxParallel: 8
