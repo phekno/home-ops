@@ -3,21 +3,21 @@
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
-  name: wizarr-restic
+  name: sabnzbd-restic
 spec:
   secretStoreRef:
     kind: ClusterSecretStore
     name: onepassword-connect
   target:
-    name: wizarr-restic-secret
+    name: sabnzbd-restic-secret
     creationPolicy: Owner
     template:
       engineVersion: v2
       data:
-        RESTIC_REPOSITORY: '{{ .REPOSITORY_TEMPLATE }}/wizarr'
-        RESTIC_PASSWORD: '{{ .RESTIC_PASSWORD }}'
-        AWS_ACCESS_KEY_ID: '{{ .AWS_ACCESS_KEY_ID }}'
-        AWS_SECRET_ACCESS_KEY: '{{ .AWS_SECRET_ACCESS_KEY }}'
+        RESTIC_REPOSITORY: "{{ .REPOSITORY_TEMPLATE }}/sabnzbd"
+        RESTIC_PASSWORD: "{{ .RESTIC_PASSWORD }}"
+        AWS_ACCESS_KEY_ID: "{{ .AWS_ACCESS_KEY_ID }}"
+        AWS_SECRET_ACCESS_KEY: "{{ .AWS_SECRET_ACCESS_KEY }}"
   dataFrom:
     - extract:
         key: volsync-restic-template
@@ -26,15 +26,15 @@ spec:
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
-  name: wizarr
+  name: sabnzbd
 spec:
-  sourcePVC: data-wizarr-0
+  sourcePVC: sabnzbd
   trigger:
     schedule: "0 1 * * *"
   restic:
     copyMethod: Snapshot
     pruneIntervalDays: 10
-    repository: jellyseerr-restic-secret
+    repository: sabnzbd-restic-secret
     cacheCapacity: 2Gi
     volumeSnapshotClassName: longhorn-snapclass
     moverSecurityContext:

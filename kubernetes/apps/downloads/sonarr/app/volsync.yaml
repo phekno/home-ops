@@ -4,7 +4,6 @@ apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
   name: sonarr-restic
-  namespace: default
 spec:
   secretStoreRef:
     kind: ClusterSecretStore
@@ -28,22 +27,20 @@ apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
   name: sonarr
-  namespace: default
 spec:
-  sourcePVC: config-sonarr-0
+  sourcePVC: sonarr
   trigger:
-    schedule: "0 7 * * *"
+    schedule: "0 1 * * *"
   restic:
     copyMethod: Snapshot
-    pruneIntervalDays: 7
+    pruneIntervalDays: 10
     repository: sonarr-restic-secret
     cacheCapacity: 2Gi
-    volumeSnapshotClassName: csi-ceph-blockpool
-    storageClassName: ceph-block
+    volumeSnapshotClassName: longhorn-snapclass
     moverSecurityContext:
-      runAsUser: 568
-      runAsGroup: 568
-      fsGroup: 568
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
     retain:
       daily: 7
       within: 3d
