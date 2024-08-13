@@ -82,4 +82,7 @@ spec:
     persistence:
       config:
         enabled: true
-        type: emptyDir
+        type: persistentVolumeClaim
+        storageClass: longhorn
+        size: 10Gi
+        accessMode: ReadWriteOnce
