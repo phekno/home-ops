@@ -3,8 +3,7 @@
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
-  name: recyclarr-restic
-  namespace: default
+  name: recyclarr
 spec:
   secretStoreRef:
     kind: ClusterSecretStore
@@ -21,29 +20,27 @@ spec:
         AWS_SECRET_ACCESS_KEY: "{{ .AWS_SECRET_ACCESS_KEY }}"
   dataFrom:
     - extract:
-        key: volsync-restic-template
+        key: volsync
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.devbu.io/volsync.backube/replicationsource_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
   name: recyclarr
-  namespace: default
 spec:
-  sourcePVC: config-recyclarr-0
+  sourcePVC: recyclarr
   trigger:
-    schedule: "0 7 * * *"
+    schedule: "0 1 * * *"
   restic:
     copyMethod: Snapshot
-    pruneIntervalDays: 7
+    pruneIntervalDays: 10
     repository: recyclarr-restic-secret
     cacheCapacity: 2Gi
-    volumeSnapshotClassName: csi-ceph-blockpool
-    storageClassName: ceph-block
+    volumeSnapshotClassName: longhorn-snapclass
     moverSecurityContext:
-      runAsUser: 568
-      runAsGroup: 568
-      fsGroup: 568
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
     retain:
       daily: 7
       within: 3d
