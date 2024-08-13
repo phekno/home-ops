@@ -34,7 +34,7 @@ spec:
   restic:
     copyMethod: Snapshot
     pruneIntervalDays: 10
-    repository: jellyseerr-restic-secret
+    repository: wizarr-restic-secret
     cacheCapacity: 2Gi
     volumeSnapshotClassName: longhorn-snapclass
     moverSecurityContext:
