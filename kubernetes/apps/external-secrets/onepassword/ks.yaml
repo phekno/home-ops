@@ -4,13 +4,13 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app onepassword
-  namespace: &namespace kube-system
+  namespace: &namespace external-secrets
 spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   interval: 30m
-  path: ./kubernetes/apps/kube-system/external-secrets/onepassword/app
+  path: ./kubernetes/apps/external-secrets/onepassword/app
   prune: true
   sourceRef:
     kind: GitRepository
@@ -25,16 +25,16 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: &app onepassword-store
-  namespace: &namespace kube-system
+  namespace: &namespace external-secrets
 spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: onepassword
-      namespace: kube-system
+      namespace: external-secrets
   interval: 30m
-  path: ./kubernetes/apps/kube-system/external-secrets/onepassword/store
+  path: ./kubernetes/apps/external-secrets/onepassword/store
   prune: true
   sourceRef:
     kind: GitRepository
