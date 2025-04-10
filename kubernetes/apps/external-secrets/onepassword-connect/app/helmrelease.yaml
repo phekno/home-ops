@@ -3,31 +3,16 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: onepassword
+  name: onepassword-connect
 spec:
   interval: 30m
   chartRef:
     kind: OCIRepository
     name: app-template
-  # chart:
-  #   spec:
-  #     chart: app-template
-  #     version: 3.7.3
-  #     sourceRef:
-  #       kind: HelmRepository
-  #       name: bjw-s
-  #       namespace: flux-system
-  install:
-    remediation:
-      retries: 3
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      strategy: rollback
-      retries: 3
+    namespace: flux-system
   values:
     controllers:
-      onepassword:
+      onepassword-connect:
         strategy: RollingUpdate
         annotations:
           reloader.stakater.com/auto: "true"
@@ -35,17 +20,17 @@ spec:
           api:
             image:
               repository: docker.io/1password/connect-api
-              tag: 1.7.3@sha256:0601c7614e102eada268dbda6ba4b5886ce77713be2c332ec6a2fd0f028484ba
+              tag: 1.7.3
             env:
               XDG_DATA_HOME: &configDir /config
-              OP_HTTP_PORT: &apiPort 80
+              OP_HTTP_PORT: &apiPort 8080
               OP_BUS_PORT: 11220
               OP_BUS_PEERS: localhost:11221
               OP_SESSION:
                 valueFrom:
                   secretKeyRef:
-                    name: onepassword-connect-secret
-                    key: onepassword-credentials.json
+                    name: onepassword-secret
+                    key: 1password-credentials.json
             probes:
               liveness:
                 enabled: true
@@ -68,7 +53,9 @@ spec:
             securityContext: &securityContext
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
-              capabilities: { drop: ["ALL"] }
+              capabilities:
+                drop:
+                  - "ALL"
             resources: &resources
               requests:
                 cpu: 10m
@@ -77,7 +64,7 @@ spec:
           sync:
             image:
               repository: docker.io/1password/connect-sync
-              tag: 1.7.3@sha256:2f17621c7eb27bbcb1f86bbc5e5a5198bf54ac3b9c2ffac38064d03c932b07d5
+              tag: 1.7.3
             env:
               XDG_DATA_HOME: *configDir
               OP_HTTP_PORT: &syncPort 8081
@@ -86,8 +73,8 @@ spec:
               OP_SESSION:
                 valueFrom:
                   secretKeyRef:
-                    name: onepassword-connect-secret
-                    key: onepassword-credentials.json
+                    name: onepassword-secret
+                    key: 1password-credentials.json
             probes:
               liveness:
                 enabled: true
@@ -109,16 +96,16 @@ spec:
                   initialDelaySeconds: 15
             securityContext: *securityContext
             resources: *resources
-        pod:
-          securityContext:
-            runAsUser: 999
-            runAsGroup: 999
-            runAsNonRoot: true
-            fsGroup: 999
-            fsGroupChangePolicy: OnRootMismatch
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        fsGroup: 999
+        fsGroupChangePolicy: OnRootMismatch
     service:
-      api:
-        controller: onepassword
+      app:
+        controller: onepassword-connect
         ports:
           http:
             port: *apiPort
