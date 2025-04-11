@@ -6,7 +6,7 @@ metadata:
   name: rook-ceph-dashboard
 spec:
   hostnames:
-    - rook.${SECRET_DOMAIN}
+    - rook.phekno.io
   parentRefs:
     - name: internal
       namespace: kube-system
