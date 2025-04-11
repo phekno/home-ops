@@ -7,5 +7,4 @@ components:
   - ../../components/common
   - ../../components/repos/app-template
 resources:
-  - ./alertmanager/ks.yaml
   - ./kube-prometheus-stack/ks.yaml
