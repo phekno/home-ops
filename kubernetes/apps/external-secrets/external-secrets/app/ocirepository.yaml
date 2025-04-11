@@ -3,18 +3,17 @@
 apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: OCIRepository
 metadata:
-  name: onepassword-connect
-  namespace: flux-system
+  name: external-secrets
 spec:
   interval: 15m
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
-    tag: 1.17.0
-  url: oci://ghcr.io/home-operations/charts-mirror/connect
+    tag: 0.15.1
+  url: oci://ghcr.io/external-secrets/charts/external-secrets
   verify:
     provider: cosign
     matchOIDCIdentity:
-      - issuer: '^https://token.actions.githubusercontent.com$'
-        subject: '^https://github.com/home-operations/charts-mirror.*$'
+      - issuer: ^https://token.actions.githubusercontent.com$
+        subject: ^https://github.com/external-secrets/external-secrets.*$
