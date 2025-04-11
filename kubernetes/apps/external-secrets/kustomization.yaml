@@ -7,7 +7,7 @@ components:
   - ../../components/common
   - ../../components/repos/app-template
   - ../../components/repos/onepassword-connect
-resources:
+resources: []
   # Flux-Kustomizations
   # - ./onepassword/ks.yaml
-  - ./external-secrets/ks.yaml
+  # - ./external-secrets/ks.yaml
