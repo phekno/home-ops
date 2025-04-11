@@ -9,7 +9,6 @@ spec:
   chartRef:
     kind: OCIRepository
     name: rook-ceph-cluster
-    namespace: flux-system
   dependsOn:
     - name: rook-ceph
       namespace: rook-ceph
@@ -79,7 +78,7 @@ spec:
       storage:
         useAllNodes: true
         useAllDevices: false
-        deviceFilter: nvme0n1
+        deviceFilter: /dev/sdc
         config:
           osdsPerDevice: "1"
     cephBlockPools:
