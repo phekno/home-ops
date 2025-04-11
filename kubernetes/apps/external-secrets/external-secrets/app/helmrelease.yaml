@@ -8,8 +8,7 @@ spec:
   interval: 30m
   chartRef:
     kind: OCIRepository
-    name: external-secrets
-    namespace: flux-system
+    name: onepassword-connect
   install:
     remediation:
       retries: 3
