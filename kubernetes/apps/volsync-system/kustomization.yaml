@@ -2,8 +2,8 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: system
-resources: []
+namespace: volsync-system
+resources:
   # - ./descheduler/ks.yaml
   # - ./fstrim/ks.yaml
   # - ./generic-device-plugin/ks.yaml
@@ -11,7 +11,7 @@ resources: []
   # - ./irqbalance/ks.yaml
   # - ./reloader/ks.yaml
   # - ./spegel/ks.yaml
-  # - ./volsync/ks.yaml
+  - ./volsync/ks.yaml
 components:
   - ../../components/common
   # - ../../components/flux/alerts
