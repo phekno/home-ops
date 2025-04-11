@@ -42,7 +42,7 @@ spec:
             cpu: 0.2
         httpPort: 8081
       serviceType: ClusterIP
-      credentialsName: onepassword-secret
+      credentialsName: onepassword-connect-secret
       credentialsKey: 1password-credentials.json
       probes:
         liveness: true
