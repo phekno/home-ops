@@ -10,4 +10,4 @@ components:
 resources:
   # Flux-Kustomizations
   - ./onepassword/ks.yaml
-  - ./external-secrets/ks.yaml
+  # - ./external-secrets/ks.yaml
