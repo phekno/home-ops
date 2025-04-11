@@ -9,5 +9,5 @@ components:
   - ../../components/repos/onepassword-connect
 resources:
   # Flux-Kustomizations
-  - ./onepassword/ks.yaml
-  # - ./external-secrets/ks.yaml
+  # - ./onepassword/ks.yaml
+  - ./external-secrets/ks.yaml
