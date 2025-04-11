@@ -26,7 +26,7 @@ spec:
         annotations:
           external-dns.alpha.kubernetes.io/target: "internal.phekno.io"
         host:
-          name: "rook.phekno.io"
+          name: rook.phekno.io
           path: "/"
     toolbox:
       enabled: true
