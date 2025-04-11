@@ -7,4 +7,3 @@ resources:
   - ./external-secrets.yaml
   - ./ingress-nginx.yaml
   - ./onepassword-connect.yaml
-  - ./rook-ceph.yaml
