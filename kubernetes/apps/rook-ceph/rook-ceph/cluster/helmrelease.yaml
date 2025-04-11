@@ -20,14 +20,14 @@ spec:
     monitoring:
       enabled: true
       createPrometheusRules: true
-    ingress:
-      dashboard:
-        ingressClassName: internal
-        annotations:
-          external-dns.alpha.kubernetes.io/target: "internal.phekno.io"
-        host:
-          name: rook.phekno.io
-          path: "/"
+    # ingress:
+    #   dashboard:
+    #     ingressClassName: internal
+    #     annotations:
+    #       external-dns.alpha.kubernetes.io/target: "internal.phekno.io"
+    #     host:
+    #       name: rook.phekno.io
+    #       path: "/"
     toolbox:
       enabled: true
     cephClusterSpec:
@@ -43,7 +43,7 @@ spec:
         readAffinity:
           enabled: true
       dashboard:
-        enabled: true
+        enabled: false
         urlPrefix: /
         ssl: false
         prometheusEndpoint: http://prometheus-operated.observability.svc.cluster.local:9090
