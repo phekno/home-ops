@@ -62,8 +62,9 @@ spec:
             port: *port
     ingress:
       app:
-        enabled: true
         className: internal
+        annotations:
+          external-dns.alpha.kubernetes.io/target: "external.phekno.io"
         hosts:
           - host: &host "{{ .Release.Name }}.phekno.io"
             paths:
