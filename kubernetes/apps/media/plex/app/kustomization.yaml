@@ -5,6 +5,7 @@ kind: Kustomization
 resources:
   - ./restore.yaml
   - ./helmrelease.yaml
+  - ./pvc.yaml
 # configMapGenerator:
 #   - name: plex-loki-rules
 #     files:
