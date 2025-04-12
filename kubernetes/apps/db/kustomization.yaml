@@ -5,7 +5,9 @@ kind: Kustomization
 namespace: db
 resources:
   - ./cloudnative-pg/ks.yaml
+  - ./dragonfly/ks.yaml
+  - ./pgadmin/ks.yaml
 components:
   - ../../components/common
-  # - ../../components/repos/app-template
+  - ../../components/repos/app-template
   # - ../../components/flux/alerts
