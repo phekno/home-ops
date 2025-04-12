@@ -58,11 +58,13 @@ spec:
                     port: *port
                   initialDelaySeconds: 10
                   periodSeconds: 30
-                  timeoutSeconds: 5
+                  timeoutSeconds: 10
                   failureThreshold: 3
               readiness: *probes
-              startup:
-                enabled: false
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
             resources:
               requests:
                 memory: 2Gi
