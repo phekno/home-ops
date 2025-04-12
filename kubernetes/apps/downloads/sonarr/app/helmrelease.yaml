@@ -45,7 +45,9 @@ spec:
               SONARR__APPLICATION_URL: "https://{{ .Release.Name }}.phekno.io"
               SONARR__LOG_LEVEL: trace
               SONARR__THEME: dark
-            envFrom: *envFrom
+            envFrom:
+              - secretRef:
+                  name: sonarr-secret
             probes:
               liveness: &probes
                 enabled: true
