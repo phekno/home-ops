@@ -8,4 +8,5 @@ resources:
   - ./plex/ks.yaml
 components:
   - ../../components/common
+  - ../../components/repos/app-template
   # - ../../components/flux/alerts
