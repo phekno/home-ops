@@ -40,7 +40,7 @@ spec:
             args:
               - sync
             env:
-              TZ: ${TIMEZONE}
+              TZ: America/Chicago
             envFrom:
               - secretRef:
                   name: recyclarr-secret

@@ -37,7 +37,7 @@ spec:
               repository: ghcr.io/home-operations/sonarr
               tag: 4.0.14.2938
             env:
-              TZ: "${TIMEZONE}"
+              TZ: "America/Chicago"
               SONARR__AUTHENTICATION_METHOD: External
               SONARR__AUTHENTICATION_REQUIRED: DisabledForLocalAddresses
               SONARR__INSTANCE_NAME: Sonarr

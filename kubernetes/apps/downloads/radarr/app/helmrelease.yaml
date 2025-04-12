@@ -37,7 +37,7 @@ spec:
               repository: ghcr.io/home-operations/radarr
               tag: 5.22.1.9832
             env:
-              TZ: "${TIMEZONE}"
+              TZ: "America/Chicago"
               RADARR__AUTHENTICATION_METHOD: External
               RADARR__AUTHENTICATION_REQUIRED: DisabledForLocalAddresses
               RADARR__INSTANCE_NAME: Radarr
