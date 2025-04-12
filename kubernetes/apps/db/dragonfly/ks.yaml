@@ -34,7 +34,7 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: dragonfly
-  path: ./kubernetes/apps/db/dragonfly/app
+  path: ./kubernetes/apps/db/dragonfly/cluster
   prune: true
   sourceRef:
     kind: GitRepository
