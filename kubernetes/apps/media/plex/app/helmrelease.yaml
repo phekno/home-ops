@@ -78,11 +78,11 @@ spec:
     ingress:
       app:
         annotations:
-          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
+          external-dns.alpha.kubernetes.io/target: "external.phekno.io"
           nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
         className: external
         hosts:
-          - host: &customHost "{{ .Release.Name }}.${SECRET_DOMAIN}"
+          - host: &customHost "{{ .Release.Name }}.phekno.io"
             paths:
               - path: /
                 service:
