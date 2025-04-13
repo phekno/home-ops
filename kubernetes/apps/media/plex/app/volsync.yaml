@@ -2,18 +2,18 @@
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
-  name: prowlarr-restic
+  name: plex-restic-secret
 spec:
   secretStoreRef:
     kind: ClusterSecretStore
     name: onepassword
   target:
-    name: prowlarr-restic-secret
+    name: plex-restic-secret
     creationPolicy: Owner
     template:
       engineVersion: v2
       data:
-        RESTIC_REPOSITORY: "{{ .BUCKET_NAME }}/prowlarr"
+        RESTIC_REPOSITORY: "{{ .BUCKET_NAME }}/plex"
         RESTIC_PASSWORD: "{{ .RESTIC_PASSWORD }}"
         AWS_ACCESS_KEY_ID: "{{ .AWS_ACCESS_KEY_ID }}"
         AWS_SECRET_ACCESS_KEY: "{{ .AWS_SECRET_ACCESS_KEY }}"
@@ -22,19 +22,23 @@ spec:
         key: volsync
 ---
 apiVersion: volsync.backube/v1alpha1
-kind: ReplicationDestination
+kind: ReplicationSource
 metadata:
-  name: prowlarr
+  name: plex
 spec:
+  sourcePVC: plex
   trigger:
-    manual: restore-once
+    schedule: "0 1 * * *"
   restic:
-    repository: prowlarr-restic-secret
-    cacheStorageClassName: ceph-block
-    destinationPVC: prowlarr-config
-    copyMethod: Direct
+    copyMethod: Snapshot
+    pruneIntervalDays: 10
+    repository: plex-restic-secret
+    cacheCapacity: 2Gi
+    volumeSnapshotClassName: csi-ceph-blockpool
     moverSecurityContext:
       runAsUser: 1000
       runAsGroup: 1000
       fsGroup: 1000
-
+    retain:
+      daily: 7
+      within: 3d
