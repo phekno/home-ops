@@ -3,15 +3,19 @@ autoDirectNodeRoutes: true
 bandwidthManager:
   enabled: true
   bbr: true
-bpf:
-  masquerade: true
-  # Ref: https://github.com/siderolabs/talos/issues/10002
-  hostLegacyRouting: true
 bgpControlPlane:
   enabled: true
-cni:
-  # Required for pairing with Multus CNI
-  exclusive: false
+bpf:
+  datapathMode: netkit
+  masquerade: true
+  preallocateMaps: true
+  # masquerade: true
+  # # Ref: https://github.com/siderolabs/talos/issues/10002
+  # hostLegacyRouting: true
+bpfClockProbe: true
+# cni:
+#   # Required for pairing with Multus CNI
+#   exclusive: false
 cgroup:
   automount:
     enabled: false
@@ -21,6 +25,7 @@ cgroup:
 cluster:
   id: 1
   name: main
+enableIPv4BIGTCP: true
 endpointRoutes:
   enabled: true
 dashboards:
@@ -41,10 +46,10 @@ k8sServicePort: 7445
 kubeProxyReplacement: true
 kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
 l2announcements:
-  enabled: true
+  enabled: false
 loadBalancer:
   algorithm: maglev
-  mode: "dsr"
+  mode: dsr
 localRedirectPolicy: true
 operator:
   dashboards:
@@ -53,7 +58,7 @@ operator:
     enabled: true
     serviceMonitor:
       enabled: true
-  replicas: 2
+  replicas: 1
   rollOutPods: true
 prometheus:
   enabled: true
