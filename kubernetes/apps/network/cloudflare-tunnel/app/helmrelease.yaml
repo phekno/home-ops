@@ -1,9 +1,9 @@
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: cloudflared
+  name: cloudflare-tunnel
 spec:
   interval: 1h
   chartRef:
@@ -18,7 +18,8 @@ spec:
       retries: 3
   values:
     controllers:
-      cloudflared:
+      cloudflare-tunnel:
+        replicas: 2
         strategy: RollingUpdate
         annotations:
           reloader.stakater.com/auto: "true"
@@ -26,7 +27,7 @@ spec:
           app:
             image:
               repository: docker.io/cloudflare/cloudflared
-              tag: 2025.4.0
+              tag: 2025.4.0@sha256:522827fe6220249d72ade9a85cf5bdcc52c18ef1d13c7a3bb7480f56a0fd36e6
             env:
               NO_AUTOUPDATE: true
               TUNNEL_METRICS: 0.0.0.0:8080
@@ -35,7 +36,7 @@ spec:
               TUNNEL_TRANSPORT_PROTOCOL: quic
             envFrom:
               - secretRef:
-                  name: cloudflared-secret
+                  name: cloudflare-tunnel-secret
             args: ["tunnel", "run"]
             probes:
               liveness: &probes
@@ -62,28 +63,23 @@ spec:
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
-        runAsUser: 65534
-        runAsGroup: 65534
-        seccompProfile: { type: RuntimeDefault }
+        runAsUser: 1000
+        runAsGroup: 1000
     service:
       app:
-        controller: cloudflared
+        controller: cloudflare-tunnel
         ports:
           http:
             port: *port
     serviceMonitor:
       app:
-        serviceName: cloudflared
+        serviceName: cloudflare-tunnel
         endpoints:
           - port: http
-            scheme: http
-            path: /metrics
-            interval: 1m
-            scrapeTimeout: 10s
     persistence:
-      config:
+      config-file:
         type: configMap
-        name: cloudflared-configmap
+        name: cloudflare-tunnel-configmap
         globalMounts:
           - path: /etc/cloudflared/config.yaml
             subPath: config.yaml
