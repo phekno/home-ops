@@ -17,8 +17,8 @@ endpointRoutes:
   enabled: true
 dashboards:
   enabled: true
-envoy:
-  rollOutPods: true
+# envoy:
+#   rollOutPods: true
 gatewayAPI:
   enabled: true
   enableAlpn: true
