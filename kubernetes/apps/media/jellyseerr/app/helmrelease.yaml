@@ -70,7 +70,7 @@ spec:
             port: *port
     ingress:
       app:
-        className: internal
+        className: external
         annotations:
           external-dns.alpha.kubernetes.io/target: "external.phekno.io"
         hosts:
