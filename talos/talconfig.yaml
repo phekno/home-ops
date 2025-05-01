@@ -39,7 +39,7 @@ nodes:
         vip:
           ip: "10.100.50.150"
   - hostname: "k8s-1"
-    ipAddress: "10.100.50.90"
+    ipAddress: "10.100.50.101"
     installDisk: "/dev/sdb"
     machineSpec:
       secureboot: false
@@ -50,7 +50,7 @@ nodes:
           hardwareAddr: "5c:f3:fc:36:b1:94"
         dhcp: false
         addresses:
-          - "10.100.50.90/24"
+          - "10.100.50.101/24"
         routes:
           - network: "0.0.0.0/0"
             gateway: "10.100.50.1"
