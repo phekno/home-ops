@@ -20,7 +20,7 @@ cniConfig:
 
 nodes:
   - hostname: "k8s-0"
-    ipAddress: "10.100.50.99"
+    ipAddress: "10.100.50.100"
     installDisk: "/dev/sdb"
     machineSpec:
       secureboot: false
@@ -31,7 +31,7 @@ nodes:
           hardwareAddr: "14:18:77:6d:a1:ed"
         dhcp: false
         addresses:
-          - "10.100.50.99/24"
+          - "10.100.50.100/24"
         routes:
           - network: "0.0.0.0/0"
             gateway: "10.100.50.1"
