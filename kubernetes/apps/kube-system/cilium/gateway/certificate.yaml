@@ -3,9 +3,9 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: "${SECRET_DOMAIN/./-}-production"
+  name: phekno-io-production-tls
 spec:
-  secretName: "${SECRET_DOMAIN/./-}-production-tls"
+  secretName: phekno-io-production-tls
   issuerRef:
     name: letsencrypt-production
     kind: ClusterIssuer
