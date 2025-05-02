@@ -1,0 +1,10 @@
+---
+originRequest:
+  originServerName: external.phekno.io
+
+ingress:
+  - hostname: phekno.io
+    service: &svc https://cilium-gateway-external.kube-system.svc.cluster.local
+  - hostname: "*.phekno.io"
+    service: *svc
+  - service: http_status:404
