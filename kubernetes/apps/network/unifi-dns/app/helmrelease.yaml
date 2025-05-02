@@ -41,6 +41,8 @@ spec:
         env:
           - name: UNIFI_HOST
             value: https://10.100.1.1
+          - name: LOG_LEVEL
+            value: debug
           - name: UNIFI_API_KEY
             valueFrom:
               secretKeyRef:
