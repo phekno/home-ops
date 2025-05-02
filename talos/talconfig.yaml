@@ -21,7 +21,7 @@ cniConfig:
 nodes:
   - hostname: "k8s-0"
     ipAddress: "10.100.50.100"
-    installDisk: "/dev/sdb"
+    installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
     talosImageURL: factory.talos.dev/installer/f777b01dc5b0d53c73597b6ce8bd5b508d625132e6978b70fd4154937a27af76
@@ -40,7 +40,7 @@ nodes:
           ip: "10.100.50.150"
   - hostname: "k8s-1"
     ipAddress: "10.100.50.101"
-    installDisk: "/dev/sdb"
+    installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
     talosImageURL: factory.talos.dev/installer/f777b01dc5b0d53c73597b6ce8bd5b508d625132e6978b70fd4154937a27af76
@@ -59,7 +59,7 @@ nodes:
           ip: "10.100.50.150"
   - hostname: "k8s-2"
     ipAddress: "10.100.50.102"
-    installDisk: "/dev/sdb"
+    installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
     talosImageURL: factory.talos.dev/installer/f777b01dc5b0d53c73597b6ce8bd5b508d625132e6978b70fd4154937a27af76
