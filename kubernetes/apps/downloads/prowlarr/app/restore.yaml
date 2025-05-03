@@ -24,7 +24,7 @@ spec:
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationDestination
 metadata:
-  name: plex-restore
+  name: prowlarr-restore
 spec:
   trigger:
     manual: restore-once
