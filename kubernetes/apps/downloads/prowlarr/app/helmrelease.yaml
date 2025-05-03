@@ -71,21 +71,6 @@ spec:
           - backendRefs:
               - name: *app
                 port: *port
-    # ingress:
-    #   app:
-    #     className: internal
-    #     annotations:
-    #       external-dns.alpha.kubernetes.io/target: "external.phekno.io"
-    #     hosts:
-    #       - host: &host "{{ .Release.Name }}.phekno.io"
-    #         paths:
-    #           - path: /
-    #             service:
-    #               identifier: app
-    #               port: http
-    #     tls:
-    #       - hosts:
-    #           - *host
     persistence:
       config:
         enabled: true
