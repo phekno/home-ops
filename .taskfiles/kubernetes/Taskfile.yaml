@@ -21,7 +21,8 @@ tasks:
         helmreleases
         certificates
         certificaterequests
-        ingresses
+        gateways
+        httproutes
         pods
 
   kubeconform:
