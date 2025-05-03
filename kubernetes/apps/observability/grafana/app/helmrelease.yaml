@@ -230,12 +230,14 @@ spec:
       - vonage-status-panel
     serviceMonitor:
       enabled: true
-    ingress:
-      enabled: true
-      annotations:
-        external-dns.alpha.kubernetes.io/target: "internal.phekno.io"
-      ingressClassName: internal
-      hosts: ["grafana.phekno.io"]
+    route:
+      main:
+        enabled: true
+        hostnames: ["{{ .Release.Name }}.phekno.io"]
+        parentRefs:
+          - name: internal
+            namespace: kube-system
+            sectionName: https
     persistence:
       enabled: false
     testFramework:
