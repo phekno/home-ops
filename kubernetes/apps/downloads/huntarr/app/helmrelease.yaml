@@ -28,7 +28,7 @@ spec:
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
     controllers:
-      app:
+      huntarr:
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
