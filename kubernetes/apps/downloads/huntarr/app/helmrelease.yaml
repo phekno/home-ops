@@ -35,7 +35,7 @@ spec:
           app:
             image:
               repository: huntarr/huntarr
-              tag: 6.4.4@sha256:955281f3d8d314a98e74f6ef51a8f7ca473ef0ee697d6558d6232ebf9d4acb0e
+              tag: 6.7.0@sha256:66c9554ab74133ea99a9e1619630bc751bad2ff0596865681eb24b835e320c48
             env:
               TZ: "America/Chicago"
             # probes:
