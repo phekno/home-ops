@@ -10,14 +10,14 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   targetNamespace: *namespace
-  components:
+  components: []
     # - ../../../../components/gatus/external
-    - ../../../../components/volsync
+    # - ../../../../components/volsync
   dependsOn:
     - name: rook-ceph-cluster
       namespace: rook-ceph
-    - name: volsync
-      namespace: volsync-system
+    # - name: volsync
+    #   namespace: volsync-system
   path: ./kubernetes/apps/downloads/huntarr/app
   postBuild:
     substitute:
