@@ -8,7 +8,7 @@ components:
   - ../../components/repos/app-template
 resources:
   # - ./huntarr/ks.yaml
-  - ./autobrr/ks.yaml
+  # - ./autobrr/ks.yaml
   - ./prowlarr/ks.yaml
   - ./radarr/ks.yaml
   - ./recyclarr/ks.yaml
