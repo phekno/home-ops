@@ -88,11 +88,15 @@ spec:
             sectionName: https
         rules:
           - backendRefs:
-              - identifier: app
+              - name: app
                 port: *port
     persistence:
       config:
-        existingClaim: autobrr
+        enabled: true
+        type: persistentVolumeClaim
+        storageClass: ceph-block
+        size: 10Gi
+        accessMode: ReadWriteOnce
       tmpfs:
         type: emptyDir
         advancedMounts:
