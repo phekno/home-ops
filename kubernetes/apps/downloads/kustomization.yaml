@@ -7,7 +7,7 @@ components:
   - ../../components/common
   - ../../components/repos/app-template
 resources:
-  # - ./huntarr/ks.yaml
+  - ./huntarr/ks.yaml
   - ./prowlarr/ks.yaml
   - ./radarr/ks.yaml
   - ./recyclarr/ks.yaml
