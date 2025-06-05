@@ -19,16 +19,16 @@ cniConfig:
   name: none
 
 nodes:
-  - hostname: "k8s-0"
+  - hostname: "k8s-control-0"
     ipAddress: "10.100.50.100"
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/f777b01dc5b0d53c73597b6ce8bd5b508d625132e6978b70fd4154937a27af76
+    talosImageURL: factory.talos.dev/installer/6e17833398fc8f856d0ab60e80c1606e2fe60d628edae4b397592129ca6bf604
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "14:18:77:6d:a1:ed"
+          hardwareAddr: "bc:24:11:6d:e4:6f"
         dhcp: false
         addresses:
           - "10.100.50.100/24"
@@ -38,16 +38,16 @@ nodes:
         mtu: 1500
         vip:
           ip: "10.100.50.150"
-  - hostname: "k8s-1"
+  - hostname: "k8s-control-1"
     ipAddress: "10.100.50.101"
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/f777b01dc5b0d53c73597b6ce8bd5b508d625132e6978b70fd4154937a27af76
+    talosImageURL: factory.talos.dev/installer/6e17833398fc8f856d0ab60e80c1606e2fe60d628edae4b397592129ca6bf604
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "5c:f3:fc:36:b1:94"
+          hardwareAddr: "bc:24:11:23:76:0e"
         dhcp: false
         addresses:
           - "10.100.50.101/24"
@@ -57,16 +57,16 @@ nodes:
         mtu: 1500
         vip:
           ip: "10.100.50.150"
-  - hostname: "k8s-2"
+  - hostname: "k8s-control-2"
     ipAddress: "10.100.50.102"
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/f777b01dc5b0d53c73597b6ce8bd5b508d625132e6978b70fd4154937a27af76
+    talosImageURL: factory.talos.dev/installer/6e17833398fc8f856d0ab60e80c1606e2fe60d628edae4b397592129ca6bf604
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "b0:83:fe:d2:6a:b1"
+          hardwareAddr: "bc:24:11:20:0b:e2"
         dhcp: false
         addresses:
           - "10.100.50.102/24"
@@ -76,10 +76,60 @@ nodes:
         mtu: 1500
         vip:
           ip: "10.100.50.150"
+  - hostname: "k8s-worker-0"
+    ipAddress: "10.100.50.103"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/6e17833398fc8f856d0ab60e80c1606e2fe60d628edae4b397592129ca6bf604
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:ba:64:10"
+        dhcp: false
+        addresses:
+          - "10.100.50.103/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "10.100.50.1"
+        mtu: 1500
+  - hostname: "k8s-worker-1"
+    ipAddress: "10.100.50.104"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/6e17833398fc8f856d0ab60e80c1606e2fe60d628edae4b397592129ca6bf604
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:39:1e:49"
+        dhcp: false
+        addresses:
+          - "10.100.50.104/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "10.100.50.1"
+        mtu: 1500
+  - hostname: "k8s-worker-2"
+    ipAddress: "10.100.50.105"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/6e17833398fc8f856d0ab60e80c1606e2fe60d628edae4b397592129ca6bf604
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:1c:9d:74"
+        dhcp: false
+        addresses:
+          - "10.100.50.105/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "10.100.50.1"
+        mtu: 1500
 
 # Global patches
 patches:
-  - "@./patches/global/machine-disks.yaml"
   - "@./patches/global/machine-files.yaml"
   - "@./patches/global/machine-kubelet.yaml"
   - "@./patches/global/machine-network.yaml"
@@ -92,3 +142,6 @@ controlPlane:
     - "@./patches/controller/admission-controller-patch.yaml"
     - "@./patches/controller/cluster.yaml"
 
+worker:
+  patches:
+    - "@./patches/global/machine-disks.yaml"

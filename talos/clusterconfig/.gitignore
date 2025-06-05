@@ -1,4 +1,7 @@
-kubernetes-k8s-0.yaml
-kubernetes-k8s-1.yaml
-kubernetes-k8s-2.yaml
 talosconfig
+kubernetes-k8s-control-0.yaml
+kubernetes-k8s-control-1.yaml
+kubernetes-k8s-control-2.yaml
+kubernetes-k8s-worker-0.yaml
+kubernetes-k8s-worker-1.yaml
+kubernetes-k8s-worker-2.yaml
