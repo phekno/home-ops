@@ -1,3 +1,5 @@
 machine:
   disks:
-      - device: /dev/sdb
+  - device: /dev/sdb
+    partitions:
+      - mountpoint: /var/mnt/longhorn
