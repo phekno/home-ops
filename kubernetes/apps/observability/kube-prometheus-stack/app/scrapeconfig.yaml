@@ -1,13 +1,28 @@
+# ---
+# # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/scrapeconfig_v1alpha1.json
+# apiVersion: monitoring.coreos.com/v1alpha1
+# kind: ScrapeConfig
+# metadata:
+#   name: &name node-exporter
+# spec:
+#   staticConfigs:
+#     - targets:
+#         - 10.100.50.5:9100
+#   metricsPath: /metrics
+#   relabelings:
+#     - action: replace
+#       targetLabel: job
+#       replacement: *name
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/scrapeconfig_v1alpha1.json
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: ScrapeConfig
 metadata:
-  name: &name node-exporter
+  name: &name smartctl-exporter
 spec:
   staticConfigs:
     - targets:
-        - 10.100.50.5:9100
+        - 10.100.50.86:9633
   metricsPath: /metrics
   relabelings:
     - action: replace
@@ -18,11 +33,11 @@ spec:
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: ScrapeConfig
 metadata:
-  name: &name smartctl-exporter
+  name: &name pve-exporter
 spec:
   staticConfigs:
     - targets:
-        - 10.100.50.5:9633
+        - 10.100.50.10:9221
   metricsPath: /metrics
   relabelings:
     - action: replace
