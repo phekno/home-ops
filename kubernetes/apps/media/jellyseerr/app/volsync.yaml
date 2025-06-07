@@ -34,7 +34,7 @@ spec:
     pruneIntervalDays: 10
     repository: jellyseerr-restic-secret
     cacheCapacity: 2Gi
-    volumeSnapshotClassName: csi-ceph-blockpool
+    volumeSnapshotClassName: longhorn-snapshot
     moverSecurityContext:
       runAsUser: 1000
       runAsGroup: 1000
