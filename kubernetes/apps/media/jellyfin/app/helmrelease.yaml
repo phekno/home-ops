@@ -31,7 +31,7 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
     controllers:
       jellyfin:
-        type: statefulset
+        # type: statefulset
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
@@ -62,14 +62,14 @@ spec:
                 memory: 16Gi
               # limits:
               #   memory: 16Gi
-        statefulset:
-          volumeClaimTemplates:
-            - name: config
-              accessMode: ReadWriteOnce
-              size: 50Gi
-              storageClass: longhorn
-              globalMounts:
-                - path: /config
+        # statefulset:
+        #   volumeClaimTemplates:
+        #     - name: config
+        #       accessMode: ReadWriteOnce
+        #       size: 50Gi
+        #       storageClass: longhorn
+        #       globalMounts:
+        #         - path: /config
     service:
       app:
         controller: *app
@@ -88,6 +88,10 @@ spec:
               - name: *app
                 port: *port
     persistence:
+      config:
+        existingClaim: jellyfin-config
+        globalMounts:
+          - path: /config
       media:
         enabled: true
         type: nfs
