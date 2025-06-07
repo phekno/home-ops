@@ -15,8 +15,8 @@ spec:
   dependsOn:
     # - name: intel-device-plugin-gpu
     #   namespace: kube-system
-    - name: rook-ceph-cluster
-      namespace: rook-ceph
+    - name: longhorn
+      namespace: longhorn
   interval: 1h
   path: ./kubernetes/apps/media/plex/app
   postBuild:

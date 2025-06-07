@@ -79,7 +79,7 @@ spec:
     persistence:
       config:
         type: persistentVolumeClaim
-        storageClass: ceph-block
+        storageClass: longhorn
         size: 25Gi
         accessMode: ReadWriteOnce
         globalMounts:

@@ -115,7 +115,7 @@ spec:
         type: emptyDir
       media:
         type: nfs
-        server: 10.100.50.5
+        server: 10.100.50.10
         path: /tank/video
         globalMounts:
           - path: /media
