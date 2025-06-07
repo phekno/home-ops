@@ -60,7 +60,7 @@ spec:
       config:
         enabled: true
         type: persistentVolumeClaim
-        storageClass: ceph-block
+        storageClass: longhorn
         size: 10Gi
         accessMode: ReadWriteOnce
       config-file:
