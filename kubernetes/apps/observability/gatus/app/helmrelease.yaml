@@ -1,5 +1,5 @@
 ---
-# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -45,7 +45,7 @@ spec:
               repository: ghcr.io/twin/gatus
               tag: v5.18.1@sha256:97525568fdef34539b1b4d015aef2d1cf6f58f1bc087443387b349940544394d
             env:
-              TZ: America/New_York
+              TZ: America/Santiago
               GATUS_CONFIG_PATH: /config
               GATUS_DELAY_START_SECONDS: 5
               WEB_PORT: &port 80
@@ -93,26 +93,28 @@ spec:
           - port: http
     route:
       app:
-        hostnames: [status.phekno.io]
+        hostnames:
+          - "{{ .Release.Name }}.phekno.io"
+          - status.phekno.io
         parentRefs:
           - name: external
             namespace: kube-system
             sectionName: https
         rules:
           - backendRefs:
-              - name: app
+              - identifier: app
                 port: *port
     rbac:
       roles:
         gatus:
-          type: ClusterRole
+          type: Role
           rules:
             - apiGroups: [""]
               resources: ["configmaps", "secrets"]
               verbs: ["get", "watch", "list"]
       bindings:
         gatus:
-          type: ClusterRoleBinding
+          type: RoleBinding
           roleRef:
             identifier: gatus
           subjects:
