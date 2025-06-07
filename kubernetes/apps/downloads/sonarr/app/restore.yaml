@@ -31,7 +31,7 @@ spec:
   restic:
     repository: sonarr-restic-restore-secret
     # Use an existing PVC, don't provision a new one
-    cacheStorageClassName: ceph-block
+    cacheStorageClassName: longhorn
     destinationPVC: sonarr-config
     copyMethod: Direct
     moverSecurityContext:

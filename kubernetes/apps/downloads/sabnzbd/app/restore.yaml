@@ -30,7 +30,7 @@ spec:
     manual: restore-once
   restic:
     repository: sabnzbd-restic-secret
-    cacheStorageClassName: ceph-block
+    cacheStorageClassName: longhorn
     destinationPVC: sabnzbd-config
     copyMethod: Direct
     moverSecurityContext:

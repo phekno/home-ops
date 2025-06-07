@@ -90,7 +90,7 @@ spec:
       config:
         enabled: true
         type: persistentVolumeClaim
-        storageClass: ceph-block
+        storageClass: longhorn
         size: 10Gi
         accessMode: ReadWriteOnce
       tmp:
@@ -98,12 +98,12 @@ spec:
       media:
         enabled: true
         type: nfs
-        server: 10.100.50.5
+        server: 10.100.50.10
         path: /tank/video
       downloads:
         enabled: true
         type: nfs
-        server: 10.100.50.5
+        server: 10.100.50.10
         path: /tank/nzbget_downloads
         globalMounts:
           - path: /config/Downloads
