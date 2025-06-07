@@ -32,8 +32,7 @@ spec:
     repository: jellyfin-restic-restore-secret
     # Use an existing PVC, don't provision a new one
     cacheStorageClassName: longhorn
-    # destinationPVC: config-jellyfin-0
-    destinationPVC: jellyfin-config
+    destinationPVC: config-jellyfin-0
     copyMethod: Direct
     moverSecurityContext:
       runAsUser: 1000
