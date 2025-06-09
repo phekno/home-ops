@@ -31,7 +31,7 @@ spec:
   restic:
     repository: sabnzbd-restic-secret
     cacheStorageClassName: longhorn
-    destinationPVC: sabnzbd-config
+    destinationPVC: sabnzbd
     copyMethod: Direct
     moverSecurityContext:
       runAsUser: 1000

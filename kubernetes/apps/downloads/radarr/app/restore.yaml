@@ -32,7 +32,7 @@ spec:
     repository: radarr-restic-restore-secret
     # Use an existing PVC, don't provision a new one
     cacheStorageClassName: longhorn
-    destinationPVC: radarr-config
+    destinationPVC: radarr
     copyMethod: Direct
     moverSecurityContext:
       runAsUser: 1000

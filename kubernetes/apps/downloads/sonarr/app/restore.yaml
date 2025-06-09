@@ -32,7 +32,7 @@ spec:
     repository: sonarr-restic-restore-secret
     # Use an existing PVC, don't provision a new one
     cacheStorageClassName: longhorn
-    destinationPVC: sonarr-config
+    destinationPVC: sonarr
     copyMethod: Direct
     moverSecurityContext:
       runAsUser: 1000
