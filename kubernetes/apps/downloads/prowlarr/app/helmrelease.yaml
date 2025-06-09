@@ -87,6 +87,10 @@ spec:
                 port: *port
     persistence:
       config:
-        existingClaim: prowlarr
+        enabled: true
+        type: persistentVolumeClaim
+        storageClass: longhorn
+        size: 1Gi
+        accessMode: ReadWriteOnce
       tmp:
         type: emptyDir
