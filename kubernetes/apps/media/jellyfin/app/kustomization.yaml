@@ -6,4 +6,4 @@ resources:
   - ./helmrelease.yaml
   # - ./restore.yaml
   - ./pvc.yaml
-  - ./volsync.yaml
+  # - ./volsync.yaml
