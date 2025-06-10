@@ -6,6 +6,3 @@ namespace: downloads
 resources:
   - ./externalsecret.yaml
   - ./helmrelease.yaml
-  # - ./gatus.yaml
-  # - ./volsync.yaml
-  # - ./restore.yaml
