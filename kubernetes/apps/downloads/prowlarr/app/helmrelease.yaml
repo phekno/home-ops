@@ -87,10 +87,11 @@ spec:
                 port: *port
     persistence:
       config:
-        enabled: true
-        type: persistentVolumeClaim
-        storageClass: longhorn
-        size: 1Gi
-        accessMode: ReadWriteOnce
+        existingClaim: ${VOLSYNC_CLAIM}
+        # enabled: true
+        # type: persistentVolumeClaim
+        # storageClass: longhorn
+        # size: 1Gi
+        # accessMode: ReadWriteOnce
       tmp:
         type: emptyDir
