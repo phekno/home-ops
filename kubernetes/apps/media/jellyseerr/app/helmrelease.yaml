@@ -78,10 +78,11 @@ spec:
                 port: *port
     persistence:
       config:
-        type: persistentVolumeClaim
-        storageClass: longhorn
-        size: 25Gi
-        accessMode: ReadWriteOnce
+        existingClaim: *app
+        # type: persistentVolumeClaim
+        # storageClass: longhorn
+        # size: 25Gi
+        # accessMode: ReadWriteOnce
         globalMounts:
           - path: /app/config
       # config-cache:

@@ -89,9 +89,10 @@ spec:
                 port: *port
     persistence:
       config:
-        existingClaim: config-jellyfin-0
-        globalMounts:
-          - path: /config
+        existingClaim: *app
+        # existingClaim: config-jellyfin-0
+        # globalMounts:
+        #   - path: /config
       media:
         enabled: true
         type: nfs
