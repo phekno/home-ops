@@ -9,6 +9,6 @@ components:
 resources:
   - ./prowlarr/ks.yaml
   - ./radarr/ks.yaml
-  # - ./recyclarr/ks.yaml
+  - ./recyclarr/ks.yaml
   - ./sabnzbd/ks.yaml
   - ./sonarr/ks.yaml
