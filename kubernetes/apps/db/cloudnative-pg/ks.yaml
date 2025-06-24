@@ -34,7 +34,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
-    - name: cloudnative-pg
+    - name: cloudnative-pg-operator
   path: ./kubernetes/apps/db/cloudnative-pg/cluster
   prune: true
   retryInterval: 2m
