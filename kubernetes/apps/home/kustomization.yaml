@@ -5,4 +5,4 @@ namespace: home
 components:
   - ../../components/common
 resources:
-  - ./home-assistant/ks.yaml
+  - ./homeassistant/ks.yaml

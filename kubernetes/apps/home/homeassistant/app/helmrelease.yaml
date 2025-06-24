@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app home-assistant
+  name: &app homeassistant
 spec:
   interval: 1h
   chartRef:
@@ -18,7 +18,7 @@ spec:
       retries: 3
   values:
     controllers:
-      home-assistant:
+      homeassistant:
         containers:
           app:
             image:
@@ -59,7 +59,7 @@ spec:
       tmpfs:
         type: emptyDir
         advancedMounts:
-          home-assistant:
+          homeassistant:
             app:
               - path: /config/.venv
                 subPath: .venv
