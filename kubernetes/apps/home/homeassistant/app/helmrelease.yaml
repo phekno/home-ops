@@ -26,6 +26,7 @@ spec:
             env:
               HOME_ASSISTANT_EXTERNAL_URL: https://hass.phekno.io
               HOME_ASSISTANT_PURGE_KEEP_DAYS: 30
+              HOME_ASSISTANT_USE_X_FORWARDED_FOR: "true"
               HOME_ASSISTANT_TRUSTED_PROXIES: 10.0.0.0/8
               HOME_ASSISTANT_UNIT_SYSTEM: us_customary
               TZ: America/Chicago
