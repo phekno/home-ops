@@ -6,5 +6,4 @@ components:
   - ../../components/common
   - ../../components/repos/app-template
 resources:
-  []
-  # - ./homeassistant/ks.yaml
+  - ./homeassistant/ks.yaml
