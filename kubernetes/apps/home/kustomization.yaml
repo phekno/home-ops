@@ -4,5 +4,6 @@ kind: Kustomization
 namespace: home
 components:
   - ../../components/common
+  - ../../components/repos/app-template
 resources:
   - ./homeassistant/ks.yaml
