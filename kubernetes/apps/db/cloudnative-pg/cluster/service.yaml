@@ -1,0 +1,21 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: &app postgres
+  labels:
+    app.kubernetes.io/name: *app
+    app.kubernetes.io/instance: *app
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: postgres.phekno.io
+    lbipam.cilium.io/ips: 10.100.50.200
+spec:
+  type: LoadBalancer
+  ports:
+    - name: postgres
+      port: 5432
+      protocol: TCP
+      targetPort: 5432
+  selector:
+    cnpg.io/cluster: postgres
+    cnpg.io/instanceRole: primary
