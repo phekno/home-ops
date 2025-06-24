@@ -1,8 +1,9 @@
 ---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app homeassistant
+  name: home-assistant
 spec:
   interval: 1h
   chartRef:
@@ -17,55 +18,42 @@ spec:
       retries: 3
   values:
     controllers:
-      homeassistant:
+      home-assistant:
+        annotations:
+          reloader.stakater.com/auto: "true"
         containers:
           app:
             image:
               repository: ghcr.io/home-operations/home-assistant
               tag: 2025.6.3@sha256:6f6b427121f376c92dac2ce14b99ff088010da3f082142fd8b86b4ade563328f
             env:
-              HASS_HTTP_TRUSTED_PROXY_1: 10.100.0.0/24
+              TZ: America/New_York
+              HASS_HTTP_TRUSTED_PROXY_1: 10.100.0.0/16
               HASS_HTTP_TRUSTED_PROXY_2: 10.42.0.0/16
-              TZ: America/Chicago
-            resources:
-              requests:
-                cpu: 10m
-              limits:
-                memory: 1Gi
+            envFrom:
+              - secretRef:
+                  name: home-assistant-secret
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 2Gi
     defaultPodOptions:
-      # annotations:
-      # k8s.v1.cni.cncf.io/networks: |
-      #   [{
-      #     "name": "multus-iot",
-      #     "namespace": "networking",
-      #     "ips": ["192.168.30.200/24"]
-      #   }]
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
         runAsGroup: 1000
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
-    persistence:
-      config:
-        existingClaim: *app
-      tmpfs:
-        type: emptyDir
-        advancedMounts:
-          homeassistant:
-            app:
-              - path: /config/.venv
-                subPath: .venv
-              - path: /config/logs
-                subPath: logs
-              - path: /config/tts
-                subPath: tts
-              - path: /tmp
-                subPath: tmp
+    service:
+      app:
+        ports:
+          http:
+            port: 8123
     route:
       app:
         hostnames:
@@ -75,8 +63,23 @@ spec:
           - name: external
             namespace: kube-system
             sectionName: https
-    service:
-      app:
-        ports:
-          http:
-            port: 8123
+    persistence:
+      config:
+        existingClaim: home-assistant
+        globalMounts:
+          - path: /config
+      config-cache:
+        existingClaim: home-assistant-cache
+        globalMounts:
+          - path: /config/.venv
+      tmpfs:
+        type: emptyDir
+        advancedMounts:
+          home-assistant:
+            app:
+              - path: /config/logs
+                subPath: logs
+              - path: /config/tts
+                subPath: tts
+              - path: /tmp
+                subPath: tmp
