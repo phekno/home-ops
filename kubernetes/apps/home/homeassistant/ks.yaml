@@ -16,7 +16,7 @@ spec:
     - name: volsync
       namespace: volsync-system
   interval: 1h
-  path: ./kubernetes/apps/home/home-assistant/app
+  path: ./kubernetes/apps/home/homeassistant/app
   postBuild:
     substitute:
       APP: *app
