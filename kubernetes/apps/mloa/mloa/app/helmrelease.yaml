@@ -33,7 +33,7 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/phekno/mloa-backend
+              repository: ghcr.io/phekno/mloa/mloa-backend
               tag: latest
             env:
               PORT: &port 8080
