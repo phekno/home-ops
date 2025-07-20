@@ -6,5 +6,5 @@ namespace: mloa
 components:
   - ../../components/common
   - ../../components/repos/app-template
-resources: []
-  # - ./mloa/ks.yaml
+resources:
+  - ./mloa/ks.yaml
