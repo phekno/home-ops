@@ -34,7 +34,7 @@ spec:
           app:
             image:
               repository: ghcr.io/phekno/mloa-backend
-              tag: sha256:d8a23a9b31c0d0d122d51bf9b2492733dabcccf8b9816a0703ad08c6b9e17914
+              tag: latest
             env:
               PORT: &port 8080
             envFrom:
