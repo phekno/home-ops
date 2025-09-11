@@ -48,6 +48,9 @@ spec:
       replicaAutoBalance: true
       storageMinimalAvailablePercentage: 1
       storageReservedPercentageForDefaultDisk: 10
+    defaultBackupStore:
+      backupTarget: s3://phekno-longhorn-backup@us-east-1/
+      backupTargetCredentialSecret: longhorn-backup
     ingress:
       enabled: false
     metrics:
