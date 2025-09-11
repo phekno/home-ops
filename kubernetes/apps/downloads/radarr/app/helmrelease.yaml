@@ -90,12 +90,11 @@ spec:
                 port: *port
     persistence:
       config:
-        existingClaim: *app
-        # enabled: true
-        # type: persistentVolumeClaim
-        # storageClass: longhorn
-        # size: 10Gi
-        # accessMode: ReadWriteOnce
+        enabled: true
+        type: persistentVolumeClaim
+        storageClass: longhorn
+        size: 10Gi
+        accessMode: ReadWriteOnce
       tmp:
         type: emptyDir
       media:
