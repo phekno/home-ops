@@ -22,8 +22,8 @@ spec:
       namespace: external-secrets
     - name: volsync
       namespace: volsync-system
-  components:
-    - ../../../../components/volsync
+  components: []
+    # - ../../../../components/volsync
   postBuild:
     substitute:
       APP: *app

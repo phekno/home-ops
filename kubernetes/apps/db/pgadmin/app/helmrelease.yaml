@@ -63,7 +63,10 @@ spec:
     persistence:
       config:
         enabled: true
-        existingClaim: "${VOLSYNC_CLAIM}"
+        type: persistentVolumeClaim
+        storageClass: longhorn
+        size: 10Gi
+        accessMode: ReadWriteOnce
         advancedMounts:
           main:
             main:
