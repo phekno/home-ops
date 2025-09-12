@@ -99,12 +99,19 @@ spec:
                 port: *port
     persistence:
       config:
-        existingClaim: *app
-        # TODO: If setting up Plex for the first time, you'll want to add the globalMounts section
+        enabled: true
+        type: persistentVolumeClaim
+        storageClass: longhorn
+        size: 50Gi
+        accessMode: ReadWriteOnce
         globalMounts:
           - path: /config/Library/Application Support/Plex Media Server
       config-cache:
-        existingClaim: plex-cache
+        enabled: true
+        type: persistentVolumeClaim
+        storageClass: longhorn
+        size: 25Gi
+        accessMode: ReadWriteOnce
         globalMounts:
           - path: /config/Library/Application Support/Plex Media Server/Cache
       config-logs:
