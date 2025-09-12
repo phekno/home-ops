@@ -61,7 +61,7 @@ spec:
         enabled: true
         type: persistentVolumeClaim
         storageClass: longhorn
-        size: 10Gi
+        size: 1Gi
         accessMode: ReadWriteOnce
       config-file:
         type: configMap
