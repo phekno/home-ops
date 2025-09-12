@@ -88,11 +88,7 @@ spec:
                 port: *port
     persistence:
       config:
-        enabled: true
-        type: persistentVolumeClaim
-        storageClass: longhorn
-        size: 10Gi
-        accessMode: ReadWriteOnce
+        existingClaim: sonarr
       tmp:
         type: emptyDir
       media:

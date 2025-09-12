@@ -90,11 +90,7 @@ spec:
                 port: *port
     persistence:
       config:
-        enabled: true
-        type: persistentVolumeClaim
-        storageClass: longhorn
-        size: 10Gi
-        accessMode: ReadWriteOnce
+        existingClaim: radarr
       tmp:
         type: emptyDir
       media:
