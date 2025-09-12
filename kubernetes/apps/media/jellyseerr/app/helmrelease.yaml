@@ -79,10 +79,6 @@ spec:
     persistence:
       config:
         existingClaim: *app
-        # type: persistentVolumeClaim
-        # storageClass: longhorn
-        # size: 25Gi
-        # accessMode: ReadWriteOnce
         globalMounts:
           - path: /app/config
       # config-cache:
