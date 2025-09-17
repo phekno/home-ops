@@ -58,11 +58,7 @@ spec:
             fsGroupChangePolicy: OnRootMismatch
     persistence:
       config:
-        enabled: true
-        type: persistentVolumeClaim
-        storageClass: longhorn
-        size: 1Gi
-        accessMode: ReadWriteOnce
+        existingClaim: *app
       config-file:
         type: configMap
         name: recyclarr-configmap
