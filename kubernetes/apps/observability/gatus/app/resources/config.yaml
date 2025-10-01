@@ -1,21 +1,14 @@
 ---
-web:
-  port: ${WEB_PORT}
-metrics: true
-debug: true
-ui:
-  title: Status | Gatus
-  header: Status
 connectivity:
   checker:
     target: 1.1.1.1:53
     interval: 1m
-# endpoints:
-#   - name: flux-webhook
-#     group: external
-#     url: https://flux-webhook.phekno.io
-#     interval: 1m
-#     client:
-#       dns-resolver: tcp://1.1.1.1:53
-#     conditions:
-#       - "[STATUS] == 404"
+
+metrics: true
+
+ui:
+  title: Status | Gatus
+  header: Status
+
+web:
+  port: ${GATUS_WEB_PORT}
