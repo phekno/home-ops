@@ -61,30 +61,23 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
     service:
       app:
-        controller: jellyseerr
         ports:
           http:
             port: *port
     route:
       app:
-        hostnames: ["requests.phekno.io"]
+        hostnames:
+          - "{{ .Release.Name }}.phekno.io"
+          - requests.phekno.io
         parentRefs:
-          - name: external
-            namespace: kube-system
+          - name: envoy-external
+            namespace: network
             sectionName: https
-        rules:
-          - backendRefs:
-              - name: *app
-                port: *port
     persistence:
       config:
         existingClaim: *app
         globalMounts:
           - path: /app/config
-      # config-cache:
-      #   type: emptyDir
-      #   globalMounts:
-      #     - path: /app/config/cache
       config-logs:
         type: emptyDir
         globalMounts:
