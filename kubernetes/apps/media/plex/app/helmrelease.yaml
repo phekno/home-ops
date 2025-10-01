@@ -102,37 +102,6 @@ spec:
           - backendRefs:
               - identifier: app
                 port: *port
-    # service:
-    #   app:
-    #     controller: plex
-    #     type: LoadBalancer
-    #     annotations:
-    #       lbipam.cilium.io/ips: 10.100.50.155
-    #     ports:
-    #       http:
-    #         port: 32400
-    # route:
-    #   app:
-    #     hostnames: ["{{ .Release.Name }}.phekno.io"]
-    #     parentRefs:
-    #       - name: external
-    #         namespace: kube-system
-    #         sectionName: https
-    #     rules:
-    #       - backendRefs:
-    #           - name: *app
-    #             port: *port
-    #         filters:
-    #           - type: RequestHeaderModifier
-    #             requestHeaderModifier:
-    #               remove: ["Range"]
-    #         matches:
-    #           - path:
-    #               type: PathPrefix
-    #               value: /library/streams
-    #       - backendRefs:
-    #           - name: *app
-    #             port: *port
     persistence:
       config:
         enabled: true
