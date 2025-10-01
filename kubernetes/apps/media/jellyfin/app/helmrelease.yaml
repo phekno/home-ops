@@ -60,28 +60,18 @@ spec:
               requests:
                 cpu: 4
                 memory: 16Gi
-              # limits:
-              #   memory: 16Gi
-        # statefulset:
-        #   volumeClaimTemplates:
-        #     - name: config
-        #       accessMode: ReadWriteOnce
-        #       size: 50Gi
-        #       storageClass: longhorn
-        #       globalMounts:
-        #         - path: /config
     service:
       app:
-        controller: *app
         ports:
           http:
             port: *port
     route:
       app:
-        hostnames: ["{{ .Release.Name }}.phekno.io"]
+        hostnames:
+          - "{{ .Release.Name }}.phekno.io"
         parentRefs:
-          - name: external
-            namespace: kube-system
+          - name: envoy-external
+            namespace: network
             sectionName: https
         rules:
           - backendRefs:
@@ -90,9 +80,6 @@ spec:
     persistence:
       config:
         existingClaim: *app
-        # existingClaim: config-jellyfin-0
-        # globalMounts:
-        #   - path: /config
       media:
         enabled: true
         type: nfs
