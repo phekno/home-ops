@@ -7,6 +7,8 @@ components:
   - ../../components/common
   - ../../components/repos/app-template
 resources:
+  - ./certificates/ks.hyaml
   - ./cloudflare-tunnel/ks.yaml
   - ./cloudflare-dns/ks.yaml
+  - ./envoy-gateway/ks.yaml
   - ./unifi-dns/ks.yaml
