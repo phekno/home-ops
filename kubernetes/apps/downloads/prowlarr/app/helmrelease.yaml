@@ -70,21 +70,17 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
     service:
       app:
-        controller: prowlarr
         ports:
           http:
             port: *port
     route:
       app:
-        hostnames: ["{{ .Release.Name }}.phekno.io"]
+        hostnames:
+          - "{{ .Release.Name }}.phekno.io"
         parentRefs:
-          - name: internal
-            namespace: kube-system
+          - name: envoy-internal
+            namespace: network
             sectionName: https
-        rules:
-          - backendRefs:
-              - identifier: app
-                port: *port
     persistence:
       config:
         existingClaim: prowlarr
