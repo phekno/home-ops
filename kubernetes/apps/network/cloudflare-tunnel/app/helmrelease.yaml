@@ -9,13 +9,6 @@ spec:
   chartRef:
     kind: OCIRepository
     name: app-template
-  install:
-    remediation:
-      retries: -1
-  upgrade:
-    cleanupOnFail: true
-    remediation:
-      retries: 3
   values:
     controllers:
       cloudflare-tunnel:
@@ -67,20 +60,31 @@ spec:
         runAsGroup: 1000
     service:
       app:
-        controller: cloudflare-tunnel
         ports:
           http:
             port: *port
     serviceMonitor:
       app:
-        serviceName: cloudflare-tunnel
         endpoints:
           - port: http
+    configMaps:
+      config:
+        data:
+          config.yaml: |-
+            ingress:
+              - hostname: phekno.io
+                originRequest:
+                  originServerName: phekno.io
+                service: https://envoy-external.{{ .Release.Namespace }}.svc.cluster.local:443
+              - hostname: "*.phekno.io"
+                originRequest:
+                  originServerName: external.phekno.io
+                service: https://envoy-external.{{ .Release.Namespace }}.svc.cluster.local:443
+              - service: http_status:404
     persistence:
       config-file:
         type: configMap
-        name: cloudflare-tunnel-configmap
+        identifier: config
         globalMounts:
           - path: /etc/cloudflared/config.yaml
             subPath: config.yaml
-            readOnly: true
