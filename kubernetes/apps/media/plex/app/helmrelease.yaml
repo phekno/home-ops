@@ -68,35 +68,71 @@ spec:
         supplementalGroups: [44]
     service:
       app:
-        controller: plex
         type: LoadBalancer
         annotations:
           lbipam.cilium.io/ips: 10.100.50.155
+        externalTrafficPolicy: Local
         ports:
           http:
-            port: 32400
+            port: *port
     route:
       app:
-        hostnames: ["{{ .Release.Name }}.phekno.io"]
+        annotations:
+          gatus.home-operations.com/endpoint: |-
+            conditions: ["[STATUS] == 401"]
+        hostnames:
+          - "{{ .Release.Name }}.phekno.io"
         parentRefs:
-          - name: external
-            namespace: kube-system
+          - name: envoy-external
+            namespace: network
             sectionName: https
         rules:
           - backendRefs:
-              - name: *app
+              - identifier: app
                 port: *port
             filters:
               - type: RequestHeaderModifier
                 requestHeaderModifier:
-                  remove: ["Range"]
+                  remove:
+                    - Range
             matches:
               - path:
                   type: PathPrefix
                   value: /library/streams
           - backendRefs:
-              - name: *app
+              - identifier: app
                 port: *port
+    # service:
+    #   app:
+    #     controller: plex
+    #     type: LoadBalancer
+    #     annotations:
+    #       lbipam.cilium.io/ips: 10.100.50.155
+    #     ports:
+    #       http:
+    #         port: 32400
+    # route:
+    #   app:
+    #     hostnames: ["{{ .Release.Name }}.phekno.io"]
+    #     parentRefs:
+    #       - name: external
+    #         namespace: kube-system
+    #         sectionName: https
+    #     rules:
+    #       - backendRefs:
+    #           - name: *app
+    #             port: *port
+    #         filters:
+    #           - type: RequestHeaderModifier
+    #             requestHeaderModifier:
+    #               remove: ["Range"]
+    #         matches:
+    #           - path:
+    #               type: PathPrefix
+    #               value: /library/streams
+    #       - backendRefs:
+    #           - name: *app
+    #             port: *port
     persistence:
       config:
         enabled: true
