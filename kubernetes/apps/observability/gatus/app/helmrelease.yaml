@@ -70,7 +70,7 @@ spec:
             - name: config
               storageClass: longhorn
               accessMode: ReadWriteOnce
-              size: 5Gi
+              size: 1Gi
     defaultPodOptions:
       hostUsers: false
     service:
@@ -129,7 +129,5 @@ spec:
         type: configMap
         name: "{{ .Release.Name }}-configmap"
         globalMounts:
-          # - path: /config/buddy.yaml
-          #   subPath: buddy.yaml
           - path: /config/config.yaml
             subPath: config.yaml
