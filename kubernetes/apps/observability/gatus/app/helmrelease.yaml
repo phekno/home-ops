@@ -118,9 +118,15 @@ spec:
     serviceAccount:
       gatus: {}
     persistence:
+      config:
+        type: persistentVolumeClaim
+        storageClass: longhorn
+        size: 5Gi
+        accessMode: ReadWriteOnce
       config-file:
         type: configMap
-        name: "{{ .Release.Name }}-configmap"
+        name: gatus-configmap
         globalMounts:
           - path: /config/config.yaml
             subPath: config.yaml
+            readOnly: true
