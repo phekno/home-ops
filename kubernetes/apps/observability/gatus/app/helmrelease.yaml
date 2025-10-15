@@ -5,10 +5,10 @@ kind: HelmRelease
 metadata:
   name: gatus
 spec:
+  interval: 1h
   chartRef:
     kind: OCIRepository
-    name: gatus
-  interval: 1h
+    name: app-template
   values:
     controllers:
       gatus:
@@ -23,25 +23,22 @@ spec:
               - --auto-httproute
               - --enable-httproute
               - --enable-service
+            restartPolicy: Always
             resources:
               requests:
                 cpu: 10m
               limits:
-                memory: 64Mi
-            restartPolicy: Always
+                memory: 128Mi
         containers:
           app:
             image:
               repository: ghcr.io/twin/gatus
               tag: v5.26.0@sha256:3c0314bd1b1e9d7c34d8f2efee16b380770a9639ec5386cc305e8df104e097dc
             env:
+              TZ: America/Chicago
               GATUS_CONFIG_PATH: /config
               GATUS_DELAY_START_SECONDS: 5
               GATUS_WEB_PORT: &port 80
-              TZ: America/Chicago
-            envFrom:
-              - secretRef:
-                  name: "{{ .Release.Name }}-secret"
             probes:
               liveness: &probes
                 enabled: true
@@ -58,14 +55,19 @@ spec:
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
-              capabilities: {add: ["NET_RAW"], drop: ["ALL"]}
+              capabilities: { drop: ["ALL"] }
             resources:
               requests:
                 cpu: 100m
               limits:
                 memory: 256Mi
-    defaultPodOptions:
-      hostUsers: false
+        pod:
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+            runAsNonRoot: true
+            fsGroup: 1000
+            fsGroupChangePolicy: OnRootMismatch
     service:
       app:
         ports:
@@ -73,19 +75,24 @@ spec:
             port: *port
     serviceMonitor:
       app:
+        serviceName: gatus
         endpoints:
           - port: http
+            scheme: http
+            path: /metrics
+            interval: 1m
+            scrapeTimeout: 10s
     route:
       app:
-        annotations:
-          gatus.home-operations.com/enabled: "false"
         hostnames:
-          - "{{ .Release.Name }}.phekno.io"
-          - status.phekno.io
+         - "status.phekno.io"
+         - "{{ .Release.Name }}.phekno.io"
         parentRefs:
-          - name: envoy-external
+          - name: envoy-internal
             namespace: network
             sectionName: https
+        # rules:
+        #   - backendRefs: [{}]
     rbac:
       roles:
         gatus:
@@ -95,6 +102,14 @@ spec:
                 - ""
               resources:
                 - services
+              verbs:
+                - get
+                - watch
+                - list
+            - apiGroups:
+                - networking.k8s.io
+              resources:
+                - ingresses
               verbs:
                 - get
                 - watch
