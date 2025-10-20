@@ -77,9 +77,9 @@ spec:
             port: *port
     route:
       app:
-        annotations:
-          gatus.home-operations.com/endpoint: |-
-            conditions: ["[STATUS] == 401"]
+        # annotations:
+        #   gatus.home-operations.com/endpoint: |-
+        #     conditions: ["[STATUS] == 401"]
         hostnames: ["{{ .Release.Name }}.phekno.io"]
         parentRefs:
           - name: envoy-external
@@ -89,13 +89,3 @@ spec:
           - backendRefs:
               - identifier: app
                 port: *port
-    # persistence:
-    #   config:
-    #     existingClaim: prowlarr
-    #     # enabled: true
-    #     # type: persistentVolumeClaim
-    #     # storageClass: longhorn
-    #     # size: 1Gi
-    #     # accessMode: ReadWriteOnce
-    #   tmp:
-    #     type: emptyDir
