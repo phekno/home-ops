@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(kubectl get:*)",
+      "Bash(kubectl describe:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(skopeo list-tags:*)",
+      "Bash(helm repo add:*)",
+      "Bash(helm repo:*)",
+      "Bash(helm search:*)",
+      "Bash(helm show chart:*)",
+      "Bash(kubectl rollout restart:*)",
+      "Bash(kubectl rollout status:*)",
+      "Bash(echo)",
+      "Bash(kubectl annotate:*)"
+    ],
+    "deny": []
+  }
+}
