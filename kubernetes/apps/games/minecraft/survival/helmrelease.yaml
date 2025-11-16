@@ -47,9 +47,10 @@ spec:
     extraEnv:
       TZ: America/Chicago
     persistence:
+      storageClass: longhorn
       dataDir:
         enabled: true
-        existingClaim: *app
+        size: 5Gi
     serviceAnnotations:
       mc-router.itzg.me/externalServerName: mc.phekno.io
     minecraftServer:
