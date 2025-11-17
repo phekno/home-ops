@@ -86,19 +86,19 @@ system:
     gamecube: ngc
     gamegear: gamegear
     gb: gb
-    gba: gba
+    gba: GBA
     gbc: gbc
     lynx: lynx
     mame: arcade
     megadrive: genesis-slash-megadrive
-    n64: n64
-    neogeo: neogeoaes
+    n64: N64
+    neogeo: NEOGEO
     nes: nes
     pcengine: turbografx16--1
     ps2: ps2
     ps3: ps3
     psp: psp
-    psx: ps
+    psx: PS
     saturn: saturn
     sega32x: sega-32x
     segacd: segacd
