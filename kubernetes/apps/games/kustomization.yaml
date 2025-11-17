@@ -9,4 +9,4 @@ components:
 resources:
   - ./minecraft/mc-router/ks.yaml
   - ./minecraft/survival/ks.yaml
-  # - ./romm/ks.yaml
+  - ./romm/ks.yaml
