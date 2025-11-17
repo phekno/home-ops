@@ -10,10 +10,10 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  dependsOn:
-    - name: external-secrets-stores
-      namespace: external-secrets
-  path: ./kubernetes/apps/database/dragonfly/app
+  dependsOn: []
+    # - name: external-secrets-stores
+    #   namespace: external-secrets
+  path: ./kubernetes/apps/db/dragonfly/app
   prune: true
   sourceRef:
     kind: GitRepository
@@ -37,7 +37,7 @@ spec:
       app.kubernetes.io/name: *app
   dependsOn:
     - name: dragonfly
-  path: ./kubernetes/apps/database/dragonfly/cluster
+  path: ./kubernetes/apps/db/dragonfly/cluster
   prune: true
   sourceRef:
     kind: GitRepository
