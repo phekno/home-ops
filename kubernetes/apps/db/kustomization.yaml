@@ -8,4 +8,5 @@ components:
   - ../../components/repos/app-template
 resources:
   - ./cloudnative-pg/ks.yaml
+  - ./dragonfly/ks.yaml
   # - ./pgadmin/ks.yaml
