@@ -18,7 +18,7 @@ spec:
       namespace: external-secrets
     - name: longhorn
       namespace: longhorn-system
-  path: ./kubernetes/apps/games/romm
+  path: ./kubernetes/apps/games/romm/app
   postBuild:
     substitute:
       APP: *app
