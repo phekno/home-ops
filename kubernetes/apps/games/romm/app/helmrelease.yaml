@@ -42,7 +42,6 @@ spec:
               ENABLE_SCHEDULED_UPDATE_SWITCH_TITLEDB: "false"
               HASHEOUS_API_ENABLED: true
               PLAYMATCH_API_ENABLED: true
-              REDIS_HOST: "dragonfly"
               REDIS_PORT: "6379"
               RESCAN_ON_FILESYSTEM_CHANGE_DELAY: 5
               ROMM_BASE_PATH: /romm
