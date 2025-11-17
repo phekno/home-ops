@@ -46,6 +46,7 @@ spec:
               REDIS_PORT: "6379"
               RESCAN_ON_FILESYSTEM_CHANGE_DELAY: 5
               ROMM_BASE_PATH: /romm
+              OIDC_ENABLED: false
               ROMM_DB_DRIVER: postgresql
               SCHEDULED_RESCAN_CRON: "0 3 * * *"
               LAUNCHBOX_API_ENABLED: "true"
