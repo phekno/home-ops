@@ -10,5 +10,13 @@ spec:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
   ref:
+<<<<<<< HEAD
     tag: 0.5.1
   url: oci://ghcr.io/spegel-org/helm-charts/spegel
+||||||| parent of 8b9a824 (fix coredns, maybe)
+    tag: 0.4.0
+  url: oci://ghcr.io/spegel-org/helm-charts/spegel
+=======
+    tag: 0.4.0
+  url: oci://ghcr.io/spegel-org/helm-charts/spegel
+>>>>>>> 8b9a824 (fix coredns, maybe)
