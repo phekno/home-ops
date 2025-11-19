@@ -5,11 +5,21 @@ kind: HelmRelease
 metadata:
   name: romm
 spec:
+  interval: 30m
   chartRef:
     kind: OCIRepository
     name: app-template
-  dependsOn: []
-  interval: 15m
+  maxHistory: 2
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  uninstall:
+    keepHistory: false
   values:
     controllers:
       romm:
@@ -63,10 +73,9 @@ spec:
               capabilities: {drop: ["ALL"]}
     defaultPodOptions:
       securityContext:
-        runAsNonRoot: true
         runAsUser: 1000
-        runAsGroup: 100
-        fsGroup: 100
+        runAsGroup: 1000
+        fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
     service:
       app:
