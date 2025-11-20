@@ -92,10 +92,14 @@ data:
     access_control:
       default_policy: deny
       rules:
-        # Bypass Authelia portal and health endpoints
+        # Bypass Authelia portal, API, and health endpoints
         - domain:
             - 'auth.phekno.io'
           policy: bypass
+          resources:
+            - '^/api.*$'
+            - '^/$'
+            - '^/static.*$'
 
         # Public test/status services
         - domain:
