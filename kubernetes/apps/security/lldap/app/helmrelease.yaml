@@ -29,7 +29,7 @@ spec:
           app:
             image:
               repository: ghcr.io/lldap/lldap
-              tag: 2025-11-17-alpine
+              tag: latest-alpine
             env:
               TZ: America/Chicago
               LLDAP_LDAP_PORT: "389"
