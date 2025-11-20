@@ -126,6 +126,6 @@ spec:
       media:
         type: nfs
         server: 10.100.50.10
-        path: /tank/roms
+        path: /tank/romm
         globalMounts:
           - path: /romm/library
