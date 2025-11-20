@@ -1,0 +1,16 @@
+---
+apiVersion: gateway.envoyproxy.io/v1alpha1
+kind: SecurityPolicy
+metadata:
+  name: ${APP}-auth
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: ${APP}
+  extAuth:
+    grpc:
+      backendRef:
+        name: authelia
+        namespace: security
+        port: 9091

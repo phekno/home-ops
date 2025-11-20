@@ -1,237 +1,304 @@
-# ⛵ Cluster Template
+# 🏠 Home Operations
 
-Welcome to my minimalist template for deploying a single Kubernetes cluster. The goal of this project is to make it easier for people interested in using Kubernetes to deploy a cluster at home on bare-metal or VMs. This template closely mirrors my personal [home-ops](https://github.com/onedr0p/home-ops) repository. At a high level this project makes use of [makejinja](https://github.com/mirkolenz/makejinja) to read in configuration files ([cluster.yaml](./cluster.sample.yaml) & [nodes.yaml](./nodes.sample.yaml)). Makejinja will render out templates that will allow you to install a Kubernetes cluster with the features mentioned below.
+My home Kubernetes cluster running on Talos Linux, managed declaratively with Flux GitOps. This cluster powers my home lab infrastructure, including media streaming, home automation, databases, monitoring, and more.
 
-## ✨ Features
+## 📊 Cluster Overview
 
-A Kubernetes cluster deployed with [Talos Linux](https://github.com/siderolabs/talos) and an opinionated implementation of [Flux](https://github.com/fluxcd/flux2) using [GitHub](https://github.com/) as the Git provider, [sops](https://github.com/getsops/sops) to manage secrets and [cloudflared](https://github.com/cloudflare/cloudflared) to access applications external to your local network.
+- **Cluster Name**: kubernetes
+- **Domain**: phekno.io
+- **Nodes**: 3x control plane nodes (all capable of running workloads)
+- **Kubernetes Version**: Managed via Talos
+- **CNI**: Cilium with eBPF datapath
+- **Gateway**: Envoy Gateway with Gateway API
+- **GitOps**: Flux CD
+- **Secrets**: External Secrets Operator + 1Password
 
-- **Required:** Some knowledge of [Containers](https://opencontainers.org/), [YAML](https://noyaml.com/), [Git](https://git-scm.com/), and a **Cloudflare account** with a **domain**.
-- **Included components:** [flux](https://github.com/fluxcd/flux2), [cilium](https://github.com/cilium/cilium), [cert-manager](https://github.com/cert-manager/cert-manager), [spegel](https://github.com/spegel-org/spegel), [reloader](https://github.com/stakater/Reloader), [ingress-nginx](https://github.com/kubernetes/ingress-nginx/), [external-dns](https://github.com/kubernetes-sigs/external-dns) and [cloudflared](https://github.com/cloudflare/cloudflared).
+### Node Configuration
 
-**Other features include:**
+| Node   | IP           | Role           | MAC Address       |
+|--------|--------------|----------------|-------------------|
+| k8s-0  | 10.100.50.29 | Control Plane  | bc:24:11:7b:d7:ad |
+| k8s-1  | 10.100.50.36 | Control Plane  | bc:24:11:0e:29:e6 |
+| k8s-2  | 10.100.50.49 | Control Plane  | bc:24:11:cd:94:29 |
 
-- Dev env managed w/ [mise](https://mise.jdx.dev/)
-- Workflow automation w/ [GitHub Actions](https://github.com/features/actions)
-- Dependency automation w/ [Renovate](https://www.mend.io/renovate)
-- Flux `HelmRelease` and `Kustomization` diffs w/ [flux-local](https://github.com/allenporter/flux-local)
+**Virtual IP**: 10.100.50.150 (HA control plane)
 
-Does this sound cool to you? If so, continue to read on! 👇
+### Network Architecture
 
-## 🚀 Let's Go!
+```
+                    Internet
+                        │
+                        │ Cloudflare Tunnel
+                        │ (flux-webhook.phekno.io)
+                        ▼
+            ┌───────────────────────┐
+            │   Cloudflare DNS      │
+            │   (*.phekno.io)       │
+            └───────────────────────┘
+                        │
+            ┌───────────┴───────────┐
+            │                       │
+    ┌───────▼──────┐        ┌──────▼──────┐
+    │ envoy-external│        │envoy-internal│
+    │ 10.100.50.151 │        │10.100.50.152 │
+    │  (Public)     │        │  (Internal)  │
+    └───────┬───────┘        └──────┬───────┘
+            │                       │
+            │   Gateway API         │
+            │   (HTTPRoute)         │
+            │                       │
+    ┌───────▼───────────────────────▼────────┐
+    │     Kubernetes Services               │
+    │  (Plex, Jellyfin, Home Assistant,    │
+    │   Grafana, Longhorn, etc.)           │
+    └──────────────────────────────────────┘
+```
 
-There are **5 stages** outlined below for completing this project, make sure you follow the stages in order.
+**Key IPs:**
+- Kubernetes API (VIP): `10.100.50.150`
+- External Gateway: `10.100.50.151` (public services)
+- Internal Gateway: `10.100.50.152` (internal services)
+- Node Network: `10.100.50.0/24`
+- Pod CIDR: `10.42.0.0/16`
+- Service CIDR: `10.43.0.0/16`
 
-### Stage 1: Machine Preparation
+## ✨ Features & Components
 
-> [!IMPORTANT]
-> If you have **3 or more nodes** it is recommended to make 3 of them controller nodes for a highly available control plane. This project configures **all nodes** to be able to run workloads. **Worker nodes** are therefore **optional**.
->
-> **Minimum system requirements**
-> | Role    | Cores    | Memory        | System Disk               |
-> |---------|----------|---------------|---------------------------|
-> | Control/Worker | 4 | 16GB | 256GB SSD/NVMe |
+### Core Infrastructure
 
-1. Head over to the [Talos Linux Image Factory](https://factory.talos.dev) and follow the instructions. Be sure to only choose the **bare-minimum system extensions** as some might require additional configuration and prevent Talos from booting without it. You can always add system extensions after Talos is installed and working.
+- **[Talos Linux](https://github.com/siderolabs/talos)**: Immutable, API-driven Kubernetes OS
+- **[Flux CD](https://github.com/fluxcd/flux2)**: GitOps continuous delivery
+- **[Cilium](https://github.com/cilium/cilium)**: Advanced eBPF-based CNI with BGP control plane
+- **[Envoy Gateway](https://gateway.envoyproxy.io/)**: Modern Gateway API implementation (replaces ingress-nginx)
+- **[Cert-Manager](https://github.com/cert-manager/cert-manager)**: Automated TLS certificate management
+- **[Spegel](https://github.com/spegel-org/spegel)**: Distributed container image registry
+- **[Reloader](https://github.com/stakater/Reloader)**: Automatic restart on ConfigMap/Secret changes
 
-2. This will eventually lead you to download a Talos Linux ISO (or for SBCs a RAW) image. Make sure to note the **schematic ID** you will need this later on.
+### Storage Solutions
 
-3. Flash the Talos ISO or RAW image to a USB drive and boot from it on your nodes.
+- **[Longhorn](https://github.com/longhorn/longhorn)**: Distributed block storage with S3 backups
+  - 3x replica count
+  - Backup to Cloudflare R2
+  - Storage class: `longhorn` (default)
 
-4. Verify with `nmap` that your nodes are available on the network. (Replace `192.168.1.0/24` with the network your nodes are on.)
+### Databases & Caching
 
-    ```sh
-    nmap -Pn -n -p 50000 192.168.1.0/24 -vv | grep 'Discovered'
-    ```
+- **[CloudNativePG](https://cloudnative-pg.io/)**: High-availability PostgreSQL operator
+  - 3-instance HA cluster
+  - Automated backups to Cloudflare R2
+  - PgAdmin management UI
+- **[Dragonfly](https://www.dragonflydb.io/)**: Redis-compatible in-memory datastore
+  - 3 replicas in cluster mode
+  - High-performance caching layer
 
-### Stage 2: Local Workstation
+### Networking & External Access
 
-> [!TIP]
-> It is recommended to set the visibility of your repository to `Public` so you can easily request help if you get stuck.
+- **[Envoy Gateway](https://gateway.envoyproxy.io/)**: Two gateways for traffic management
+  - `envoy-external` (10.100.50.151): Public-facing services
+  - `envoy-internal` (10.100.50.152): Internal-only services
+  - HTTP/3, Brotli compression, TLS termination
+- **[External-DNS](https://github.com/kubernetes-sigs/external-dns)**: Dual DNS automation
+  - Cloudflare: Public DNS records
+  - UniFi: Internal network DNS
+- **[Cloudflare Tunnel](https://github.com/cloudflare/cloudflared)**: Secure external access without port forwarding
 
-1. Create a new repository by clicking the green `Use this template` button at the top of this page, then clone the new repo you just created and `cd` into it. Alternatively you can us the [GitHub CLI](https://cli.github.com/) ...
+### Observability
 
-    ```sh
-    export REPONAME="home-ops"
-    gh repo create $REPONAME --template onedr0p/cluster-template --disable-wiki --public --clone && cd $REPONAME
-    ```
+- **[Prometheus Stack](https://github.com/prometheus-community/helm-charts)**: Metrics collection and alerting
+  - Prometheus, Grafana, AlertManager
+  - ServiceMonitor autodiscovery
+- **[Victoria-Logs](https://github.com/VictoriaMetrics/VictoriaMetrics)**: Log aggregation
+- **[Fluent-Bit](https://github.com/fluent/fluent-bit)**: Log collection and forwarding
+- **[Gatus](https://github.com/TwiN/gatus)**: Uptime monitoring and status page
+- **[UnPoller](https://github.com/unpoller/unpoller)**: UniFi network metrics
 
-2. **Install** and **activate** [mise](https://mise.jdx.dev/) following the instructions for your workstation [here](https://mise.jdx.dev/getting-started.html).
+### Secret Management
 
-3. Use `mise` to install the **required** CLI tools:
+- **[External Secrets Operator](https://github.com/external-secrets/external-secrets)**: Sync secrets from 1Password to Kubernetes
+- **[SOPS](https://github.com/getsops/sops)**: Encrypted secrets in Git
 
-    ```sh
-    mise trust
-    pip install pipx
-    mise install
-    ```
+### Applications
 
-   📍 _**Having trouble installing the tools?** Try unsetting the `GITHUB_TOKEN` env var and then run these commands again_
+**Media & Entertainment:**
+- Plex, Jellyfin, Jellyseerr
+- Sabnzbd, Prowlarr, Radarr, Sonarr
+- ROMM (ROM manager)
 
-   📍 _**Having trouble compiling Python?** Try running `mise settings python.compile=0` and then run these commands again_
+**Home Automation:**
+- Home Assistant
 
-### Stage 3: Cloudflare configuration
+**Gaming:**
+- Minecraft (survival server with mc-router)
+
+**Utilities:**
+- PgAdmin (PostgreSQL management)
+- Echo (testing service)
+
+### 🌐 Service Access
+
+Quick reference for accessing deployed services:
+
+| Service | URL | Gateway | Description |
+|---------|-----|---------|-------------|
+| Grafana | `grafana.phekno.io` | Internal | Metrics visualization |
+| Prometheus | `prometheus.phekno.io` | Internal | Metrics collection |
+| AlertManager | `alertmanager.phekno.io` | Internal | Alert management |
+| Longhorn | `longhorn.phekno.io` | Internal | Storage management |
+| PgAdmin | `pgadmin.phekno.io` | Internal | PostgreSQL management |
+| LLDAP | `lldap.phekno.io` | Internal | LDAP user management (planned) |
+| Authelia | `auth.phekno.io` | Internal | SSO portal (planned) |
+| Plex | `plex.phekno.io` | External | Media streaming |
+| Jellyfin | `jellyfin.phekno.io` | External | Media streaming |
+| Home Assistant | `home-assistant.phekno.io` | External | Home automation |
+| Flux Webhook | `flux-webhook.phekno.io` | External | GitOps webhook receiver |
+| Echo | `echo.phekno.io` | External | Testing service |
+
+### Development & Automation
+
+- **[mise](https://mise.jdx.dev/)**: Development environment manager
+- **[Renovate](https://www.mend.io/renovate)**: Automated dependency updates
+- **[GitHub Actions](https://github.com/features/actions)**: CI/CD workflows
+- **[flux-local](https://github.com/allenporter/flux-local)**: Local Flux testing and diffing
+
+## 🚀 Quick Start
+
+This cluster is already deployed and operational. For operational tasks, see the sections below.
+
+### Prerequisites
+
+Ensure you have the following tools installed locally:
+
+```sh
+# Install mise for tool management
+# See: https://mise.jdx.dev/getting-started.html
+
+# Trust and install tools
+mise trust
+pip install pipx
+mise install
+```
+
+This will install: kubectl, talosctl, flux, cilium, helm, kubectl, k9s, and other required CLI tools.
+
+## 🔧 Cluster Operations
+
+### ✅ Health Checks
+
+**Check Cilium status:**
+```sh
+cilium status
+```
+
+**Check Flux status:**
+```sh
+flux check
+flux get sources git -A
+flux get ks -A
+flux get hr -A
+```
+
+📍 _Run `task reconcile` to force Flux to sync your Git repository state_
+
+**Check Gateway status:**
+```sh
+kubectl get gateway -n network
+kubectl get httproute -A
+```
+
+**Check Envoy Gateway connectivity:**
+```sh
+# Internal gateway (10.100.50.152)
+curl -k https://10.100.50.152
+
+# External gateway (10.100.50.151)
+curl -k https://10.100.50.151
+```
+
+**Check certificates:**
+```sh
+kubectl get certificates -A
+kubectl -n cert-manager describe certificates
+```
+
+**Check storage:**
+```sh
+# Longhorn
+kubectl get volumes -n longhorn-system
+kubectl get pvc -A
+```
+
+### 🌐 Networking
+
+#### Gateway API (Envoy Gateway)
+
+This cluster uses **Envoy Gateway** with Gateway API instead of traditional Ingress resources.
+
+**Two gateways available:**
+- **envoy-internal** (10.100.50.152): For internal-only services
+  - Use parentRef: `name: envoy-internal, namespace: network`
+- **envoy-external** (10.100.50.151): For publicly accessible services
+  - Use parentRef: `name: envoy-external, namespace: network`
+
+**Example HTTPRoute:**
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: my-app
+spec:
+  hostnames: ["my-app.phekno.io"]
+  parentRefs:
+    - name: envoy-internal  # or envoy-external
+      namespace: network
+      sectionName: https
+  rules:
+    - backendRefs:
+        - name: my-app-service
+          port: 80
+```
+
+#### DNS Configuration
+
+**External DNS** automatically manages DNS records:
+- **Cloudflare**: Public DNS for external access
+- **UniFi**: Internal network DNS integration
+
+HTTPRoutes with appropriate gateway references automatically get DNS entries created.
+
+#### GitHub Webhook
+
+Flux can reconcile immediately on git push via webhook at `https://flux-webhook.phekno.io`.
+
+**Get webhook path:**
+```sh
+kubectl -n flux-system get receiver github-webhook -o jsonpath='{.status.webhookPath}'
+```
+
+Webhook is configured in GitHub repository settings to send push events.
+
+### 💾 Backups
+
+**PostgreSQL** (CloudNativePG):
+- Automated backups to Cloudflare R2: `s3://phekno-home-k8s-pg/`
+- Retention: Managed by CloudNativePG backup policies
+- Recovery: Use CloudNativePG recovery procedures
+
+**Longhorn**:
+- Backup target: `s3://phekno-longhorn-backup@us-east-1/`
+- Manual backups: Via Longhorn UI at `longhorn.phekno.io`
+- Scheduled snapshots: Configured per-volume
+
+**Configuration**:
+- All cluster configuration is version controlled in Git
+- Secrets managed via External Secrets Operator + 1Password
+- SOPS-encrypted secrets for sensitive GitOps data
+
+## 💥 Cluster Reset
 
 > [!WARNING]
-> If any of the commands fail with `command not found` or `unknown command` it means `mise` is either not install or configured incorrectly.
+> This will completely destroy the cluster and all data. Ensure backups are current before proceeding.
 
-1. Create a Cloudflare API token for use with cloudflared and external-dns by reviewing the official [documentation](https://developers.cloudflare.com/fundamentals/api/get-started/create-token/) and following the instructions below.
-
-   - Click the blue `Use template` button for the `Edit zone DNS` template.
-   - Name your token `kubernetes`
-   - Under `Permissions`, click `+ Add More` and add permissions `Zone - DNS - Edit` and `Account - Cloudflare Tunnel - Read`
-   - Limit the permissions to a specific account and/or zone resources and then click `Continue to Summary` and then `Create Token`.
-   - **Save this token somewhere safe**, you will need it later on.
-
-2. Create the Cloudflare Tunnel:
-
-    ```sh
-    cloudflared tunnel login
-    cloudflared tunnel create --credentials-file cloudflare-tunnel.json kubernetes
-    ```
-
-### Stage 4: Cluster configuration
-
-1. Generate the config files from the sample files:
-
-    ```sh
-    task init
-    ```
-
-2. Fill out `cluster.yaml` and `nodes.yaml` configuration files using the comments in those file as a guide.
-
-3. Template out the kubernetes and talos configuration files, if any issues come up be sure to read the error and adjust your config files accordingly.
-
-    ```sh
-    task configure
-    ```
-
-4. Push your changes to git:
-
-   📍 _**Verify** all the `./kubernetes/**/*.sops.*` files are **encrypted** with SOPS_
-
-    ```sh
-    git add -A
-    git commit -m "chore: initial commit :rocket:"
-    git push
-    ```
-
-> [!TIP]
-> Using a **private repository**? Make sure to paste the public key from `github-deploy.key.pub` into the deploy keys section of your GitHub repository settings. This will make sure Flux has read/write access to your repository.
-
-### Stage 5: Bootstrap Talos, Kubernetes, and Flux
-
-> [!WARNING]
-> It might take a while for the cluster to be setup (10+ minutes is normal). During which time you will see a variety of error messages like: "couldn't get current server API group list," "error: no matching resources found", etc. 'Ready' will remain "False" as no CNI is deployed yet. **This is a normal.** If this step gets interrupted, e.g. by pressing <kbd>Ctrl</kbd> + <kbd>C</kbd>, you likely will need to [reset the cluster](#-reset) before trying again
-
-1. Install Talos:
-
-    ```sh
-    task bootstrap:talos
-    ```
-
-2. Push your changes to git:
-
-    ```sh
-    git add -A
-    git commit -m "chore: add talhelper encrypted secret :lock:"
-    git push
-    ```
-
-3. Install cilium, coredns, spegel, flux and sync the cluster to the repository state:
-
-    ```sh
-    task bootstrap:apps
-    ```
-
-4. Watch the rollout of your cluster happen:
-
-    ```sh
-    kubectl get pods --all-namespaces --watch
-    ```
-
-## 📣 Post installation
-
-### ✅ Verifications
-
-1. Check the status of Cilium:
-
-    ```sh
-    cilium status
-    ```
-
-2. Check the status of Flux and if the Flux resources are up-to-date and in a ready state:
-
-   📍 _Run `task reconcile` to force Flux to sync your Git repository state_
-
-    ```sh
-    flux check
-    flux get sources git flux-system
-    flux get ks -A
-    flux get hr -A
-    ```
-
-3. Check TCP connectivity to both the ingress controllers:
-
-    ```sh
-    nmap -Pn -n -p 443 ${cluster_ingress_addr} ${cloudflare_ingress_addr} -vv
-    ```
-
-4. Check you can resolve DNS for `echo`, this should resolve to `${cluster_ingress_addr}`:
-
-    ```sh
-    dig @${cluster_dns_gateway_addr} echo.${cloudflare_domain}
-    ```
-
-5. Check the status of your wildcard `Certificate`:
-
-    ```sh
-    kubectl -n cert-manager describe certificates
-    ```
-
-### 🌐 Public DNS
-
-> [!TIP]
-> Use the `external` ingress class to make applications public to the internet.
-
-The `external-dns` application created in the `network` namespace will handle creating public DNS records. By default, `echo` and the `flux-webhook` are the only subdomains reachable from the public internet. In order to make additional applications public you must **set the correct ingress class name and ingress annotations** like in the HelmRelease for `echo`.
-
-### 🏠 Home DNS
-
-> [!TIP]
-> Use the `internal` ingress class to make applications private to your network. If you're having trouble with internal DNS resolution check out [this](https://github.com/onedr0p/cluster-template/discussions/719) GitHub discussion.
-
-`k8s_gateway` will provide DNS resolution to external Kubernetes resources (i.e. points of entry to the cluster) from any device that uses your home DNS server. For this to work, your home DNS server must be configured to forward DNS queries for `${cloudflare_domain}` to `${cluster_dns_gateway_addr}` instead of the upstream DNS server(s) it normally uses. This is a form of **split DNS** (aka split-horizon DNS / conditional forwarding).
-
-_... Nothing working? That is expected, this is DNS after all!_
-
-### 🪝 Github Webhook
-
-By default Flux will periodically check your git repository for changes. In-order to have Flux reconcile on `git push` you must configure Github to send `push` events to Flux.
-
-1. Obtain the webhook path:
-
-   📍 _Hook id and path should look like `/hook/12ebd1e363c641dc3c2e430ecf3cee2b3c7a5ac9e1234506f6f5f3ce1230e123`_
-
-    ```sh
-    kubectl -n flux-system get receiver github-webhook --output=jsonpath='{.status.webhookPath}'
-    ```
-
-2. Piece together the full URL with the webhook path appended:
-
-    ```text
-    https://flux-webhook.${cloudflare_domain}/hook/12ebd1e363c641dc3c2e430ecf3cee2b3c7a5ac9e1234506f6f5f3ce1230e123
-    ```
-
-3. Navigate to the settings of your repository on Github, under "Settings/Webhooks" press the "Add webhook" button. Fill in the webhook URL and your token from `github-push-token.txt`, Content type: `application/json`, Events: Choose Just the push event, and save.
-
-## 💥 Reset
-
-> [!WARNING]
-> **Resetting** the cluster **multiple times in a short period of time** could lead to being **rate limited by DockerHub or Let's Encrypt**.
-
-There might be a situation where you want to destroy your Kubernetes cluster. The following command will reset your nodes back to maintenance mode.
-
+Reset nodes back to maintenance mode:
 ```sh
 task talos:reset
 ```
@@ -316,89 +383,61 @@ Below is a general guide on trying to debug an issue with an resource or applica
 
 Resolving problems that you have could take some tweaking of your YAML manifests in order to get things working, other times it could be a external factor like permissions on a NFS server. If you are unable to figure out your problem see the support sections below.
 
-## 🧹 Tidy up
+## 📚 Documentation
 
-Once your cluster is fully configured and you no longer need to run `task configure`, it's a good idea to clean up the repository by removing the [templates](./templates) directory and any files related to the templating process. This will help eliminate unnecessary clutter from the upstream template repository and resolve any "duplicate registry" warnings from Renovate.
+Additional documentation is available in the [`docs/`](./docs/) directory:
 
-1. Tidy up your repository:
+- **[Authelia + LLDAP Integration](./docs/authelia-lldap-integration.md)**: Guide for implementing forward authentication with Envoy Gateway
 
-    ```sh
-    task template:tidy
-    ```
+### 🧩 Kustomize Components
 
-2. Push your changes to git:
+Reusable components are available in [`kubernetes/components/`](./kubernetes/components/):
 
-    ```sh
-    git add -A
-    git commit -m "chore: tidy up :broom:"
-    git push
-    ```
+- **[ext-auth](./kubernetes/components/ext-auth/)**: Add external authentication to any HTTPRoute
+- **[common](./kubernetes/components/common/)**: Common resources (secrets, namespace)
+- **[gatus](./kubernetes/components/gatus/)**: Add uptime monitoring endpoint
+- **[volsync](./kubernetes/components/volsync/)**: Add volume backup/replication
+
+See individual component READMEs for usage instructions.
 
 ## 👉 Community Support
 
-- Make a post in this repository's Github [Discussions](https://github.com/onedr0p/cluster-template/discussions).
-- Start a thread in the `#support` or `#cluster-template` channels in the [Home Operations](https://discord.gg/home-operations) Discord server.
+Questions or need help? Great resources:
+- [Home Operations Discord](https://discord.gg/home-operations) - `#support` and `#flux` channels
+- [Kubernetes Homelab Reddit](https://reddit.com/r/kubernetes) and [r/selfhosted](https://reddit.com/r/selfhosted)
+- Individual project documentation (see links in Features section above)
 
-## 🙋 GitHub Sponsors Support
+## 🎯 Future Enhancements
 
-If you're having difficulty with this project, can't find the answers you need through the community support options above, or simply want to show your appreciation while gaining deeper insights, I’m offering one-on-one paid support through GitHub Sponsors for a limited time. Payment and scheduling will be coordinated through [GitHub Sponsors](https://github.com/sponsors/onedr0p).
+Potential improvements and additions:
 
-<details>
+- **Authentication**: Implement Authelia + LLDAP for centralized SSO (see [docs](./docs/authelia-lldap-integration.md))
+- **Monitoring**: Expand observability with additional ServiceMonitors
+- **Backups**: Implement automated testing of backup restoration procedures
+- **GitOps**: Add automated testing with flux-local
+- **Security**: Implement NetworkPolicies for pod-to-pod traffic control
+- **Service Mesh**: Consider Cilium service mesh features for advanced traffic management
 
-<summary>Click to expand the details</summary>
+## 🔗 Useful Resources
 
-<br>
+- **[Kubesearch](https://kubesearch.dev)**: Search Flux HelmReleases across GitHub/GitLab repositories
+- **[Gateway API Documentation](https://gateway-api.sigs.k8s.io/)**: Official Gateway API reference
+- **[Envoy Gateway Documentation](https://gateway.envoyproxy.io/)**: Envoy Gateway guides and API reference
+- **[Talos Linux Documentation](https://www.talos.dev/)**: Talos OS documentation and guides
+- **[Flux Documentation](https://fluxcd.io/flux/)**: Flux CD documentation
 
-- **Rate**: $50/hour (no longer than 2 hours / day).
-- **What’s Included**: Assistance with deployment, debugging, or answering questions related to this project.
-- **What to Expect**:
-  1. Sessions will focus on specific questions or issues you are facing.
-  2. I will provide guidance, explanations, and actionable steps to help resolve your concerns.
-  3. Support is limited to this project and does not extend to unrelated tools or custom feature development.
+## 🙌 Inspiration & References
 
-</details>
+This cluster was initially based on the excellent [onedr0p/cluster-template](https://github.com/onedr0p/cluster-template).
 
-## ❔ What's next
+**Other great homelab projects:**
+- [onedr0p/home-ops](https://github.com/onedr0p/home-ops) - onedr0p's personal home operations cluster
+- [khuedoan/homelab](https://github.com/khuedoan/homelab) - Fully automated homelab from empty disk to running services
+- [ricsanfre/pi-cluster](https://github.com/ricsanfre/pi-cluster) - Pi Kubernetes cluster automated with Ansible and FluxCD
+- [bjw-s/home-ops](https://github.com/bjw-s/home-ops) - bjw-s home operations using Flux
 
-The cluster is your oyster (or something like that). Below are some optional considerations you might want to review.
+## 🤝 Acknowledgments
 
-### DNS
-
-Instead of using [k8s_gateway](https://github.com/ori-edge/k8s_gateway) to provide DNS for your applications you might want to check out [external-dns](https://github.com/kubernetes-sigs/external-dns), there is wide support for many different DNS providers such as [Pi-hole](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/pihole.md), [UniFi](https://github.com/kashalls/external-dns-unifi-webhook), [Adguard Home](https://github.com/muhlba91/external-dns-provider-adguard), [Bind](https://github.com/kubernetes-sigs/external-dns/blob/master/docs/tutorials/rfc2136.md) and more.
-
-### Storage
-
-You might find you need persistent storage for your workloads with features like replicated storage or to connect to a NFS/SMB/iSCSI server. If you need any of those features be sure to check out the projects like [rook-ceph](https://github.com/rook/rook), [longhorn](https://github.com/longhorn/longhorn), [openebs](https://github.com/openebs/openebs), [democratic-csi](https://github.com/democratic-csi/democratic-csi), [csi-driver-nfs](https://github.com/kubernetes-csi/csi-driver-nfs), [csi-driver-smb](https://github.com/kubernetes-csi/csi-driver-smb)
-or [synology-csi](https://github.com/SynologyOpenSource/synology-csi).
-
-### Community Repositories
-
-Community member [@whazor](https://github.com/whazor) created [Kubesearch](https://kubesearch.dev) to allow searching Flux HelmReleases across Github and Gitlab repositories with the `kubesearch` topic.
-
-## 🙌 Related Projects
-
-If this repo is too hot to handle or too cold to hold check out these following projects.
-
-- [ajaykumar4/cluster-template](https://github.com/ajaykumar4/cluster-template) - _A template for deploying a Talos Kubernetes cluster including Argo for GitOps_
-- [khuedoan/homelab](https://github.com/khuedoan/homelab) - _Fully automated homelab from empty disk to running services with a single command._
-- [mitchross/k3s-argocd-starter](https://github.com/mitchross/k3s-argocd-starter) - starter kit for k3s, argocd
-- [ricsanfre/pi-cluster](https://github.com/ricsanfre/pi-cluster) - _Pi Kubernetes Cluster. Homelab kubernetes cluster automated with Ansible and FluxCD_
-- [techno-tim/k3s-ansible](https://github.com/techno-tim/k3s-ansible) - _The easiest way to bootstrap a self-hosted High Availability Kubernetes cluster. A fully automated HA k3s etcd install with kube-vip, MetalLB, and more. Build. Destroy. Repeat._
-
-## ⭐ Stargazers
-
-<div align="center">
-
-<a href="https://star-history.com/#onedr0p/cluster-template&Date">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=onedr0p/cluster-template&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=onedr0p/cluster-template&type=Date" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=onedr0p/cluster-template&type=Date" />
-  </picture>
-</a>
-
-</div>
-
-## 🤝 Thanks
-
-Big shout out to all the contributors, sponsors and everyone else who has helped on this project.
+- **[onedr0p](https://github.com/onedr0p)** for the cluster-template and app-template Helm chart
+- **[bjw-s](https://github.com/bjw-s)** for the app-template Helm chart
+- The **Home Operations Discord** community for support and inspiration

@@ -1,0 +1,13 @@
+---
+# yamllint configuration for home-ops
+extends: default
+
+rules:
+  line-length: disable
+  comments:
+    min-spaces-from-content: 1
+  indentation:
+    spaces: 2
+    indent-sequences: true
+  truthy:
+    allowed-values: ['true', 'false', 'on', 'off']
