@@ -1,0 +1,111 @@
+---
+theme: auto
+server:
+  address: 'tcp://0.0.0.0:9091'
+  buffers:
+    read: 8192
+    write: 8192
+  timeouts:
+    read: 6s
+    write: 6s
+    idle: 30s
+
+log:
+  level: debug
+
+telemetry:
+  metrics:
+    enabled: true
+    address: 'tcp://0.0.0.0:9959'
+    buffers:
+      read: 4096
+      write: 4096
+
+totp:
+  disable: false
+  issuer: phekno.io
+  algorithm: sha1
+  digits: 6
+  period: 30
+  skew: 1
+  secret_size: 32
+
+webauthn:
+  disable: false
+  display_name: Phekno Auth
+  attestation_conveyance_preference: indirect
+  user_verification: preferred
+  timeout: 60s
+
+authentication_backend:
+  password_reset:
+    disable: false
+  refresh_interval: 5m
+  ldap:
+    implementation: custom
+    address: 'ldap://lldap.security.svc.cluster.local:389'
+    timeout: 5s
+    start_tls: false
+    base_dn: 'dc=phekno,dc=io'
+    username_attribute: uid
+    additional_users_dn: 'ou=people'
+    users_filter: '(&({username_attribute}={input})(objectClass=person))'
+    additional_groups_dn: 'ou=groups'
+    groups_filter: '(member={dn})'
+    group_name_attribute: cn
+    mail_attribute: mail
+    display_name_attribute: displayName
+    user: 'uid=admin,ou=people,dc=phekno,dc=io'
+
+session:
+  name: authelia_session
+  domain: phekno.io
+  same_site: lax
+  expiration: 1h
+  inactivity: 5m
+  remember_me: 1M
+
+regulation:
+  max_retries: 3
+  find_time: 2m
+  ban_time: 5m
+
+storage:
+  postgres:
+    address: 'tcp://postgres-rw.db.svc.cluster.local:5432'
+    database: authelia
+    schema: public
+    timeout: 5s
+
+notifier:
+  disable_startup_check: true
+  filesystem:
+    filename: /tmp/notification.txt
+
+access_control:
+  default_policy: deny
+  rules:
+    # Bypass all Authelia portal paths
+    - domain:
+        - 'auth.phekno.io'
+      policy: bypass
+
+    # Public test/status services
+    - domain:
+        - 'echo.phekno.io'
+      policy: bypass
+
+    # Admin services requiring 2FA
+    - domain:
+        - 'grafana.phekno.io'
+        - 'prometheus.phekno.io'
+        - 'alertmanager.phekno.io'
+        - 'longhorn.phekno.io'
+      policy: two_factor
+      subject:
+        - 'group:admins'
+
+    # Catch-all for authenticated internal services
+    - domain:
+        - '*.phekno.io'
+      policy: one_factor
