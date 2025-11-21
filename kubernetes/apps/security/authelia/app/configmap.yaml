@@ -17,8 +17,7 @@ data:
         idle: 30s
 
     log:
-      level: info
-      format: text
+      level: debug
 
     telemetry:
       metrics:
