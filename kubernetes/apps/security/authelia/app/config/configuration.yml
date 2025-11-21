@@ -59,11 +59,16 @@ authentication_backend:
 
 session:
   name: authelia_session
-  domain: phekno.io
-  same_site: lax
   expiration: 1h
-  inactivity: 5m
+  inactivity: 15m
   remember_me: 1M
+  cookies:
+    - domain: phekno.io
+      authelia_url: https://auth.phekno.io
+      default_redirection_url: https://phekno.io
+  redis:
+    host: dragonfly.database.svc.cluster.local
+    port: 6379
 
 regulation:
   max_retries: 3
