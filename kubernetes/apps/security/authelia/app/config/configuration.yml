@@ -90,13 +90,6 @@ access_control:
         - 'auth.phekno.io'
       policy: bypass
 
-    # Public test/status services
-    - domain:
-        - 'echo.phekno.io'
-      policy: one_factor
-      subject:
-        - 'group:admins'
-
     # Admin services requiring 2FA
     - domain:
         - 'grafana.phekno.io'
