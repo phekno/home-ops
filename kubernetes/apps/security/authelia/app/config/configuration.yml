@@ -93,6 +93,9 @@ access_control:
     # Public test/status services
     - domain:
         - 'echo.phekno.io'
+      policy: one_factor
+      subject:
+        - 'group:admins'
 
     # Admin services requiring 2FA
     - domain:
