@@ -93,7 +93,6 @@ access_control:
     # Public test/status services
     - domain:
         - 'echo.phekno.io'
-      policy: bypass
 
     # Admin services requiring 2FA
     - domain:
