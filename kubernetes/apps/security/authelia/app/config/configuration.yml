@@ -53,9 +53,10 @@ authentication_backend:
     additional_groups_dn: 'ou=groups'
     groups_filter: '(member={dn})'
     group_name_attribute: cn
-    mail_attribute: mail
     display_name_attribute: displayName
     user: 'uid=admin,ou=people,dc=phekno,dc=io'
+    attributes:
+      mail: mail
 
 session:
   name: authelia_session
