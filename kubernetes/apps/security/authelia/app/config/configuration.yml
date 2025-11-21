@@ -67,7 +67,7 @@ session:
       authelia_url: https://auth.phekno.io
       default_redirection_url: https://phekno.io
   redis:
-    host: dragonfly.database.svc.cluster.local
+    host: dragonfly.db.svc.cluster.local
     port: 6379
 
 regulation:
