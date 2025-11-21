@@ -64,7 +64,7 @@ spec:
       gameMode: survival
       pvp: false
       # onlineMode: https://kube-schemas.pages.dev/source.toolkit.fluxcd.io/ocirepository_v1.json
-      ops: "phekno"
+      ops: "phekno,quinnyf13"
       motd: "Phekno's Survival Server"
       worldSaveName: phekno-survival
       viewDistance: 12
