@@ -34,7 +34,7 @@ spec:
         cpu: 200m
       limits:
         cpu: 2000m
-        memory: 4Gi
+        memory: 8Gi
     securityContext:
       runAsUser: 1000
       fsGroup: 100
@@ -74,6 +74,7 @@ spec:
       # - 36618 #Prom Exporter
       rcon:
         enabled: true
+      serviceType: LoadBalancer
       serviceAnnotations:
         io.cilium/lb-ipam-ips: 10.100.50.156
     # services:
