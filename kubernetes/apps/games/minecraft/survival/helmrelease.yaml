@@ -76,7 +76,7 @@ spec:
         enabled: true
     services:
       minecraft-survival:
-        type: LoadBalancer
+        type: NodePort
         annotations:
           lbipam.cilium.io/ips: 10.100.50.156
           # external-dns.alpha.kubernetes.io/hostname: mc.phekno.io
