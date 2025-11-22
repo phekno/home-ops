@@ -7,6 +7,6 @@ components:
   - ../../components/common
   - ../../components/repos/app-template
 resources:
-  - ./minecraft/mc-router/ks.yaml
+  # - ./minecraft/mc-router/ks.yaml
   - ./minecraft/survival/ks.yaml
   - ./romm/ks.yaml
