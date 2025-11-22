@@ -74,7 +74,8 @@ spec:
       # - 36618 #Prom Exporter
       rcon:
         enabled: true
-      externalIPs: 10.100.50.156
+      serviceAnnotations:
+        io.cilium/lb-ipam-ips: 10.100.50.156
     # services:
     #   minecraft-survival:
     #     type: NodePort
