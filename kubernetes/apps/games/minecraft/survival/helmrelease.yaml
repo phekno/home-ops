@@ -75,7 +75,7 @@ spec:
       rcon:
         enabled: true
     services:
-      minecraft:
+      minecraft-survival:
         type: LoadBalancer
         annotations:
           lbipam.cilium.io/ips: 10.100.50.156
