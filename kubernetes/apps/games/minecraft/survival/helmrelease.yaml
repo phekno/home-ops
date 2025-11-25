@@ -64,6 +64,7 @@ spec:
       pvp: false
       # onlineMode: https://kube-schemas.pages.dev/source.toolkit.fluxcd.io/ocirepository_v1.json
       ops: "phekno,quinnyf13"
+      whitelist: "phekno,quinnyf13,harpyf13,LivParrot,abbykinz2013"
       motd: "Phekno's Survival Server"
       worldSaveName: phekno-survival
       viewDistance: 12
