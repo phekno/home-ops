@@ -100,11 +100,11 @@ spec:
         ports:
           http:
             port: 3003
-      redis:
-        controller: redis
-        ports:
-          http:
-            port: 6379
+      # redis:
+      #   controller: redis
+      #   ports:
+      #     http:
+      #       port: 6379
     serviceMonitor:
       server:
         enabled: true
