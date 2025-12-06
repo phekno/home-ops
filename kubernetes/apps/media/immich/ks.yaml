@@ -6,7 +6,7 @@ metadata:
   name: immich
 spec:
   targetNamespace: media
-  path: ./kubernetes/main/apps/media/immich/app
+  path: ./kubernetes/apps/media/immich/app
   sourceRef:
     kind: GitRepository
     name: flux-system
