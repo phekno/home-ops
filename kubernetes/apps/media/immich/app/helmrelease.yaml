@@ -79,15 +79,15 @@ spec:
                   name: immich-configmap
             env:
               MPLCONFIGDIR: "/cache/matplotlib"
-      redis:
-        containers:
-          main:
-            image:
-              repository: public.ecr.aws/docker/library/redis
-              tag: 8.2.3@sha256:66e31e0cae26a8d291c9a4991eec0a12af4ec2185d01fdaabbed027472f1f42b
-            env:
-              REDIS_REPLICATION_MODE: master
-            command: ["redis-server"]
+      # redis:
+      #   containers:
+      #     main:
+      #       image:
+      #         repository: public.ecr.aws/docker/library/redis
+      #         tag: 8.2.3@sha256:66e31e0cae26a8d291c9a4991eec0a12af4ec2185d01fdaabbed027472f1f42b
+      #       env:
+      #         REDIS_REPLICATION_MODE: master
+      #       command: ["redis-server"]
 
     service:
       server:
