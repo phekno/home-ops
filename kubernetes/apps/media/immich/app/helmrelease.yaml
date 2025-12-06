@@ -137,7 +137,7 @@ spec:
         enabled: true
         type: nfs
         server: 10.100.50.10
-        path: /tank/pictures
+        path: /tank/immich
         advancedMounts:
           server:
             main:
