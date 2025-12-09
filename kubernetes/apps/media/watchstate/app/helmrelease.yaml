@@ -29,7 +29,7 @@ spec:
                 spec:
                   httpGet:
                     path: /v1/api/system/healthcheck
-                    port: http
+                    port: 8080
                   initialDelaySeconds: 0
                   periodSeconds: 10
                   timeoutSeconds: 1
