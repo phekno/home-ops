@@ -132,5 +132,13 @@ spec:
         globalMounts:
           - path: /media
             readOnly: true
+      media-music:
+        enabled: true
+        type: nfs
+        server: 10.100.50.10
+        path: /tank/music
+        globalMounts:
+          - path: /media/music
+            readOnly: true
       tmp:
         type: emptyDir
