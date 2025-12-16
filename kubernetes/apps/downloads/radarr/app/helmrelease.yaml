@@ -35,7 +35,7 @@ spec:
           app:
             image:
               repository: ghcr.io/home-operations/radarr
-              tag: 6.0.2.10271
+              tag: 6.1.0.10309
             env:
               TZ: "America/Chicago"
               RADARR__APP__INSTANCENAME: Radarr
