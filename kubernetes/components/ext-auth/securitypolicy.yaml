@@ -9,8 +9,12 @@ spec:
     kind: HTTPRoute
     name: ${APP}
   extAuth:
-    grpc:
+    http:
       backendRef:
         name: authelia
         namespace: security
         port: 9091
+      path: /api/authz/ext-authz/
+      headersToBackend:
+        - cookie
+        - authorization
