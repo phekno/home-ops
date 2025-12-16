@@ -12,7 +12,8 @@
       "Bash(kubectl rollout restart:*)",
       "Bash(kubectl rollout status:*)",
       "Bash(echo)",
-      "Bash(kubectl annotate:*)"
+      "Bash(kubectl annotate:*)",
+      "Bash(kubectl logs:*)"
     ],
     "deny": []
   }
