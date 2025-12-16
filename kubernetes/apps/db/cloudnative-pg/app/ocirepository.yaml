@@ -11,8 +11,3 @@ spec:
   ref:
     tag: 0.27.0
   url: oci://ghcr.io/cloudnative-pg/charts/cloudnative-pg
-  verify:
-    provider: cosign
-    matchOIDCIdentity:
-      - issuer: '^https://token.actions.githubusercontent.com$'
-        subject: '^https://github.com/cloudnative-pg/cloudnative-pg.*$'
