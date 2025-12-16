@@ -133,6 +133,8 @@ spec:
   clientIPDetection:
     xForwardedFor:
       numTrustedHops: 1
+  headers:
+    xForwardedProtoAction: Append
   connection:
     bufferLimit: 64Mi
     maxAcceptPerSocketEvent: 0

@@ -18,3 +18,7 @@ spec:
       headersToBackend:
         - cookie
         - authorization
+        - x-forwarded-proto
+        - x-forwarded-host
+        - x-forwarded-uri
+        - x-forwarded-for
