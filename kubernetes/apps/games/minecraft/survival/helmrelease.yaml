@@ -49,7 +49,7 @@ spec:
       storageClass: longhorn
       dataDir:
         enabled: true
-        size: 5Gi
+        size: 25Gi
     # serviceAnnotations:
     #   mc-router.itzg.me/externalServerName: mc.phekno.io
     minecraftServer:
@@ -69,20 +69,11 @@ spec:
       worldSaveName: phekno-survival
       viewDistance: 12
       modUrls: []
-      # - "https://cdn.modrinth.com/data/LNytGWDc/versions/5LpL274U/create-1.21.1-6.0.4.jar"
-      # spigetResources:
-      # - 36618 #Prom Exporter
       rcon:
         enabled: true
       serviceType: LoadBalancer
       serviceAnnotations:
         io.cilium/lb-ipam-ips: 10.100.50.156
-    # services:
-    #   minecraft-survival:
-    #     type: NodePort
-    #     annotations:
-    #       lbipam.cilium.io/ips: 10.100.50.156
-          # external-dns.alpha.kubernetes.io/hostname: mc.phekno.io
   valuesFrom:
     - kind: Secret
       name: *app
