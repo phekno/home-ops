@@ -22,6 +22,9 @@ telemetry:
     buffers:
       read: 4096
       write: 4096
+identity_validation:
+  reset_password:
+    jwt_secret: "{{ .AUTHELIA_JWT_SECRET }}"
 totp:
   disable: false
 webauthn:
@@ -36,21 +39,13 @@ authentication_backend:
     disable: false
   refresh_interval: 5m
   ldap:
-    implementation: custom
-    address: 'ldap://lldap.security.svc.cluster.local:389'
+    implementation: lldap
+    address: ldap://lldap.security.svc.cluster.local:3890
     timeout: 5s
     start_tls: false
-    base_dn: 'dc=phekno,dc=io'
-    additional_users_dn: 'ou=people'
-    users_filter: '(&({username_attribute}={input})(objectClass=person))'
-    additional_groups_dn: 'ou=groups'
-    groups_filter: '(member={dn})'
-    user: 'uid=admin,ou=people,dc=phekno,dc=io'
-    attributes:
-      username: uid
-      mail: mail
-      display_name: displayName
-      group_name: cn
+    base_dn: dc=home,dc=cluster
+    user: uid=authelia_bind,ou=people,dc=home,dc=cluster
+    password: "{{ .AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD }}"
 session:
   name: authelia_session
   expiration: 1h
@@ -68,11 +63,12 @@ regulation:
   find_time: 2m
   ban_time: 5m
 storage:
+  encryption_key: "{{ .AUTHELIA_STORAGE_ENCRYPTION_KEY }}"
   postgres:
-    address: 'tcp://postgres-rw.db.svc.cluster.local:5432'
+    address: 'postgres-rw.db.svc.cluster.local:5432'
     database: authelia
-    schema: public
-    timeout: 5s
+    username: "{{ .AUTHELIA_POSTGRES_USERNAME }}"
+    password: "{{ .AUTHELIA_POSTGRES_PASSWORD }}"
 notifier:
   disable_startup_check: false
   smtp:
