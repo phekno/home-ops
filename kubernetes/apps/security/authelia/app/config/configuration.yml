@@ -24,18 +24,13 @@ telemetry:
       write: 4096
 totp:
   disable: false
-  # issuer: phekno.io
-  # algorithm: sha1
-  # digits: 6
-  # period: 30
-  # skew: 1
-  # secret_size: 32
 webauthn:
   disable: true
-  # display_name: Phekno Auth
-  # attestation_conveyance_preference: indirect
-  # user_verification: preferred
-  # timeout: 60s
+duo_api:
+  disable: false
+  hostname: "{{ .AUTHELIA_DUO_API_HOSTNAME }}"
+  integration_key: "{{ .AUTHELIA_DUO_API_INTEGRATION_KEY }}"
+  secret_key: "{{ .AUTHELIA_DUO_API_SECRET_KEY }}"
 authentication_backend:
   password_reset:
     disable: false
@@ -79,9 +74,13 @@ storage:
     schema: public
     timeout: 5s
 notifier:
-  disable_startup_check: true
-  filesystem:
-    filename: /tmp/notification.txt
+  disable_startup_check: false
+  smtp:
+    host: email-smtp.us-east-1.amazonaws.com
+    port: 587
+    username: "{{ .AUTHELIA_NOTIFIER_SMTP_USERNAME }}"
+    password: "{{ .AUTHELIA_NOTIFIER_SMTP_PASSWORD }}"
+    sender: Authelia Admin <admin@phekno.io>
 access_control:
   default_policy: deny
   rules:
