@@ -111,12 +111,10 @@ spec:
             sectionName: https
     persistence:
       config:
-        type: configMap
+        enabled: true
+        type: secret
         name: authelia-config
         globalMounts:
-          - path: /config
+          - path: /config/configuration.yml
+            subPath: configuration.yaml
             readOnly: true
-      tmp:
-        type: emptyDir
-        globalMounts:
-          - path: /tmp
