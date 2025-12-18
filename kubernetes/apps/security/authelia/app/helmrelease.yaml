@@ -35,7 +35,7 @@ spec:
             command:
               - authelia
             args:
-              - --config=/config/configuration.yml
+              - --config=/config/configuration.yaml
             env:
               TZ: America/Chicago
               AUTHELIA_SERVER_DISABLE_HEALTHCHECK: "false"
@@ -115,6 +115,6 @@ spec:
         type: secret
         name: authelia-config
         globalMounts:
-          - path: /config/configuration.yml
+          - path: /config/configuration.yaml
             subPath: configuration.yaml
             readOnly: true
