@@ -48,9 +48,9 @@ spec:
             env:
               TZ: America/Chicago
               AUTHELIA_SERVER_DISABLE_HEALTHCHECK: "false"
-            envFrom:
-              - secretRef:
-                  name: authelia-secret
+            # envFrom:
+            #   - secretRef:
+            #       name: authelia-secret
             probes:
               liveness:
                 enabled: true
