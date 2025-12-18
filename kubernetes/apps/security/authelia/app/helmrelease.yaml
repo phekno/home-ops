@@ -27,15 +27,6 @@ spec:
         strategy: RollingUpdate
         annotations:
           reloader.stakater.com/auto: "true"
-        # initContainers:
-        #   init-db:
-        #     image:
-        #       repository: ghcr.io/home-operations/postgres-init
-        #       tag: 18.1
-        #       pullPolicy: IfNotPresent
-        #     envFrom:
-        #       - secretRef:
-        #           name: authelia-secret
         containers:
           app:
             image:
@@ -48,9 +39,6 @@ spec:
             env:
               TZ: America/Chicago
               AUTHELIA_SERVER_DISABLE_HEALTHCHECK: "false"
-            # envFrom:
-            #   - secretRef:
-            #       name: authelia-secret
             probes:
               liveness:
                 enabled: true
