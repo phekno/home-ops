@@ -48,6 +48,7 @@ authentication_backend:
     password: "{{ .AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD }}"
 session:
   name: authelia_session
+  secret: "{{ .AUTHELIA_SESSION_SECRET }}"
   expiration: 1h
   inactivity: 15m
   remember_me: 1M
@@ -72,8 +73,7 @@ storage:
 notifier:
   disable_startup_check: false
   smtp:
-    host: email-smtp.us-east-1.amazonaws.com
-    port: 587
+    address: submission://email-smtp.us-east-1.amazonaws.com:587
     username: "{{ .AUTHELIA_NOTIFIER_SMTP_USERNAME }}"
     password: "{{ .AUTHELIA_NOTIFIER_SMTP_PASSWORD }}"
     sender: Authelia Admin <admin@phekno.io>
