@@ -32,10 +32,7 @@ webauthn:
   enable_passkey_login: true
   display_name: Phekno Authelia
 duo_api:
-  disable: false
-  hostname: "{{ .AUTHELIA_DUO_API_HOSTNAME }}"
-  integration_key: "{{ .AUTHELIA_DUO_API_INTEGRATION_KEY }}"
-  secret_key: "{{ .AUTHELIA_DUO_API_SECRET_KEY }}"
+  disable: true
 authentication_backend:
   password_reset:
     disable: false
