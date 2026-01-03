@@ -8,7 +8,7 @@ spec:
   hostnames:
     - grafana.phekno.io
   parentRefs:
-    - name: envoy-internal
+    - name: envoy-external
       namespace: network
       sectionName: https
   rules:
