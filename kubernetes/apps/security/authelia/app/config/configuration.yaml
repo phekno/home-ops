@@ -111,7 +111,8 @@ identity_providers:
       - key_id: 'authelia'
         algorithm: 'RS256'
         use: 'sig'
-        key: "{{ .AUTHELIA_OIDC_JWKS_PRIVATE_KEY }}"
+        key:
+          path: /secrets/jwks/jwks.pem
     claims_policies:
       grafana:
         id_token:
