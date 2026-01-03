@@ -30,6 +30,7 @@ totp:
 webauthn:
   disable: false
   enable_passkey_login: true
+  display_name: Phekno Authelia
 duo_api:
   disable: false
   hostname: "{{ .AUTHELIA_DUO_API_HOSTNAME }}"
