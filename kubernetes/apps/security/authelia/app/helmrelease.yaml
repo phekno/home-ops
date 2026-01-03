@@ -118,10 +118,3 @@ spec:
           - path: /config/configuration.yaml
             subPath: configuration.yaml
             readOnly: true
-      jwks:
-        enabled: true
-        type: secret
-        name: authelia-oidc-jwks
-        globalMounts:
-          - path: /secrets/jwks
-            readOnly: true
