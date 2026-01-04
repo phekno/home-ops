@@ -1,0 +1,145 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: node-disk-alerts
+spec:
+  groups:
+    - name: node-disk.rules
+      interval: 1m
+      rules:
+        # Warning: Disk usage is high but not critical yet
+        - alert: NodeDiskPressureWarning
+          annotations:
+            summary: Node {{ $labels.node }} disk usage is high
+            description: |
+              Node {{ $labels.node }} has {{ $value | humanizePercentage }} disk used.
+              Current threshold: 75% used (25% available).
+              Eviction will occur at 90% used (10% available for nodefs).
+          expr: |
+            (
+              1 - (
+                node_filesystem_avail_bytes{job="node-exporter",mountpoint="/var",fstype!=""}
+                /
+                node_filesystem_size_bytes{job="node-exporter",mountpoint="/var",fstype!=""}
+              )
+            ) > 0.75
+          for: 10m
+          labels:
+            severity: warning
+
+        # Critical: Disk usage is approaching eviction threshold
+        - alert: NodeDiskPressureCritical
+          annotations:
+            summary: Node {{ $labels.node }} disk usage is critical
+            description: |
+              Node {{ $labels.node }} has {{ $value | humanizePercentage }} disk used.
+              Current threshold: 85% used (15% available).
+              Eviction will occur at 90% used (10% available for nodefs).
+              ACTION REQUIRED: Clean up disk space or expand disk immediately.
+          expr: |
+            (
+              1 - (
+                node_filesystem_avail_bytes{job="node-exporter",mountpoint="/var",fstype!=""}
+                /
+                node_filesystem_size_bytes{job="node-exporter",mountpoint="/var",fstype!=""}
+              )
+            ) > 0.85
+          for: 5m
+          labels:
+            severity: critical
+
+        # ImageFS (container images) specific alerts
+        - alert: NodeImageFSPressureWarning
+          annotations:
+            summary: Node {{ $labels.node }} container image filesystem usage is high
+            description: |
+              Node {{ $labels.node }} ImageFS (container images) is at {{ $value | humanizePercentage }} used.
+              Image garbage collection starts at 85%.
+              Eviction threshold is at 85% used (15% available for imagefs).
+          expr: |
+            (
+              kubelet_volume_stats_used_bytes{job="kubelet",metrics_path="/metrics",persistentvolumeclaim=""}
+              /
+              kubelet_volume_stats_capacity_bytes{job="kubelet",metrics_path="/metrics",persistentvolumeclaim=""}
+            ) > 0.75
+            OR
+            (
+              1 - (
+                sum by (cluster, instance, node) (kubelet_node_name{job="kubelet",metrics_path="/metrics"})
+                *
+                sum by (cluster, instance) (container_fs_usage_bytes{job="kubelet",metrics_path="/metrics/cadvisor",container="",id="/",fstype!=""})
+                /
+                sum by (cluster, instance) (container_fs_limit_bytes{job="kubelet",metrics_path="/metrics/cadvisor",container="",id="/",fstype!=""})
+              )
+            ) > 0.75
+          for: 10m
+          labels:
+            severity: warning
+
+        - alert: NodeImageFSPressureCritical
+          annotations:
+            summary: Node {{ $labels.node }} container image filesystem usage is critical
+            description: |
+              Node {{ $labels.node }} ImageFS (container images) is at {{ $value | humanizePercentage }} used.
+              Image garbage collection active.
+              Eviction will occur at 85% used (15% available for imagefs).
+              ACTION REQUIRED: Pods may be evicted soon.
+          expr: |
+            (
+              kubelet_volume_stats_used_bytes{job="kubelet",metrics_path="/metrics",persistentvolumeclaim=""}
+              /
+              kubelet_volume_stats_capacity_bytes{job="kubelet",metrics_path="/metrics",persistentvolumeclaim=""}
+            ) > 0.80
+            OR
+            (
+              1 - (
+                sum by (cluster, instance, node) (kubelet_node_name{job="kubelet",metrics_path="/metrics"})
+                *
+                sum by (cluster, instance) (container_fs_usage_bytes{job="kubelet",metrics_path="/metrics/cadvisor",container="",id="/",fstype!=""})
+                /
+                sum by (cluster, instance) (container_fs_limit_bytes{job="kubelet",metrics_path="/metrics/cadvisor",container="",id="/",fstype!=""})
+              )
+            ) > 0.80
+          for: 5m
+          labels:
+            severity: critical
+
+        # Inode pressure alerts
+        - alert: NodeInodePressureWarning
+          annotations:
+            summary: Node {{ $labels.node }} inode usage is high
+            description: |
+              Node {{ $labels.node }} has {{ $value | humanizePercentage }} inodes used.
+              Eviction threshold is at 95% used (5% available).
+          expr: |
+            (
+              1 - (
+                node_filesystem_files_free{job="node-exporter",mountpoint="/var",fstype!=""}
+                /
+                node_filesystem_files{job="node-exporter",mountpoint="/var",fstype!=""}
+              )
+            ) > 0.85
+          for: 10m
+          labels:
+            severity: warning
+
+        - alert: NodeInodePressureCritical
+          annotations:
+            summary: Node {{ $labels.node }} inode usage is critical
+            description: |
+              Node {{ $labels.node }} has {{ $value | humanizePercentage }} inodes used.
+              Eviction will occur at 95% used (5% available).
+              ACTION REQUIRED: Clean up files or expand disk.
+          expr: |
+            (
+              1 - (
+                node_filesystem_files_free{job="node-exporter",mountpoint="/var",fstype!=""}
+                /
+                node_filesystem_files{job="node-exporter",mountpoint="/var",fstype!=""}
+              )
+            ) > 0.90
+          for: 5m
+          labels:
+            severity: critical
