@@ -112,6 +112,8 @@ spec:
     grafana:
       enabled: false
       forceDeployDashboards: true
+      defaultDashboardsAnnotations:
+        grafana_folder: kubernetes
     additionalPrometheusRulesMap:
       dockerhub-rules:
         groups:

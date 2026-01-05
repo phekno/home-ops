@@ -13,4 +13,4 @@ spec:
     - datasourceName: prometheus
       inputName: DS_PROMETHEUS
   url: https://raw.githubusercontent.com/VictoriaMetrics/VictoriaMetrics/master/dashboards/victorialogs.json
-  folderTitle: observability
+  folder: observability
