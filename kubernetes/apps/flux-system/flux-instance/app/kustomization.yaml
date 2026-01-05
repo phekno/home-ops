@@ -10,3 +10,4 @@ resources:
   - ./httproute.yaml
   - ./receiver.yaml
   - ./prometheusrule.yaml
+  - ./podmonitor.yaml
