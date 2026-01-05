@@ -13,3 +13,4 @@ spec:
     - datasourceName: prometheus
       inputName: DS_PROMETHEUS
   url: https://gitlab.com/uneeq-oss/cert-manager-mixin/-/raw/master/dashboards/cert-manager.json
+  folderTitle: security
