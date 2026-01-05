@@ -1,0 +1,29 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/postgresql.cnpg.io/cluster_v1.json
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: forgejo-postgres
+spec:
+  instances: 1
+  postgresql:
+    parameters:
+      max_connections: "100"
+      shared_buffers: 128MB
+  storage:
+    storageClass: longhorn
+    size: 10Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 1Gi
+  monitoring:
+    enablePodMonitor: true
+  bootstrap:
+    initdb:
+      database: forgejo
+      owner: forgejo
+      secret:
+        name: forgejo-postgres-secret

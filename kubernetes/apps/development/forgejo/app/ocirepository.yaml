@@ -1,0 +1,11 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/source.toolkit.fluxcd.io/ocirepository_v1.json
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: forgejo
+spec:
+  interval: 6h
+  url: oci://codeberg.org/forgejo-helm/forgejo
+  ref:
+    tag: 10.6.0

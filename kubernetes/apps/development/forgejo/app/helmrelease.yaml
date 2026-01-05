@@ -1,0 +1,97 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app forgejo
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: forgejo
+  interval: 1h
+  values:
+    fullnameOverride: *app
+
+    redis-cluster:
+      enabled: false
+
+    postgresql-ha:
+      enabled: false
+
+    postgresql:
+      enabled: false
+
+    # Use external PostgreSQL via CloudNativePG
+    gitea:
+      config:
+        database:
+          DB_TYPE: postgres
+          HOST: forgejo-postgres-rw.development.svc.cluster.local:5432
+          NAME: forgejo
+          USER: forgejo
+          PASSWD: ${FORGEJO_DB_PASSWORD}
+          SCHEMA: public
+
+        session:
+          PROVIDER: db
+
+        cache:
+          ADAPTER: memory
+
+        queue:
+          TYPE: level
+
+        indexer:
+          ISSUE_INDEXER_TYPE: bleve
+          REPO_INDEXER_ENABLED: true
+
+        server:
+          DOMAIN: git.phekno.io
+          ROOT_URL: https://git.phekno.io
+          SSH_DOMAIN: git.phekno.io
+          SSH_PORT: 22
+          DISABLE_SSH: false
+          START_SSH_SERVER: true
+          SSH_LISTEN_PORT: 2222
+          LFS_START_SERVER: true
+
+        security:
+          INSTALL_LOCK: true
+          SECRET_KEY: ${FORGEJO_SECRET_KEY}
+          INTERNAL_TOKEN: ${FORGEJO_INTERNAL_TOKEN}
+
+        service:
+          DISABLE_REGISTRATION: false
+          REQUIRE_SIGNIN_VIEW: false
+
+        admin:
+          DISABLE_REGULAR_ORG_CREATION: false
+
+        openid:
+          ENABLE_OPENID_SIGNIN: false
+          ENABLE_OPENID_SIGNUP: false
+
+    service:
+      http:
+        type: ClusterIP
+        port: 3000
+      ssh:
+        type: LoadBalancer
+        port: 22
+        annotations:
+          io.cilium/lb-ipam-ips: 10.100.50.157
+
+    ingress:
+      enabled: false
+
+    persistence:
+      enabled: true
+      storageClass: longhorn
+      size: 10Gi
+
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        memory: 1Gi
