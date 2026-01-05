@@ -9,6 +9,19 @@ spec:
     kind: OCIRepository
     name: forgejo
   interval: 1h
+  valuesFrom:
+    - kind: Secret
+      name: forgejo-secret
+      valuesKey: FORGEJO_DB_PASSWORD
+      targetPath: gitea.config.database.PASSWD
+    - kind: Secret
+      name: forgejo-secret
+      valuesKey: FORGEJO_SECRET_KEY
+      targetPath: gitea.config.security.SECRET_KEY
+    - kind: Secret
+      name: forgejo-secret
+      valuesKey: FORGEJO_INTERNAL_TOKEN
+      targetPath: gitea.config.security.INTERNAL_TOKEN
   values:
     fullnameOverride: *app
 
@@ -29,7 +42,6 @@ spec:
           HOST: forgejo-postgres-rw.development.svc.cluster.local:5432
           NAME: forgejo
           USER: forgejo
-          PASSWD: ${FORGEJO_DB_PASSWORD}
           SCHEMA: public
 
         session:
@@ -57,8 +69,6 @@ spec:
 
         security:
           INSTALL_LOCK: true
-          SECRET_KEY: ${FORGEJO_SECRET_KEY}
-          INTERNAL_TOKEN: ${FORGEJO_INTERNAL_TOKEN}
 
         service:
           DISABLE_REGISTRATION: false
