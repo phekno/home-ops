@@ -20,8 +20,6 @@ spec:
       serviceMonitor:
         enabled: true
     dashboards:
-      enabled: true
-      annotations:
-        grafana_folder: observability
-      labels:
-        grafana_dashboard: "1"
+      # Disable default dashboards (includes unwanted Vector dashboard)
+      # We only need the VictoriaLogs dashboard which we'll create manually
+      enabled: false
