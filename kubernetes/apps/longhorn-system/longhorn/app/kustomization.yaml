@@ -4,5 +4,6 @@ kind: Kustomization
 resources:
 - ./helmrelease.yaml
 - ./externalsecret.yaml
+- ./grafanadashboard.yaml
 - ./snapshot.yaml
 - ./httproute.yaml
