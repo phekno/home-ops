@@ -110,13 +110,13 @@ spec:
         type: LoadBalancer
         port: 22
         annotations:
-          external-dns.alpha.kubernetes.io/hostname: "ssh.forgejo.${SECRET_DOMAIN_INTERNAL}"
-          lbipam.cilium.io/ips: 192.168.222.125
+          external-dns.alpha.kubernetes.io/hostname: "ssh.forgejo.phekno.io"
+          lbipam.cilium.io/ips: 10.100.50.157
     ingress:
       enabled: true
       className: traefik-internal
       annotations:
-        external-dns.alpha.kubernetes.io/target: "internal.${SECRET_DOMAIN_INTERNAL}"
+        external-dns.alpha.kubernetes.io/target: "internal.phekno.io"
         gatus.home-operations.com/enabled: "false"
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
         traefik.ingress.kubernetes.io/router.middlewares: "networking-traefik-middleware-chain-no-auth@kubernetescrd"
@@ -130,22 +130,22 @@ spec:
             - *host
           secretName: "${SECRET_DOMAIN/./-}-production-tls"
   valuesFrom:
-    - targetPath: gitea.config.storage.MINIO_ACCESS_KEY_ID
-      kind: Secret
-      name: *secret
-      valuesKey: FORGEJO_AWS_ACCESS_KEY_ID
-    - targetPath: gitea.config.storage.MINIO_SECRET_ACCESS_KEY
-      kind: Secret
-      name: *secret
-      valuesKey: FORGEJO_AWS_SECRET_ACCESS_KEY
-    - targetPath: gitea.config.attachment.MINIO_ACCESS_KEY_ID
-      kind: Secret
-      name: *secret
-      valuesKey: FORGEJO_AWS_ACCESS_KEY_ID
-    - targetPath: gitea.config.attachment.MINIO_SECRET_ACCESS_KEY
-      kind: Secret
-      name: *secret
-      valuesKey: FORGEJO_AWS_SECRET_ACCESS_KEY
+    # - targetPath: gitea.config.storage.MINIO_ACCESS_KEY_ID
+    #   kind: Secret
+    #   name: *secret
+    #   valuesKey: FORGEJO_AWS_ACCESS_KEY_ID
+    # - targetPath: gitea.config.storage.MINIO_SECRET_ACCESS_KEY
+    #   kind: Secret
+    #   name: *secret
+    #   valuesKey: FORGEJO_AWS_SECRET_ACCESS_KEY
+    # - targetPath: gitea.config.attachment.MINIO_ACCESS_KEY_ID
+    #   kind: Secret
+    #   name: *secret
+    #   valuesKey: FORGEJO_AWS_ACCESS_KEY_ID
+    # - targetPath: gitea.config.attachment.MINIO_SECRET_ACCESS_KEY
+    #   kind: Secret
+    #   name: *secret
+    #   valuesKey: FORGEJO_AWS_SECRET_ACCESS_KEY
     - targetPath: gitea.config.database.NAME
       kind: Secret
       name: *secret

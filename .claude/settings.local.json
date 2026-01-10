@@ -14,7 +14,8 @@
       "Bash(echo)",
       "Bash(kubectl annotate:*)",
       "Bash(kubectl logs:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(cat:*)"
     ],
     "deny": []
   }

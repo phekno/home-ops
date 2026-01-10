@@ -3,13 +3,13 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: phekno-io
+  name: phekno-social
 spec:
-  secretName: phekno-io-tls
+  secretName: phekno-social-tls
   issuerRef:
     name: letsencrypt-production
     kind: ClusterIssuer
-  commonName: phekno.io
+  commonName: phekno.social
   dnsNames:
-    - phekno.io
-    - "*.phekno.io"
+    - phekno.social
+    - "*.phekno.social"
