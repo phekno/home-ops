@@ -148,6 +148,7 @@ spec:
         type: persistentVolumeClaim
         storageClass: longhorn
         size: 20Gi
+        accessMode: ReadWriteOnce
         advancedMounts:
           sidekiq:
             main:
