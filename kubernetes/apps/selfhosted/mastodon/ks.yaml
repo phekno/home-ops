@@ -15,7 +15,7 @@ spec:
       namespace: longhorn-system
     - name: cloudflare-tunnel
       namespace: network
-    - name: onepassword
+    - name: onepassword-store
       namespace: external-secrets
     - name: dragonfly
       namespace: db
