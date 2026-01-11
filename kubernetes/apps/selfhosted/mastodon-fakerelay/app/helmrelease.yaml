@@ -25,7 +25,15 @@ spec:
               - -c
               - |
                 if [ ! -f /data/config.json ]; then
-                  echo '{"Relays":[]}' > /data/config.json
+                  cat > /data/config.json <<EOF
+                {
+                  "FakeRelayUrl": "https://fakerelay.phekno.social",
+                  "FakeRelayApiKey": "CHANGE_ME",
+                  "Host": "toot.phekno.social",
+                  "ApiKey": "CHANGE_ME",
+                  "Relays": []
+                }
+                EOF
                 fi
         containers:
           app:
