@@ -15,26 +15,29 @@ spec:
         pod:
           annotations:
             reloader.stakater.com/auto: "true"
-        initContainers:
-          init-config:
-            image:
-              repository: busybox
-              tag: latest
-            command:
-              - sh
-              - -c
-              - |
-                if [ ! -f /data/config.json ]; then
-                  cat > /data/config.json <<EOF
-                {
-                  "FakeRelayUrl": "https://fakerelay.phekno.social",
-                  "FakeRelayApiKey": "CHANGE_ME",
-                  "Host": "toot.phekno.social",
-                  "ApiKey": "CHANGE_ME",
-                  "Relays": []
-                }
-                EOF
-                fi
+        # initContainers:
+        #   init-config:
+        #     image:
+        #       repository: busybox
+        #       tag: latest
+        #     command:
+        #       - sh
+        #       - -c
+        #       - |
+        #         if [ ! -f /data/config.json ]; then
+        #           cat > /data/config.json <<EOF
+        #         {
+        #           "FakeRelayUrl": "https://fakerelay.phekno.social",
+        #           "FakeRelayApiKey": "CHANGE_ME",
+        #           "Host": "toot.phekno.social",
+        #           "ApiKey": "CHANGE_ME",
+        #           "Relays": [],
+        #           "PrivateKey": "",
+        #           "PublicKey": "",
+        #           "Host": ""
+        #         }
+        #         EOF
+        #         fi
         containers:
           app:
             image:
