@@ -36,7 +36,6 @@ spec:
     sources:
       - crd
       - gateway-httproute
-      - service
     txtOwnerId: default
     txtPrefix: k8s.
     domainFilters:

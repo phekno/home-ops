@@ -52,7 +52,7 @@ spec:
     sources: ["gateway-httproute", "service"]
     txtOwnerId: main
     txtPrefix: k8s.main.
-    domainFilters: ["phekno.io"]
+    domainFilters: ["phekno.io", "phekno.social"]
     serviceMonitor:
       enabled: true
     podAnnotations:
