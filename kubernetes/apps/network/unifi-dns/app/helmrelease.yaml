@@ -49,10 +49,14 @@ spec:
           timeoutSeconds: 5
     triggerLoopOnEvent: true
     policy: sync
-    sources: ["gateway-httproute", "service"]
+    sources:
+      - gateway-httproute
+      - service
     txtOwnerId: main
     txtPrefix: k8s.main.
-    domainFilters: ["phekno.io", "phekno.social"]
+    domainFilters:
+      - phekno.io
+      - phekno.social
     serviceMonitor:
       enabled: true
     podAnnotations:

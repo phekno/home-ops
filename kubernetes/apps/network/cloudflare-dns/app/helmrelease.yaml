@@ -47,6 +47,7 @@ spec:
     txtPrefix: k8s.
     domainFilters:
       - phekno.io
+      - phekno.social
     serviceMonitor:
       enabled: true
     podAnnotations:
