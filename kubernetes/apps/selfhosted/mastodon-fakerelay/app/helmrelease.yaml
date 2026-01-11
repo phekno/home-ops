@@ -15,6 +15,18 @@ spec:
         pod:
           annotations:
             reloader.stakater.com/auto: "true"
+        initContainers:
+          init-config:
+            image:
+              repository: busybox
+              tag: latest
+            command:
+              - sh
+              - -c
+              - |
+                if [ ! -f /data/config.json ]; then
+                  echo '{"Relays":[]}' > /data/config.json
+                fi
         containers:
           app:
             image:
