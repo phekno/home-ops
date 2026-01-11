@@ -16,7 +16,8 @@
       "Bash(kubectl logs:*)",
       "Bash(find:*)",
       "Bash(cat:*)",
-      "Bash(jq:*)"
+      "Bash(jq:*)",
+      "Bash(flux reconcile helmrelease:*)"
     ],
     "deny": []
   }
