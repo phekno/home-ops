@@ -46,7 +46,8 @@ spec:
     persistence:
       data:
         type: persistentVolumeClaim
-        storageClassName: longhorn
+        storageClass: longhorn
         size: 1Gi
+        accessMode: ReadWriteOnce
         globalMounts:
           - path: /data
