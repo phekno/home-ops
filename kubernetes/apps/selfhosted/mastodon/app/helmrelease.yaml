@@ -24,7 +24,7 @@ spec:
               - secretRef:
                   name: mastodon-secret
             env: &env
-              LOCAL_DOMAIN: toot.phekno.io
+              LOCAL_DOMAIN: toot.phekno.social
               SMTP_FROM_ADDRESS: notifications@phekno.social
               SMTP_PORT: "587"
               SMTP_AUTH_METHOD: login
@@ -169,7 +169,7 @@ spec:
               - path: /mastodon/public/system
     route:
       app:
-        hostnames: ["toot.phekno.io"]
+        hostnames: ["toot.phekno.social"]
         parentRefs:
           - name: social
             namespace: network
