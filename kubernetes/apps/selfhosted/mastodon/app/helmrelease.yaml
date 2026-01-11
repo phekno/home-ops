@@ -29,10 +29,11 @@ spec:
               SMTP_PORT: "587"
               SMTP_AUTH_METHOD: login
               SMTP_OPENSSL_VERIFY_MODE: peer
-              # SMTP_ENABLE_STARTTLS_AUTO: auto
               REDIS_HOST: dragonfly.db.svc.cluster.local
               REDIS_PORT: 6379
-              # S3_ENABLED: true
+              S3_ENABLED: true
+              S3_PROTOCOL: https
+              S3_PERMISSION: private
             resources:
               requests:
                 memory: 500Mi
