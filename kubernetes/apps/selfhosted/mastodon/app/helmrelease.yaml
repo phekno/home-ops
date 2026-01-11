@@ -31,9 +31,11 @@ spec:
               SMTP_OPENSSL_VERIFY_MODE: peer
               REDIS_HOST: dragonfly.db.svc.cluster.local
               REDIS_PORT: 6379
-              S3_ENABLED: true
+              S3_ENABLED: "true"
               S3_PROTOCOL: https
               S3_PERMISSION: private
+              S3_REGION: auto
+              S3_FORCE_SINGLE_REQUEST: "true"
             resources:
               requests:
                 memory: 500Mi
