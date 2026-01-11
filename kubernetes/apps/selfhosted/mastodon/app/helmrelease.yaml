@@ -59,7 +59,7 @@ spec:
                 memory: 2048Mi
       web:
         initContainers:
-          init-db:
+          01-init-db:
             image:
               repository: ghcr.io/home-operations/postgres-init
               tag: 18.1@sha256:866f15038ed5185a2b8118821f470bb7ca0df8c4231b8e277446e681ebb1ed84
@@ -67,7 +67,7 @@ spec:
             envFrom:
               - secretRef:
                   name: mastodon-secret
-          init:
+          02-init:
             image:
               repository: ghcr.io/mastodon/mastodon
               tag: v4.5.4
