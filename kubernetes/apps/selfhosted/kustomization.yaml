@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: selfhosted
 resources:
   - ./mastodon/ks.yaml
-  - ./mastodon-fakerelay/ks.yaml
+  # - ./mastodon-fakerelay/ks.yaml
   # - ./mastodon-getmoarfediverse/ks.yaml
 components:
   - ../../components/common
