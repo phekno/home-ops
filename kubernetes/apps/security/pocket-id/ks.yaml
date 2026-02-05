@@ -3,14 +3,32 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: pocket-id
+  name: &app pocket-id
+  namespace: &namespace security
 spec:
-  interval: 1h
+  targetNamespace: *namespace
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
   path: ./kubernetes/apps/security/pocket-id/app
-  prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  targetNamespace: security
+  dependsOn:
+    - name: lldap
+      namespace: security
+    - name: cloudnative-pg
+      namespace: db
+    - name: external-secrets
+      namespace: external-secrets
+  postBuild:
+    substitute:
+      APP: *app
+    substituteFrom:
+      - kind: Secret
+        name: cluster-secrets
+  prune: true
   wait: false
+  interval: 1h
+  timeout: 5m
