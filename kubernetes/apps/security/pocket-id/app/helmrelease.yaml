@@ -55,6 +55,7 @@ spec:
               UPLOAD_PATH: /app/data/uploads
               GEOLITE_DB_PATH: /app/data/GeoLite2-City.mmdb
               UI_CONFIG_DISABLED: true
+              LDAP_USER_SEARCH_FILTER: "(&(objectClass=person)(!(uid=admin)))"
             envFrom: *envFrom
             probes:
               liveness: &probes
