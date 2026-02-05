@@ -36,18 +36,19 @@ spec:
               EMAILS_VERIFIED: true
               KEYS_STORAGE: database
               LDAP_ENABLED: true
-              LDAP_URL: ldaps://lldap.security.svc.cluster.local
-              LDAP_SKIP_CERT_VERIFY: true
-              LDAP_USER_GROUP_SEARCH_FILTER: (&(objectClass=group)(cn=ID*))
-              LDAP_ATTRIBUTE_USER_UNIQUE_IDENTIFIER: objectGUID
-              LDAP_ATTRIBUTE_GROUP_UNIQUE_IDENTIFIER: objectGUID
+              LDAP_URL: ldap://lldap.security.svc.cluster.local:389
+              LDAP_SKIP_CERT_VERIFY: false
+              LDAP_USER_SEARCH_FILTER: "(objectClass=person)"
+              LDAP_USER_GROUP_SEARCH_FILTER: "(objectClass=groupOfUniqueNames)"
+              LDAP_ATTRIBUTE_USER_UNIQUE_IDENTIFIER: uid
+              LDAP_ATTRIBUTE_GROUP_UNIQUE_IDENTIFIER: cn
               LDAP_ATTRIBUTE_USER_FIRST_NAME: givenName
               LDAP_ATTRIBUTE_USER_LAST_NAME: sn
-              LDAP_ATTRIBUTE_USER_USERNAME: sAMAccountName
+              LDAP_ATTRIBUTE_USER_USERNAME: uid
               LDAP_ATTRIBUTE_USER_EMAIL: mail
-              LDAP_ATTRIBUTE_GROUP_MEMBER: member
+              LDAP_ATTRIBUTE_GROUP_MEMBER: uniqueMember
               LDAP_ATTRIBUTE_GROUP_NAME: cn
-              LDAP_ADMIN_GROUP_NAME: ID-Admin
+              LDAP_ADMIN_GROUP_NAME: pocket-id-admin
               SMTP_FROM: pocket-id@${SECRET_DOMAIN}
               SESSION_DURATION: 43800
               TRUST_PROXY: true
@@ -95,7 +96,7 @@ spec:
           - "id.${SECRET_DOMAIN}"
         parentRefs:
           - name: envoy-external
-            namespace: networking
+            namespace: network
     persistence:
       data:
         enabled: true

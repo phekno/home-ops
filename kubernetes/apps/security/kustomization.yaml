@@ -7,5 +7,6 @@ components:
   - ../../components/common
   - ../../components/repos/app-template
 resources:
-  - ./lldap/ks.yaml
   - ./authelia/ks.yaml
+  - ./lldap/ks.yaml
+  - ./pocket-id/ks.yaml
