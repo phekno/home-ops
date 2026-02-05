@@ -38,7 +38,7 @@ spec:
               LDAP_ENABLED: true
               LDAP_URL: ldap://lldap.security.svc.cluster.local:389
               LDAP_SKIP_CERT_VERIFY: false
-              LDAP_USER_SEARCH_FILTER: "(objectClass=person)"
+              LDAP_USER_SEARCH_FILTER: "(&(objectClass=person)(!(uid=admin)))"
               LDAP_USER_GROUP_SEARCH_FILTER: "(objectClass=groupOfUniqueNames)"
               LDAP_ATTRIBUTE_USER_UNIQUE_IDENTIFIER: uid
               LDAP_ATTRIBUTE_GROUP_UNIQUE_IDENTIFIER: cn
@@ -50,12 +50,12 @@ spec:
               LDAP_ATTRIBUTE_GROUP_NAME: cn
               LDAP_ADMIN_GROUP_NAME: pocket-id-admin
               SMTP_FROM: pocket-id@${SECRET_DOMAIN}
+              SMTP_TLS: starttls
               SESSION_DURATION: 43800
               TRUST_PROXY: true
               UPLOAD_PATH: /app/data/uploads
               GEOLITE_DB_PATH: /app/data/GeoLite2-City.mmdb
               UI_CONFIG_DISABLED: true
-              LDAP_USER_SEARCH_FILTER: "(&(objectClass=person)(!(uid=admin)))"
             envFrom: *envFrom
             probes:
               liveness: &probes
