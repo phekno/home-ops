@@ -2,8 +2,8 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: selfhosted
-resources:
-  - ./mastodon/ks.yaml
+resources: []
+  # - ./mastodon/ks.yaml
   # - ./mastodon-fakerelay/ks.yaml
   # - ./mastodon-getmoarfediverse/ks.yaml
 components:
