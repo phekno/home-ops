@@ -19,13 +19,13 @@ spec:
       enabled: "false"
     auth.generic_oauth:
       enabled: "true"
-      name: Authelia
+      name: Pocket-ID
       icon: signin
       scopes: openid profile email groups
       empty_scopes: "false"
-      auth_url: https://auth.phekno.io/api/oidc/authorization
-      token_url: https://auth.phekno.io/api/oidc/token
-      api_url: https://auth.phekno.io/api/oidc/userinfo
+      auth_url: https://id.phekno.io/authorize
+      token_url: https://id.phekno.io/api/oidc/token
+      api_url: https://id.phekno.io/api/oidc/userinfo
       login_attribute_path: preferred_username
       groups_attribute_path: groups
       name_attribute_path: name
