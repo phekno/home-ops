@@ -9,6 +9,3 @@ spec:
     - dnsName: "external.${SECRET_DOMAIN}"
       recordType: CNAME
       targets: ["ad5878c9-6af4-45d9-a505-13e42af6fd81.cfargotunnel.com"]
-    - dnsName: "ingress.phekno.social"
-      recordType: CNAME
-      targets: ["ad5878c9-6af4-45d9-a505-13e42af6fd81.cfargotunnel.com"]
