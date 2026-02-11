@@ -40,6 +40,7 @@ spec:
               PHOTOVIEW_MEDIA_CACHE: /app/cache
               PHOTOVIEW_LISTEN_IP: 0.0.0.0
               PHOTOVIEW_LISTEN_PORT: &port 80
+              PHOTOVIEW_DISABLE_FACE_RECOGNITION: "true"
             probes:
               liveness: &probes
                 enabled: true
