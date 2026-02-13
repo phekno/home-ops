@@ -61,6 +61,9 @@ spec:
           - port: http
     route:
       app:
+        annotations:
+          # Echo is behind ext-auth, so expect 302 redirect
+          gatus.home-operations.com/endpoint: 'conditions: ["[STATUS] == 302"]'
         hostnames:
           - "{{ .Release.Name }}.phekno.io"
         parentRefs:
