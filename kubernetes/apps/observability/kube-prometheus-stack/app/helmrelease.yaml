@@ -22,6 +22,11 @@ spec:
         enabled: true
         forceConflicts: true
     cleanPrometheusOperatorObjectNames: true
+    # Disable alerts that don't make sense for our setup
+    defaultRules:
+      disabled:
+        # OnDelete StatefulSets (like Dragonfly) intentionally don't auto-roll
+        KubeStatefulSetUpdateNotRolledOut: true
     alertmanager:
       route:
         main:
