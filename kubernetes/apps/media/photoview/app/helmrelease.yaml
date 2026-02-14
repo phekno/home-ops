@@ -32,7 +32,7 @@ spec:
           app:
             image:
               repository: viktorstrate/photoview
-              tag: 2.3.13
+              tag: 2.4.0
             env:
               TZ: America/Chicago
               PHOTOVIEW_DATABASE_DRIVER: sqlite
