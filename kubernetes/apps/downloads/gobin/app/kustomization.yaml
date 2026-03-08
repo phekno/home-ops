@@ -5,6 +5,7 @@ namespace: downloads
 resources:
   - ./helmrelease.yaml
   - ./externalsecret.yaml
+  - ./pvc.yaml
 configMapGenerator:
   - name: gobin-configmap
     files:
