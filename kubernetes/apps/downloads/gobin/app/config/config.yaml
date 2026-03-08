@@ -1,0 +1,63 @@
+---
+general:
+  download_dir: /downloads/incomplete
+  complete_dir: /downloads/complete
+  watch_dir: /downloads/nzb
+  permissions: "775"
+  log_level: info
+
+servers:
+  - name: primary
+    host: ${USENET_HOST}
+    port: 563
+    tls: true
+    username: ${USENET_USER}
+    password: ${USENET_PASS}
+    connections: 20
+    priority: 0
+
+categories:
+  - name: movies
+    dir: Movies
+    script: ""
+  - name: tv
+    dir: TV
+    script: ""
+  - name: music
+    dir: Music
+    script: ""
+  - name: software
+    dir: Software
+    script: ""
+
+downloads:
+  max_retries: 3
+  article_cache_mb: 512
+  temp_dir: /tmp/gobin
+  speed_limit_kbps: 0
+
+postprocess:
+  par2_enabled: true
+  par2_path: /usr/bin/par2
+  unpack_enabled: true
+  unrar_path: /usr/bin/unrar
+  sevenz_path: /usr/bin/7z
+  cleanup_after_unpack: true
+  script_dir: /config/scripts
+
+api:
+  listen: 0.0.0.0
+  port: 8080
+  api_key: ${GOBIN_API_KEY}
+  base_url: /
+  cors_origins: []
+  forward_auth:
+    enabled: false
+
+notifications:
+  on_complete: true
+  on_failure: true
+  webhooks: []
+
+rss:
+  enabled: false
