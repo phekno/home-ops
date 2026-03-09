@@ -36,7 +36,7 @@ spec:
           app:
             image:
               repository: ghcr.io/phekno/gobin
-              tag: 0.3.2@sha256:a51b894494673265cfcf515c5f1fa14ad99e5ef5768ef17b0954259ebcaf72b3
+              tag: 0.3.3@sha256:291937b48f3fed37a086aca917f22f7d63aa940df01d443185b6831f6651b95c
             env:
               TZ: "America/Chicago"
               USENET_HOST:
