@@ -7,13 +7,13 @@ general:
   log_level: info
 
 servers:
-  - name: primary
+  - name: UsenetServer
     host: ${USENET_HOST}
     port: 563
     tls: true
     username: ${USENET_USER}
     password: ${USENET_PASS}
-    connections: 20
+    connections: 100
     priority: 0
 
 categories:
