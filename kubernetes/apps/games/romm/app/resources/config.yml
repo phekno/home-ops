@@ -1,5 +1,8 @@
+---
 exclude:
-  platforms: []
+  platforms:
+    - "ps3-disc-keys"
+    - "psx-bios"
   roms:
     single_file:
       extensions: []
@@ -10,6 +13,33 @@ exclude:
         names: []
         extensions: []
 system:
-  platforms: {}
+  platforms:
+    # Nintendo
+    "nes-headered": 18
+    "nes-headerless": 18
+    "snes": 19
+    "n64": 4
+    "gb": 33
+    "gbc": 22
+    "gba": 24
+    "nds": 20
+    # Sega
+    "genesis": 29
+    "master-system": 64
+    "saturn": 32
+    "dreamcast": 23
+    "sega-32x": 30
+    "sega-cd": 78
+    # Sony
+    "ps1": 7
+    "ps2": 8
+    "ps3": 9
+    "psp": 38
+    "psvita": 46
+    # Atari
+    "atari-2600": 59
+    # Microsoft
+    "xbox": 11
+    "xbox360": 12
   versions: {}
 filesystem: {}
