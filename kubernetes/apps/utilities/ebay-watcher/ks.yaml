@@ -6,6 +6,11 @@ metadata:
   name: &app ebay-watcher
   namespace: &namespace utilities
 spec:
+  dependsOn:
+    - name: cloudnative-pg-cluster
+      namespace: db
+    - name: onepassword-store
+      namespace: external-secrets
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
