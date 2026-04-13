@@ -21,7 +21,8 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "Bash(gh:*)",
       "Bash(gh api:*)",
-      "Bash(docker manifest:*)"
+      "Bash(docker manifest:*)",
+      "Bash(go build:*)"
     ],
     "deny": []
   }
