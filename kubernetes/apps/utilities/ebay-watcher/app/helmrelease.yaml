@@ -40,7 +40,7 @@ spec:
           app:
             image:
               repository: ghcr.io/phekno/ebay-watcher
-              tag: 0.2.5@sha256:6cb2c370d2836a4825ea4b796a33a4139b2a5ffe7749e819df43f2e8c91f0d72
+              tag: 0.2.6@sha256:3e6a89ef873e49dbd714e83e887a67a366d0d59cd00db5bf603ca4c9181fcc39
             env:
               TZ: America/Chicago
               HTTP_PORT: "8080"
