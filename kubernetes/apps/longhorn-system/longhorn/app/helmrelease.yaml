@@ -23,7 +23,7 @@ spec:
       chart: longhorn
       # Upgrade path: 1.9.0 → 1.10.2 → 1.11.1 (cannot skip minor versions)
       # Step 2 of 2: final hop to 1.11.1
-      version: 1.11.1
+      version: 1.11.2
       sourceRef:
         kind: HelmRepository
         name: longhorn
