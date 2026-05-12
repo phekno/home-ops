@@ -115,6 +115,8 @@ spec:
             identifier: gatus
           subjects:
             - identifier: gatus
+    defaultPodOptions:
+      automountServiceAccountToken: true
     serviceAccount:
       gatus: {}
     persistence:
