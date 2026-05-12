@@ -8,6 +8,7 @@ resources:
   - ./jellyseerr/ks.yaml
   - ./photoview/ks.yaml
   - ./plex/ks.yaml
+  - ./plex-adult/ks.yaml
   - ./watchstate/ks.yaml
 components:
   - ../../components/common
