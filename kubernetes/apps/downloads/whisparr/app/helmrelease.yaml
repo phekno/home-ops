@@ -84,4 +84,4 @@ spec:
         server: 10.100.50.10
         path: /tank/nzbget_downloads
         globalMounts:
-          - path: /downloads
+          - path: /config/Downloads
