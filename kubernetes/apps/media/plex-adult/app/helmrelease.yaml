@@ -29,7 +29,8 @@ spec:
             env:
               TZ: America/Chicago
               PLEX_ADVERTISE_URL: https://plex-adult.phekno.io:443
-              # PLEX_NO_AUTH_NETWORKS: 10.0.0.0/8  # Disabled until server is claimed
+              PLEX_CLAIM: claim-Y9dt4uPyRHRzsXz1qoeR
+              # PLEX_NO_AUTH_NETWORKS: 10.0.0.0/8  # Re-enable after claim succeeds
             probes:
               liveness: &probes
                 enabled: true
