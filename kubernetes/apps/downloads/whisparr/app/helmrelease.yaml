@@ -29,13 +29,12 @@ spec:
         containers:
           app:
             image:
-              repository: ghcr.io/hotio/whisparr
-              tag: v2
+              repository: ghcr.io/thespad/whisparr
+              tag: v3
             env:
               TZ: "America/Chicago"
               PUID: "1000"
               PGID: "1000"
-              UMASK: "002"
             probes:
               liveness: &probes
                 enabled: true
