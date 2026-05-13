@@ -143,3 +143,28 @@ spec:
           for: 5m
           labels:
             severity: critical
+
+    - name: zfs-pool.rules
+      interval: 1m
+      rules:
+        - alert: ZFSChecksumErrors
+          annotations:
+            summary: "ZFS checksum errors on {{ $labels.vdev }}"
+            description: |
+              vdev {{ $labels.vdev }} has {{ $value }} checksum errors.
+              Investigate cable, backplane, or drive health.
+          expr: zpool_checksum_errors{job="node-exporter"} > 0
+          for: 5m
+          labels:
+            severity: warning
+
+        - alert: ZFSReadWriteErrors
+          annotations:
+            summary: "ZFS read/write errors on {{ $labels.vdev }}"
+            description: |
+              vdev {{ $labels.vdev }} has read or write errors (read={{ $value }}).
+              Drive may be failing.
+          expr: (zpool_read_errors{job="node-exporter"} > 0) or (zpool_write_errors{job="node-exporter"} > 0)
+          for: 5m
+          labels:
+            severity: critical
