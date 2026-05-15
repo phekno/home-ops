@@ -11,3 +11,4 @@ spec:
     requests:
       storage: 50Gi
   storageClassName: longhorn
+  volumeName: plex-config-restore-pv
