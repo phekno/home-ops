@@ -19,3 +19,7 @@ talosconfig
 .venv/
 .DS_Store
 Thumbs.db
+
+# Sherpa IDE agent session data (local, not for version control)
+.sherpa/sessions.db
+.sherpa/sessions.db.tmp
