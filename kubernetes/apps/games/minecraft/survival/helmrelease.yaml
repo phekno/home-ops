@@ -50,6 +50,7 @@ spec:
       dataDir:
         enabled: true
         Size: 10Gi
+        existingClaim: minecraft-survival-datadir
     # serviceAnnotations:
     #   mc-router.itzg.me/externalServerName: mc.phekno.io
     minecraftServer:
