@@ -3,14 +3,14 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app 3d-shop
+  name: &app shop
   namespace: &namespace selfhosted
 spec:
   targetNamespace: *namespace
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  path: ./kubernetes/apps/selfhosted/3d-shop/app
+  path: ./kubernetes/apps/selfhosted/shop/app
   sourceRef:
     kind: GitRepository
     name: flux-system
