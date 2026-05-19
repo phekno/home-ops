@@ -38,7 +38,9 @@ spec:
           app:
             image:
               repository: ghcr.io/phekno/3d-shop
-              tag: latest # Flux image automation can pin to a dated tag later.
+              # Pinned. Bump after each CI run (or set up Flux image automation
+              # to do it for you — ImageRepository + ImagePolicy + ImageUpdateAutomation).
+              tag: 20260519.d715a9d
             env:
               TZ: America/Chicago
               PORT: "8080"
