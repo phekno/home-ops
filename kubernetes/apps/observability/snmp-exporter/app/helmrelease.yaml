@@ -21,6 +21,7 @@ spec:
               tag: v0.26.0
             args:
               - --config.file=/etc/snmp_exporter/snmp.yml
+              - --config.file=/etc/snmp_exporter/auths.yml
             probes:
               liveness: &probes
                 enabled: true
@@ -55,10 +56,10 @@ spec:
           http:
             port: *port
     persistence:
-      config:
+      auths:
         type: secret
         name: snmp-exporter-secret
         globalMounts:
-          - path: /etc/snmp_exporter/snmp.yml
-            subPath: snmp.yml
+          - path: /etc/snmp_exporter/auths.yml
+            subPath: auths.yml
             readOnly: true
