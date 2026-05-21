@@ -11,7 +11,7 @@ spec:
   metricsPath: /snmp
   params:
     module: [cyberpower]
-    auth: [cyberpower_v3]
+    auth: [cyberpower_v1]
   relabelings:
     - sourceLabels: [__address__]
       targetLabel: __param_target
