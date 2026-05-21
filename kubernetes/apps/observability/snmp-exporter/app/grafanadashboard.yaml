@@ -9,8 +9,206 @@ spec:
   instanceSelector:
     matchLabels:
       grafana.internal/instance: grafana
+  folder: power
   datasources:
     - datasourceName: prometheus
       inputName: DS_PROMETHEUS
-  url: https://grafana.com/api/dashboards/21605/revisions/2/download
-  folder: power
+  json: |
+    {
+      "title": "CyberPower UPS",
+      "uid": "cyberpower-ups",
+      "tags": ["snmp", "ups", "cyberpower"],
+      "timezone": "browser",
+      "schemaVersion": 39,
+      "editable": true,
+      "refresh": "30s",
+      "time": {"from": "now-6h", "to": "now"},
+      "templating": {
+        "list": [
+          {
+            "name": "DS_PROMETHEUS",
+            "type": "datasource",
+            "query": "prometheus",
+            "current": {"text": "Prometheus", "value": "Prometheus"},
+            "hide": 0
+          },
+          {
+            "name": "instance",
+            "type": "query",
+            "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+            "query": "label_values(upsBaseIdentModel, instance)",
+            "refresh": 1,
+            "includeAll": false
+          }
+        ]
+      },
+      "panels": [
+        {
+          "id": 1, "type": "stat", "title": "Model",
+          "gridPos": {"h": 4, "w": 4, "x": 0, "y": 0},
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "targets": [{"expr": "upsBaseIdentModel{instance=~\"$instance\"}", "legendFormat": "{{upsBaseIdentModel}}", "instant": true}],
+          "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "mappings": [{"type": "value", "options": {"1": {"text": "—", "color": "text"}}}]}},
+          "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "/^upsBaseIdentModel$/"}, "textMode": "name", "colorMode": "value"}
+        },
+        {
+          "id": 2, "type": "stat", "title": "Serial",
+          "gridPos": {"h": 4, "w": 5, "x": 4, "y": 0},
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "targets": [{"expr": "upsAdvanceIdentSerialNumber{instance=~\"$instance\"}", "legendFormat": "{{upsAdvanceIdentSerialNumber}}", "instant": true}],
+          "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "/^upsAdvanceIdentSerialNumber$/"}, "textMode": "name", "colorMode": "none"}
+        },
+        {
+          "id": 3, "type": "stat", "title": "Battery Status",
+          "gridPos": {"h": 4, "w": 5, "x": 9, "y": 0},
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "targets": [{"expr": "upsBaseBatteryStatus{instance=~\"$instance\"}", "instant": true}],
+          "fieldConfig": {"defaults": {
+            "mappings": [
+              {"type": "value", "options": {"1": {"text": "Unknown", "color": "yellow"}, "2": {"text": "Normal", "color": "green"}, "3": {"text": "Low", "color": "orange"}, "4": {"text": "Depleted", "color": "red"}}}
+            ],
+            "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}
+          }},
+          "options": {"colorMode": "background", "graphMode": "none", "textMode": "value"}
+        },
+        {
+          "id": 4, "type": "stat", "title": "Output Status",
+          "gridPos": {"h": 4, "w": 5, "x": 14, "y": 0},
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "targets": [{"expr": "upsBaseOutputStatus{instance=~\"$instance\"}", "instant": true}],
+          "fieldConfig": {"defaults": {
+            "mappings": [
+              {"type": "value", "options": {
+                "1": {"text": "Unknown", "color": "yellow"},
+                "2": {"text": "On Line", "color": "green"},
+                "3": {"text": "On Battery", "color": "orange"},
+                "4": {"text": "On Boost", "color": "yellow"},
+                "5": {"text": "Sleeping", "color": "blue"},
+                "6": {"text": "Off", "color": "red"},
+                "7": {"text": "Rebooting", "color": "yellow"},
+                "8": {"text": "On ECO", "color": "green"},
+                "9": {"text": "On Bypass", "color": "orange"},
+                "10": {"text": "On Buck", "color": "yellow"},
+                "11": {"text": "On Overload", "color": "red"}
+              }}
+            ],
+            "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}
+          }},
+          "options": {"colorMode": "background", "graphMode": "none", "textMode": "value"}
+        },
+        {
+          "id": 5, "type": "stat", "title": "Replace Battery",
+          "gridPos": {"h": 4, "w": 5, "x": 19, "y": 0},
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "targets": [{"expr": "upsAdvanceBatteryReplaceIndicator{instance=~\"$instance\"}", "instant": true}],
+          "fieldConfig": {"defaults": {
+            "mappings": [
+              {"type": "value", "options": {"1": {"text": "OK", "color": "green"}, "2": {"text": "Replace", "color": "red"}}}
+            ],
+            "color": {"mode": "thresholds"}, "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}
+          }},
+          "options": {"colorMode": "background", "graphMode": "none", "textMode": "value"}
+        },
+        {
+          "id": 10, "type": "gauge", "title": "Battery Capacity",
+          "gridPos": {"h": 6, "w": 6, "x": 0, "y": 4},
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "targets": [{"expr": "upsAdvanceBatteryCapacity{instance=~\"$instance\"}"}],
+          "fieldConfig": {"defaults": {
+            "unit": "percent", "min": 0, "max": 100,
+            "thresholds": {"mode": "absolute", "steps": [
+              {"color": "red", "value": null},
+              {"color": "orange", "value": 25},
+              {"color": "yellow", "value": 50},
+              {"color": "green", "value": 75}
+            ]}
+          }}
+        },
+        {
+          "id": 11, "type": "stat", "title": "Runtime Remaining",
+          "gridPos": {"h": 6, "w": 6, "x": 6, "y": 4},
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "targets": [{"expr": "upsAdvanceBatteryRunTimeRemaining{instance=~\"$instance\"} / 100"}],
+          "fieldConfig": {"defaults": {
+            "unit": "s",
+            "thresholds": {"mode": "absolute", "steps": [
+              {"color": "red", "value": null},
+              {"color": "orange", "value": 600},
+              {"color": "green", "value": 1200}
+            ]},
+            "color": {"mode": "thresholds"}
+          }},
+          "options": {"colorMode": "value", "graphMode": "area", "textMode": "value"}
+        },
+        {
+          "id": 12, "type": "gauge", "title": "Output Load",
+          "gridPos": {"h": 6, "w": 6, "x": 12, "y": 4},
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "targets": [{"expr": "upsAdvanceOutputLoad{instance=~\"$instance\"}"}],
+          "fieldConfig": {"defaults": {
+            "unit": "percent", "min": 0, "max": 100,
+            "thresholds": {"mode": "absolute", "steps": [
+              {"color": "green", "value": null},
+              {"color": "yellow", "value": 60},
+              {"color": "orange", "value": 80},
+              {"color": "red", "value": 90}
+            ]}
+          }}
+        },
+        {
+          "id": 13, "type": "stat", "title": "Battery Temperature",
+          "gridPos": {"h": 6, "w": 6, "x": 18, "y": 4},
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "targets": [{"expr": "upsAdvanceBatteryTemperature{instance=~\"$instance\"}"}],
+          "fieldConfig": {"defaults": {
+            "unit": "celsius",
+            "thresholds": {"mode": "absolute", "steps": [
+              {"color": "green", "value": null},
+              {"color": "yellow", "value": 35},
+              {"color": "orange", "value": 40},
+              {"color": "red", "value": 45}
+            ]},
+            "color": {"mode": "thresholds"}
+          }},
+          "options": {"colorMode": "value", "graphMode": "area", "textMode": "value"}
+        },
+        {
+          "id": 20, "type": "timeseries", "title": "Input Voltage",
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 10},
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "targets": [
+            {"expr": "upsAdvanceInputLineVoltage{instance=~\"$instance\"} / 10", "legendFormat": "Input"},
+            {"expr": "upsAdvanceInputMinLineVoltage{instance=~\"$instance\"} / 10", "legendFormat": "Min"},
+            {"expr": "upsAdvanceInputMaxLineVoltage{instance=~\"$instance\"} / 10", "legendFormat": "Max"}
+          ],
+          "fieldConfig": {"defaults": {"unit": "volt"}}
+        },
+        {
+          "id": 21, "type": "timeseries", "title": "Output Voltage & Power",
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 10},
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "targets": [
+            {"expr": "upsAdvanceOutputVoltage{instance=~\"$instance\"} / 10", "legendFormat": "Output V"},
+            {"expr": "upsAdvanceOutputPower{instance=~\"$instance\"}", "legendFormat": "Output W"}
+          ],
+          "fieldConfig": {"defaults": {"unit": "short"}}
+        },
+        {
+          "id": 22, "type": "timeseries", "title": "Battery Voltage",
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 18},
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "targets": [{"expr": "upsAdvanceBatteryVoltage{instance=~\"$instance\"} / 10", "legendFormat": "Battery"}],
+          "fieldConfig": {"defaults": {"unit": "volt"}}
+        },
+        {
+          "id": 23, "type": "timeseries", "title": "Frequency",
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 18},
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "targets": [
+            {"expr": "upsAdvanceInputFrequency{instance=~\"$instance\"} / 10", "legendFormat": "Input"},
+            {"expr": "upsAdvanceOutputFrequency{instance=~\"$instance\"} / 10", "legendFormat": "Output"}
+          ],
+          "fieldConfig": {"defaults": {"unit": "rotHz"}}
+        }
+      ]
+    }
