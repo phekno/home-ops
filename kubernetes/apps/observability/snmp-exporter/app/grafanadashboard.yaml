@@ -48,15 +48,14 @@ spec:
           "gridPos": {"h": 4, "w": 4, "x": 0, "y": 0},
           "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
           "targets": [{"expr": "upsBaseIdentModel{instance=~\"$instance\"}", "legendFormat": "{{upsBaseIdentModel}}", "instant": true}],
-          "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "mappings": [{"type": "value", "options": {"1": {"text": "—", "color": "text"}}}]}},
-          "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "/^upsBaseIdentModel$/"}, "textMode": "name", "colorMode": "value"}
+          "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": ""}, "textMode": "name", "colorMode": "none"}
         },
         {
           "id": 2, "type": "stat", "title": "Serial",
           "gridPos": {"h": 4, "w": 5, "x": 4, "y": 0},
           "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
           "targets": [{"expr": "upsAdvanceIdentSerialNumber{instance=~\"$instance\"}", "legendFormat": "{{upsAdvanceIdentSerialNumber}}", "instant": true}],
-          "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": "/^upsAdvanceIdentSerialNumber$/"}, "textMode": "name", "colorMode": "none"}
+          "options": {"reduceOptions": {"calcs": ["lastNotNull"], "fields": ""}, "textMode": "name", "colorMode": "none"}
         },
         {
           "id": 3, "type": "stat", "title": "Battery Status",
@@ -191,7 +190,13 @@ spec:
             {"expr": "upsAdvanceOutputVoltage{instance=~\"$instance\"} / 10", "legendFormat": "Output V"},
             {"expr": "upsAdvanceOutputPower{instance=~\"$instance\"}", "legendFormat": "Output W"}
           ],
-          "fieldConfig": {"defaults": {"unit": "short"}}
+          "fieldConfig": {
+            "defaults": {"unit": "short"},
+            "overrides": [
+              {"matcher": {"id": "byName", "options": "Output V"}, "properties": [{"id": "unit", "value": "volt"}]},
+              {"matcher": {"id": "byName", "options": "Output W"}, "properties": [{"id": "unit", "value": "watt"}]}
+            ]
+          }
         },
         {
           "id": 22, "type": "timeseries", "title": "Battery Voltage",
@@ -208,7 +213,7 @@ spec:
             {"expr": "upsAdvanceInputFrequency{instance=~\"$instance\"} / 10", "legendFormat": "Input"},
             {"expr": "upsAdvanceOutputFrequency{instance=~\"$instance\"} / 10", "legendFormat": "Output"}
           ],
-          "fieldConfig": {"defaults": {"unit": "rotHz"}}
+          "fieldConfig": {"defaults": {"unit": "hertz"}}
         }
       ]
     }
