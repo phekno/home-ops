@@ -1,0 +1,124 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: snmp-exporter-cyberpower-rules
+spec:
+  groups:
+    - name: cyberpower-ups.rules
+      rules:
+        - alert: UpsScrapeFailed
+          expr: |-
+            up{job="snmp-exporter-cyberpower"} == 0
+          for: 5m
+          labels:
+            severity: critical
+            device: ups
+          annotations:
+            summary: >-
+              snmp-exporter cannot reach UPS {{ $labels.instance }}
+            description: >-
+              The CyberPower UPS at {{ $labels.instance }} has not been
+              scraped successfully for 5 minutes. Power and battery state
+              are unobservable until this is resolved.
+
+        - alert: UpsOnBattery
+          expr: |-
+            upsBaseOutputStatus{job="snmp-exporter-cyberpower"} == 3
+          labels:
+            severity: critical
+            device: ups
+          annotations:
+            summary: >-
+              UPS {{ $labels.instance }} is running on battery
+            description: >-
+              Mains power has been lost. UPS is currently supplying load
+              from battery. Estimated runtime remaining will degrade until
+              power is restored.
+
+        - alert: UpsBatteryStatusAbnormal
+          expr: |-
+            upsBaseBatteryStatus{job="snmp-exporter-cyberpower"} != 2
+          for: 5m
+          labels:
+            severity: critical
+            device: ups
+          annotations:
+            summary: >-
+              UPS {{ $labels.instance }} battery status is not normal
+            description: >-
+              upsBaseBatteryStatus = {{ $value }} (1=unknown, 3=low, 4=depleted).
+              Battery may not be able to sustain the load through a power
+              event.
+
+        - alert: UpsBatteryCapacityCritical
+          expr: |-
+            upsAdvanceBatteryCapacity{job="snmp-exporter-cyberpower"} < 20
+          for: 2m
+          labels:
+            severity: critical
+            device: ups
+          annotations:
+            summary: >-
+              UPS {{ $labels.instance }} battery below 20% ({{ $value }}%)
+            description: >-
+              Remaining battery capacity is critically low. Initiate
+              graceful workload shutdown if mains power has not returned.
+
+        - alert: UpsRuntimeCritical
+          expr: |-
+            upsAdvanceBatteryRunTimeRemaining{job="snmp-exporter-cyberpower"} / 100 < 600
+          for: 1m
+          labels:
+            severity: critical
+            device: ups
+          annotations:
+            summary: >-
+              UPS {{ $labels.instance }} runtime under 10 minutes
+            description: >-
+              Estimated battery runtime is {{ $value | humanizeDuration }}.
+              Graceful shutdown should already be in progress.
+
+        - alert: UpsOverloaded
+          expr: |-
+            upsAdvanceOutputLoad{job="snmp-exporter-cyberpower"} > 80
+          for: 10m
+          labels:
+            severity: warning
+            device: ups
+          annotations:
+            summary: >-
+              UPS {{ $labels.instance }} output load above 80% ({{ $value }}%)
+            description: >-
+              Sustained load near the UPS rating reduces runtime during a
+              power event and accelerates battery wear. Consider moving
+              load off this UPS.
+
+        - alert: UpsBatteryNeedsReplacement
+          expr: |-
+            upsAdvanceBatteryReplaceIndicator{job="snmp-exporter-cyberpower"} == 2
+          for: 15m
+          labels:
+            severity: warning
+            device: ups
+          annotations:
+            summary: >-
+              UPS {{ $labels.instance }} reports battery needs replacement
+            description: >-
+              The RMCARD's self-test has flagged the battery for
+              replacement.
+
+        - alert: UpsBatteryHighTemperature
+          expr: |-
+            upsAdvanceBatteryTemperature{job="snmp-exporter-cyberpower"} > 40
+          for: 10m
+          labels:
+            severity: warning
+            device: ups
+          annotations:
+            summary: >-
+              UPS {{ $labels.instance }} battery temperature high ({{ $value }}°C)
+            description: >-
+              Sustained battery temperature above 40°C shortens battery
+              life. Check airflow around the UPS.
