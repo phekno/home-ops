@@ -51,7 +51,7 @@ spec:
       storageMinimalAvailablePercentage: 1
       storageReservedPercentageForDefaultDisk: 10
     defaultBackupStore:
-      backupTarget: s3://phekno-longhorn-backup@us-east-1/
+      backupTarget: s3://phekno-longhorn-backup@us-west-004/
       backupTargetCredentialSecret: longhorn-backup
     ingress:
       enabled: false
