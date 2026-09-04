@@ -64,6 +64,14 @@ spec:
               readOnlyRootFilesystem: true
               capabilities: { drop: [ALL] }
         pod:
+          labels:
+            # The NetworkPolicy the operator generates for Dragonfly pods (v1.6.0+)
+            # only permits ingress on the admin port (9999) from pods labelled
+            # control-plane=controller-manager, which is what upstream's own
+            # manifests set. We deploy via app-template, so the label has to be
+            # applied here or the operator cannot probe replication state and
+            # rolling updates stall. Re-check this when upgrading the operator.
+            control-plane: controller-manager
           securityContext:
             runAsUser: 65534
             runAsGroup: 65534
