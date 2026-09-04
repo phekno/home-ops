@@ -6,7 +6,7 @@ metadata:
   name: longhorn-dashboard
   annotations:
     gatus.home-operations.com/endpoint: |-
-      conditions: ["[STATUS] == 404"
+      conditions: ["[STATUS] == 404"]
 spec:
   hostnames:
     - longhorn.phekno.io
