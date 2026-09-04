@@ -7,6 +7,11 @@ metadata:
 spec:
   image: ghcr.io/dragonflydb/dragonfly:v1.38.1@sha256:baf70ba7ad182a992b988497cfa31a488978c8fab7712079784c2401f447e402
   replicas: 3 # set to the number of nodes in the cluster
+  # Operator v1.6.0+ generates a NetworkPolicy by default. Its port 6379 rule is
+  # `from: [{podSelector: {}}]` with no namespaceSelector, which permits only
+  # pods in this namespace. Dragonfly is consumed from other namespaces here
+  # (games/romm, security/authelia), so the generated policy cuts them off.
+  networkPolicyEnabled: false
   env:
     - name: MAX_MEMORY
       valueFrom:
