@@ -117,6 +117,17 @@ spec:
             - identifier: gatus
     defaultPodOptions:
       automountServiceAccountToken: true
+      # gatus-sidecar 0.4.0+ writes its generated config through a temp file in
+      # /config and renames it into place, so it needs write access to the
+      # directory rather than just the output file. fsGroup makes the shared
+      # PersistentVolume writable for both containers. uid/gid match the
+      # defaults in the upstream gatus-sidecar chart.
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
     serviceAccount:
       gatus: {}
     persistence:
