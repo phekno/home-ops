@@ -19,6 +19,14 @@ tasks:
       - test -f {{.TALOS_DIR}}/talconfig.yaml
       - which talhelper talosctl sops
 
+  crds:
+    desc: Apply CRDs that ship with charts, sourced from their Flux OCIRepository
+    cmd: bash {{.SCRIPTS_DIR}}/apply-chart-crds.sh
+    preconditions:
+      - test -f {{.KUBECONFIG}}
+      - test -f {{.SCRIPTS_DIR}}/apply-chart-crds.sh
+      - which helm kubectl yq
+
   apps:
     desc: Bootstrap apps into the Talos cluster
     cmd: bash {{.SCRIPTS_DIR}}/bootstrap-apps.sh

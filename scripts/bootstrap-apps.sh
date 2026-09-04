@@ -88,11 +88,14 @@ function apply_sops_secrets() {
 function apply_crds() {
     log debug "Applying CRDs"
 
+    # The gateway-api bundle is deliberately absent: those CRDs ship with the
+    # envoy-gateway chart and are installed by apply-chart-crds.sh, so that the
+    # CRD version always matches the controller consuming it. Pinning the
+    # upstream release here as well gave the same CRDs two owners writing
+    # different bundle versions.
     local -r crds=(
         # renovate: datasource=github-releases depName=kubernetes-sigs/external-dns
         https://raw.githubusercontent.com/kubernetes-sigs/external-dns/refs/tags/v0.22.0/config/crd/standard/dnsendpoint.yaml
-        # renovate: datasource=github-releases depName=kubernetes-sigs/gateway-api
-        https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.6.2/experimental-install.yaml
         # renovate: datasource=github-releases depName=prometheus-operator/prometheus-operator
         https://github.com/prometheus-operator/prometheus-operator/releases/download/v0.93.1/stripped-down-crds.yaml
     )
@@ -128,13 +131,14 @@ function apply_helm_releases() {
 }
 
 function main() {
-    check_cli helmfile kubectl kustomize sops talhelper yq
+    check_cli helm helmfile kubectl kustomize sops talhelper yq
 
     # Apply resources and Helm releases
     wait_for_nodes
     apply_namespaces
     apply_sops_secrets
     apply_crds
+    bash "$(dirname "${0}")/apply-chart-crds.sh"
     apply_helm_releases
 
     log info "Congrats! The cluster is bootstrapped and Flux is syncing the Git repository"
