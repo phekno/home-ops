@@ -6,10 +6,14 @@ metadata:
   name: envoy-gateway
 spec:
   interval: 5m
-  install:
-    crds: CreateReplace
-  upgrade:
-    crds: CreateReplace
+  # Gateway API CRDs are deliberately NOT managed from here. The chart bundles
+  # them in a `crds` subchart whose manifest also contains the
+  # safe-upgrades.gateway.networking.k8s.io ValidatingAdmissionPolicy and its
+  # binding; replacing those on every reconcile fails because the binding's
+  # policyName cannot resolve the just-recreated policy. Ownership belongs to
+  # scripts/bootstrap-apps.sh, which applies the upstream gateway-api bundle.
+  # Leaving install.crds/upgrade.crds unset keeps Flux at Create/Skip, so the
+  # chart creates CRDs only if absent and never fights the bootstrap bundle.
   chartRef:
     kind: OCIRepository
     name: envoy-gateway
