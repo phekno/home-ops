@@ -39,6 +39,13 @@ spec:
     persistence:
       defaultDataLocality: best-effort
     defaultSettings:
+      # Longhorn defaults this to 0, which means volume engines are never
+      # upgraded to the new default engine image after the manager is upgraded.
+      # That is how 23 of 30 volumes ended up still running the v1.9.0 engine
+      # while the manager walked 1.9.0 -> 1.10.2 -> 1.11.2. Setting 1 lets
+      # Longhorn live-upgrade one engine per node at a time, so engines track
+      # the manager instead of falling minor versions behind.
+      concurrentAutomaticEngineUpgradePerNodeLimit: 1
       createDefaultDiskLabeledNodes: true
       defaultDataLocality: best-effort
       defaultLonghornStaticStorageClass: longhorn
