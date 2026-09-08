@@ -6,5 +6,5 @@ namespace: utilities
 components:
   - ../../components/common
   - ../../components/repos/app-template
-resources:
-  - ./ebay-watcher/ks.yaml
+resources: []
+  # - ./ebay-watcher/ks.yaml
