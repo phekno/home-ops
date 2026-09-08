@@ -2,6 +2,18 @@ machine:
   kubelet:
     extraConfig:
       serializeImagePulls: false
+      # Image garbage collection. Left at the kubelet defaults, images are
+      # reclaimed only under disk pressure (85%) and never because they are
+      # stale, so old layers accumulate indefinitely -- /var on k8s-0 reached
+      # 80% with 54Gi of it container images.
+      #
+      # imageMaximumGCAge prunes images unused for longer than the duration
+      # regardless of disk usage, which is the part that was missing. The
+      # thresholds are lowered so collection happens below the 75% mark the
+      # NodeDiskPressureWarning rule alerts on, rather than 10 points above it.
+      imageMaximumGCAge: 168h
+      imageGCHighThresholdPercent: 75
+      imageGCLowThresholdPercent: 65
     nodeIP:
       validSubnets:
         - 10.100.50.0/24
