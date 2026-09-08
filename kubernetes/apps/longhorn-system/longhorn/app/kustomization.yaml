@@ -8,3 +8,4 @@ resources:
 - ./recurringjob.yaml
 - ./snapshot.yaml
 - ./httproute.yaml
+- ./networkpolicy.yaml

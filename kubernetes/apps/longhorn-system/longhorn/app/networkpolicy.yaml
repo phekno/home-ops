@@ -1,0 +1,30 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/networking.k8s.io/networkpolicy_v1.json
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: longhorn-manager-allow-monitoring
+spec:
+  # The chart's own longhorn-manager NetworkPolicy lists only bare
+  # podSelectors, with no namespaceSelector, so it admits traffic solely from
+  # inside longhorn-system. Prometheus runs in observability and its scrapes of
+  # the manager metrics port time out, taking the longhorn-backend target down.
+  #
+  # Ingress rules from separate NetworkPolicies are unioned, so this grants the
+  # scrape without weakening or contending with the chart's policy. It cannot
+  # be expressed through values: the chart renders its policies whether
+  # networkPolicies.enabled is true or false (verified against 1.12.1), so the
+  # flag is not a usable lever.
+  podSelector:
+    matchLabels:
+      app: longhorn-manager
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: observability
+      ports:
+        - port: 9500
+          protocol: TCP
