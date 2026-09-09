@@ -88,24 +88,33 @@
       },
     },
     {
-      // A Kubernetes minor is never a free-standing bump here. Talos caps the
-      // Kubernetes version it supports (1.12 -> 1.35.99, 1.13 -> 1.36.99,
-      // 1.14 -> 1.37.99), and Kubernetes itself forbids skipping a minor on a
-      // control-plane upgrade, so a kubelet minor is only appliable once
-      // siderolabs/installer has been raised far enough and every intermediate
-      // minor has been stepped through. Renovate cannot see either constraint:
-      // it offered v1.35.3 -> v1.37.0, which skipped 1.36 and exceeded the
-      // ceiling of the Talos release then running.
+      // Neither of these is a free-standing bump, and neither is applied by
+      // Flux -- both land in talos/talenv.yaml and wait for a talosctl run.
       //
-      // Requiring dashboard approval keeps the update visible without opening a
-      // PR that cannot be merged. Patches inside the current minor stay
-      // automatic, since those are always safe.
-      description: 'Kubernetes minors need Talos support first, so gate them',
+      // kubelet is bounded twice over. Talos caps the Kubernetes version it
+      // supports (1.12 -> 1.35.99, 1.13 -> 1.36.99, 1.14 -> 1.37.99, see
+      // pkg/machinery/compatibility) and Kubernetes forbids skipping a minor on
+      // a control-plane upgrade, so a kubelet minor is only appliable once
+      // installer has been raised far enough and every intermediate minor has
+      // been stepped through. Renovate sees neither constraint: it offered
+      // v1.35.3 -> v1.37.0, skipping 1.36 and exceeding the ceiling of the
+      // Talos release then running.
+      //
+      // installer is what raises that ceiling, and a Talos minor means rolling
+      // every node through a reboot. Talos does permit skipping a minor
+      // (1.12 -> 1.14 is allowed), so the trap is maturity rather than
+      // sequencing: 1.11.0 was skipped here for a regression, and a fresh minor
+      // is worth letting settle before three nodes reboot into it.
+      //
+      // Dashboard approval keeps both visible without opening a PR that cannot
+      // be merged yet. Patches inside the current minor stay automatic.
+      description: 'Talos and Kubernetes minors need deliberate sequencing',
       matchDatasources: [
         'docker',
       ],
       matchPackageNames: [
         'ghcr.io/siderolabs/kubelet',
+        'ghcr.io/siderolabs/installer',
       ],
       matchUpdateTypes: [
         'major',
