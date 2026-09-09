@@ -5,5 +5,21 @@ kind: Kustomization
 namespace: longhorn-system
 components:
   - ../../components/common
+# Longhorn's manager, CSI plugin and engine-image DaemonSets run privileged with
+# hostPath volumes and SYS_ADMIN, which the cluster's default PodSecurity level
+# (baseline, set by Talos and exempting only kube-system) rejects. Without this
+# the DaemonSets cannot create pods on a node that reboots, which strands its
+# volumes. Labels rather than an apiserver exemption: they need no machine
+# config change, so no node reboot, and they cannot be undone by config drift.
+patches:
+  - target:
+      kind: Namespace
+    patch: |-
+      - op: add
+        path: /metadata/labels
+        value:
+          pod-security.kubernetes.io/enforce: privileged
+          pod-security.kubernetes.io/audit: privileged
+          pod-security.kubernetes.io/warn: privileged
 resources:
   - ./longhorn/ks.yaml

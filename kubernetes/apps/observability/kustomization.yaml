@@ -6,6 +6,22 @@ namespace: observability
 components:
   - ../../components/common
   - ../../components/repos/app-template
+# node-exporter and fluent-bit need hostPath, hostNetwork and hostPID; gatus
+# adds NET_RAW for its icmp:// endpoints. All are rejected by the cluster's
+# default PodSecurity level (baseline, set by Talos and exempting only
+# kube-system), so without this their pods cannot be created at all. Labels
+# rather than an apiserver exemption: no machine config change means no node
+# reboot, and config drift cannot silently undo them.
+patches:
+  - target:
+      kind: Namespace
+    patch: |-
+      - op: add
+        path: /metadata/labels
+        value:
+          pod-security.kubernetes.io/enforce: privileged
+          pod-security.kubernetes.io/audit: privileged
+          pod-security.kubernetes.io/warn: privileged
 resources:
   - ./alertmanager-discord/ks.yaml
   - ./fluent-bit/ks.yaml

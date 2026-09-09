@@ -1,7 +1,14 @@
 cluster:
   allowSchedulingOnControlPlanes: true
   apiServer:
-    admissionControl: []  # Disable default admission controllers (was JSON6902 patch)
+    # PodSecurity admission is ACTIVE, enforcing the baseline level and exempting
+    # only kube-system -- that is Talos's default and it is not overridden here.
+    # An `admissionControl: []` line used to sit here claiming to disable it, but
+    # an empty list does not clear a default in a strategic merge, so it was a
+    # no-op; genconfig emits the stock PodSecurity plugin either way. Namespaces
+    # needing privileged pods carry pod-security.kubernetes.io labels instead
+    # (see kubernetes/apps/{longhorn-system,observability}/kustomization.yaml),
+    # which need no machine config change and survive config drift.
     extraArgs:
       # https://kubernetes.io/docs/tasks/extend-kubernetes/configure-aggregation-layer/
       enable-aggregator-routing: true
