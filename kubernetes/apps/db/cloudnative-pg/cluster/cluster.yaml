@@ -8,6 +8,20 @@ spec:
   instances: 3
   imageName: ghcr.io/cloudnative-pg/postgresql:${POSTGRESQL_VERSION}
   primaryUpdateStrategy: unsupervised
+  affinity:
+    # CNPG defaults podAntiAffinityType to "preferred", which only asks the
+    # scheduler to spread instances. During the Talos rolling reboots the
+    # instances drifted until the primary and a replica shared one node, so a
+    # single node failure would have taken out two of three. With three
+    # instances on three nodes there is no reason to allow co-location:
+    # "required" pins one instance per node.
+    #
+    # The trade-off is deliberate. While a node is down its instance stays
+    # Pending instead of doubling up elsewhere, so maintenance runs with two
+    # instances rather than three crowded onto two nodes. That is the safer
+    # failure mode for a database -- and if a node is lost for good, the third
+    # instance waits until it returns or the cluster is scaled down.
+    podAntiAffinityType: required
   storage:
     size: 10Gi
     storageClass: longhorn
