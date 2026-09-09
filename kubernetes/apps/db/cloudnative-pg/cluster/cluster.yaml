@@ -8,6 +8,19 @@ spec:
   instances: 3
   imageName: ghcr.io/cloudnative-pg/postgresql:${POSTGRESQL_VERSION}
   primaryUpdateStrategy: unsupervised
+  # Rolling updates touch the primary last. CNPG defaults primaryUpdateMethod to
+  # "restart", which stops Postgres in place and brings it back on the same pod,
+  # so writes fail for as long as that takes -- roughly 90 seconds when the
+  # anti-affinity change rolled through. "switchover" instead promotes an
+  # already-updated replica and demotes the old primary, so the outage is the
+  # switchover itself rather than a full restart.
+  #
+  # Safe here because nothing is pinned to an instance: all four consumers
+  # connect through postgres-rw.db.svc.cluster.local, and that service follows
+  # whichever instance is primary. Sessions are still dropped at the switchover,
+  # so clients need to reconnect -- it shortens the interruption rather than
+  # removing it.
+  primaryUpdateMethod: switchover
   affinity:
     # CNPG defaults podAntiAffinityType to "preferred", which only asks the
     # scheduler to spread instances. During the Talos rolling reboots the
