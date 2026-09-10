@@ -1,0 +1,11 @@
+---
+- Cluster:
+    - Repo:
+        - abbr: GH
+          href: https://github.com/phekno/home-ops
+    - Talos:
+        - abbr: TA
+          href: https://www.talos.dev/latest/
+    - Flux:
+        - abbr: FL
+          href: https://fluxcd.io/flux/

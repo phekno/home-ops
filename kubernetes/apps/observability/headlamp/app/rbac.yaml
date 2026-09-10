@@ -1,0 +1,17 @@
+---
+# Headlamp acts through its own ServiceAccount, so this binding is the real
+# access boundary - anyone who clears Authelia gets exactly these rights.
+# Add a two_factor rule for headlamp.phekno.io in Authelia before exposing it,
+# the way grafana and longhorn are already handled.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: headlamp
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: headlamp
+    namespace: observability

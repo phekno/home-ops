@@ -1,0 +1,26 @@
+---
+# Only overrides live here; everything else is inherited so upgrades do not
+# require reconciling a full copy of upstream's settings.yml.
+use_default_settings: true
+general:
+  instance_name: "search.phekno.io"
+  donation_url: false
+  contact_url: false
+server:
+  # secret_key is injected by the SEARXNG_SECRET env var, which takes
+  # precedence over anything set here.
+  limiter: true
+  image_proxy: true
+  method: "GET"
+redis:
+  url: redis://dragonfly.db.svc.cluster.local:6379/1
+search:
+  safe_search: 0
+  autocomplete: "duckduckgo"
+  formats:
+    - html
+    - json
+ui:
+  default_theme: simple
+  theme_args:
+    simple_style: dark

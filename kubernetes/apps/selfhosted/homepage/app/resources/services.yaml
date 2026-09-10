@@ -1,0 +1,88 @@
+---
+- Media:
+    - Plex:
+        href: https://plex.phekno.io
+        icon: plex.png
+        description: Movies and TV
+    - Jellyfin:
+        href: https://jellyfin.phekno.io
+        icon: jellyfin.png
+        description: Movies and TV
+    - Jellyseerr:
+        href: https://requests.phekno.io
+        icon: jellyseerr.png
+        description: Requests
+    - Navidrome:
+        href: https://navidrome.phekno.io
+        icon: navidrome.png
+        description: Music
+    - RomM:
+        href: https://romm.phekno.io
+        icon: romm.png
+        description: Games
+
+- Downloads:
+    - Sonarr:
+        href: https://sonarr.phekno.io
+        icon: sonarr.png
+        description: TV
+    - Radarr:
+        href: https://radarr.phekno.io
+        icon: radarr.png
+        description: Movies
+    - Prowlarr:
+        href: https://prowlarr.phekno.io
+        icon: prowlarr.png
+        description: Indexers
+    - SABnzbd:
+        href: https://sabnzbd.phekno.io
+        icon: sabnzbd.png
+        description: Usenet
+    - slskd:
+        href: https://slskd.phekno.io
+        icon: slskd.png
+        description: Soulseek
+
+- Observability:
+    - Grafana:
+        href: https://grafana.phekno.io
+        icon: grafana.png
+        description: Dashboards
+    - Gatus:
+        href: https://status.phekno.io
+        icon: gatus.png
+        description: Uptime
+    - Prometheus:
+        href: https://prometheus.phekno.io
+        icon: prometheus.png
+        description: Metrics
+    - Tautulli:
+        href: https://tautulli.phekno.io
+        icon: tautulli.png
+        description: Plex stats
+    - Headlamp:
+        href: https://headlamp.phekno.io
+        icon: kubernetes.png
+        description: Cluster UI
+
+- Infrastructure:
+    - Longhorn:
+        href: https://longhorn.phekno.io
+        icon: longhorn.png
+        description: Storage
+    - pgAdmin:
+        href: https://pgadmin.phekno.io
+        icon: postgres.png
+        description: Postgres
+    - Authelia:
+        href: https://auth.phekno.io
+        icon: authelia.png
+        description: SSO
+    - SearXNG:
+        href: https://search.phekno.io
+        icon: searxng.png
+        description: Search
+    - ntfy:
+        href: https://ntfy.phekno.io
+        icon: ntfy.png
+        description: Notifications

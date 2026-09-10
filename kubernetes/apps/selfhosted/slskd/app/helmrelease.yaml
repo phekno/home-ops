@@ -1,0 +1,123 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2beta2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app slskd
+  namespace: selfhosted
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  maxHistory: 2
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    controllers:
+      slskd:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        # Single replica: the peer LoadBalancer must land on one pod, and the
+        # share index and transfer database are not safe to run concurrently.
+        strategy: Recreate
+        containers:
+          app:
+            image:
+              repository: ghcr.io/slskd/slskd
+              tag: 0.13.1
+            env:
+              TZ: "America/Chicago"
+              SLSKD_HTTP_PORT: &webPort 5030
+              SLSKD_NO_HTTPS: "true"
+              # Must match the LoadBalancer port below and the router's
+              # forward, or peers behind their own NAT cannot reach you.
+              SLSKD_SLSK_LISTEN_PORT: &peerPort 50300
+              SLSKD_SHARED_DIR: /music
+              SLSKD_DOWNLOADS_DIR: /music/_incoming
+              SLSKD_INCOMPLETE_DIR: /incomplete
+              SLSKD_APP_DIR: /config
+            envFrom:
+              - secretRef:
+                  name: slskd-secret
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities: { drop: ["ALL"] }
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *webPort
+                  initialDelaySeconds: 20
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *probes
+            resources:
+              requests:
+                cpu: 50m
+                memory: 512Mi
+              limits:
+                memory: 4Gi
+    service:
+      app:
+        ports:
+          http:
+            port: *webPort
+      # Soulseek advertises this port to the central server; peers dial it
+      # directly. Needs a matching port-forward on the UniFi to be useful.
+      peer:
+        controller: slskd
+        type: LoadBalancer
+        annotations:
+          io.cilium/lb-ipam-ips: 10.100.50.157
+        externalTrafficPolicy: Local
+        ports:
+          peer:
+            port: *peerPort
+            protocol: TCP
+    route:
+      app:
+        hostnames: ["slskd.phekno.io"]
+        parentRefs:
+          - name: envoy-internal
+            namespace: network
+            sectionName: https
+        # Two services exist (web + peer LoadBalancer), so app-template cannot
+        # infer the backend and requires it spelled out.
+        rules:
+          - backendRefs:
+              - identifier: app
+                port: http
+    persistence:
+      config:
+        existingClaim: slskd
+        globalMounts:
+          - path: /config
+      music:
+        type: nfs
+        server: 10.100.50.10
+        path: /tank/music
+        globalMounts:
+          - path: /music
+      incomplete:
+        type: emptyDir
+        globalMounts:
+          - path: /incomplete

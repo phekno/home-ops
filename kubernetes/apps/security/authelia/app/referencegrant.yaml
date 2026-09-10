@@ -5,10 +5,19 @@ metadata:
   name: authelia-ext-auth
   namespace: security
 spec:
+  # SecurityPolicies created by components/ext-auth live in the *app's*
+  # namespace, not network, so every namespace hosting a guarded app needs to
+  # appear here or the extAuth backendRef is silently rejected.
   from:
     - group: gateway.envoyproxy.io
       kind: SecurityPolicy
       namespace: network
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: selfhosted
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
+      namespace: observability
   to:
     - group: ""
       kind: Service
