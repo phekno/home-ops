@@ -4,7 +4,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: &app slskd
-  namespace: selfhosted
+  namespace: downloads
 spec:
   interval: 30m
   chartRef:
@@ -50,7 +50,7 @@ spec:
           app:
             image:
               repository: ghcr.io/slskd/slskd
-              tag: 0.13.1
+              tag: 0.26.0
             env:
               TZ: "America/Chicago"
               SLSKD_HTTP_PORT: &webPort 5030

@@ -10,4 +10,3 @@ resources:
   - ./homepage/ks.yaml
   - ./ntfy/ks.yaml
   - ./searxng/ks.yaml
-  - ./slskd/ks.yaml

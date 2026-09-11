@@ -36,26 +36,26 @@ spec:
           app:
             image:
               repository: ghcr.io/kashalls/kromgo
-              tag: 0.3.1
+              tag: v0.10.0
             env:
               TZ: "America/Chicago"
-              PROMETHEUS_URL: http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
-              # v0.3.1 reads /kromgo/config.yaml unconditionally - there is no
-              # config path variable - and the port variable is PORT.
-              PORT: &port 8080
+              KROMGO_PROMETHEUS_URL: http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
+              KROMGO_SERVER_PORT: &port 8080
+              # The /metrics listener would need its own service and port; the
+              # badges themselves are the point here.
+              KROMGO_METRICS_ENABLED: "false"
+              KROMGO_LOG_FORMAT: json
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities: { drop: ["ALL"] }
             probes:
-              # v0.3.1 serves only /query?metric=<name>; there is no health
-              # endpoint. Liveness stays on TCP so a Prometheus outage cannot
-              # restart-loop kromgo, while readiness proves it can still answer.
-              liveness:
+              liveness: &probes
                 enabled: true
                 custom: true
                 spec:
-                  tcpSocket:
+                  httpGet:
+                    path: /healthz
                     port: *port
                   initialDelaySeconds: 10
                   periodSeconds: 30
@@ -66,7 +66,7 @@ spec:
                 custom: true
                 spec:
                   httpGet:
-                    path: /query?metric=cluster_node_count
+                    path: /readyz
                     port: *port
                   initialDelaySeconds: 10
                   periodSeconds: 30
@@ -95,6 +95,6 @@ spec:
         type: configMap
         name: kromgo-config
         globalMounts:
-          - path: /kromgo/config.yaml
+          - path: /config/config.yaml
             subPath: config.yaml
             readOnly: true
