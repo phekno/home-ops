@@ -40,25 +40,38 @@ spec:
             env:
               TZ: "America/Chicago"
               PROMETHEUS_URL: http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
-              KROMGO_CONFIG: /kromgo/config.yaml
-              SERVER_PORT: &port 8080
+              # v0.3.1 reads /kromgo/config.yaml unconditionally - there is no
+              # config path variable - and the port variable is PORT.
+              PORT: &port 8080
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities: { drop: ["ALL"] }
             probes:
-              liveness: &probes
+              # v0.3.1 serves only /query?metric=<name>; there is no health
+              # endpoint. Liveness stays on TCP so a Prometheus outage cannot
+              # restart-loop kromgo, while readiness proves it can still answer.
+              liveness:
                 enabled: true
                 custom: true
                 spec:
-                  httpGet:
-                    path: /healthz
+                  tcpSocket:
                     port: *port
                   initialDelaySeconds: 10
                   periodSeconds: 30
                   timeoutSeconds: 5
                   failureThreshold: 3
-              readiness: *probes
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /query?metric=cluster_node_count
+                    port: *port
+                  initialDelaySeconds: 10
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
             resources:
               requests:
                 cpu: 10m
