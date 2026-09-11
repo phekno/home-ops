@@ -1,0 +1,32 @@
+---
+directory: /music
+library: /config/library.db
+
+import:
+  # Move rather than copy: files leave _incoming and land in the library, so a
+  # folder left behind is a visible signal that beets declined to match it.
+  move: yes
+  write: yes
+  quiet: yes
+  # The safety property that makes unattended import acceptable. In quiet mode
+  # beets applies only matches it is confident about; anything ambiguous is
+  # skipped and left in place for a human rather than guessed at.
+  quiet_fallback: skip
+  resume: no
+  incremental: no
+  log: /config/import.log
+
+paths:
+  default: $albumartist/$album%aunique{}/$track $title
+  singleton: $artist/Non-Album/$title
+  comp: Various Artists/$album%aunique{}/$track $title
+
+plugins: fetchart embedart scrub duplicates fromfilename
+
+fetchart:
+  auto: yes
+embedart:
+  auto: yes
+  remove_art_file: yes
+scrub:
+  auto: yes
