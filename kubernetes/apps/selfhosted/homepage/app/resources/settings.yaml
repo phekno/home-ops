@@ -1,0 +1,20 @@
+---
+title: phekno
+theme: dark
+color: slate
+headerStyle: clean
+hideVersion: true
+statusStyle: dot
+layout:
+  Media:
+    style: row
+    columns: 4
+  Downloads:
+    style: row
+    columns: 4
+  Observability:
+    style: row
+    columns: 4
+  Infrastructure:
+    style: row
+    columns: 4
