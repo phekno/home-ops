@@ -26,6 +26,19 @@ spec:
       homepage:
         annotations:
           reloader.stakater.com/auto: "true"
+        initContainers:
+          # homepage copies any missing config file out of its own skeleton on
+          # startup, so /app/config has to be writable. The ConfigMap is staged
+          # read-only and seeded into an emptyDir instead of being mounted
+          # directly, which would make the whole directory read-only.
+          init-config:
+            image:
+              repository: docker.io/library/busybox
+              tag: 1.38.0
+            command:
+              - sh
+              - -c
+              - cp -f /config-src/*.yaml /app/config/
         containers:
           app:
             image:
@@ -109,18 +122,18 @@ spec:
             namespace: network
             sectionName: https
     persistence:
-      config:
+      config-src:
         type: configMap
         name: homepage-config
         globalMounts:
-          - path: /app/config
+          - path: /config-src
             readOnly: true
+      config:
+        type: emptyDir
+        globalMounts:
+          - path: /app/config
       # Next.js writes its build cache at runtime, and the root fs is read-only.
       cache:
         type: emptyDir
         globalMounts:
           - path: /app/.next/cache
-      logs:
-        type: emptyDir
-        globalMounts:
-          - path: /app/config/logs
