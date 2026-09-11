@@ -1,0 +1,117 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2beta2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app beets
+  namespace: downloads
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  maxHistory: 2
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      strategy: rollback
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    defaultPodOptions:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+      restartPolicy: OnFailure
+    controllers:
+      # Routine pass over new downloads.
+      beets:
+        type: cronjob
+        annotations:
+          reloader.stakater.com/auto: "true"
+        cronjob:
+          schedule: "*/15 * * * *"
+          # /music is NFS, so inotify never fires - polling is the only option
+          # that works here, not a fallback.
+          concurrencyPolicy: Forbid
+          successfulJobsHistory: 1
+          failedJobsHistory: 3
+          backoffLimit: 1
+          ttlSecondsAfterFinished: 3600
+        containers:
+          app: &container
+            image:
+              repository: ghcr.io/linuxserver/beets
+              tag: 2.14.0
+            # The image is s6-overlay based; giving it a command bypasses the
+            # init that would otherwise start the beets web UI and never exit.
+            command:
+              - /bin/sh
+              - -c
+              # slskd writes an album a track at a time, so a folder touched in
+              # the last 30 minutes may still be arriving. Importing it then
+              # would file a partial album under a name beets then considers
+              # settled.
+              - |
+                set -eu
+                find /music/_incoming -mindepth 1 -maxdepth 1 -mmin +30 -print0 \
+                  | xargs -0 -r -n1 beet import -q
+            env:
+              TZ: "America/Chicago"
+              BEETSDIR: /config
+            securityContext:
+              allowPrivilegeEscalation: false
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 50m
+                memory: 256Mi
+              limits:
+                memory: 2Gi
+
+      # One-off normalisation of the whole library. Suspended: trigger it with
+      #   kubectl create job -n downloads --from=cronjob/beets-beets-library <name>
+      # Suspend the beets cronjob first - both mount the same ReadWriteOnce
+      # volume and cannot run at the same time.
+      beets-library:
+        type: cronjob
+        annotations:
+          reloader.stakater.com/auto: "true"
+        cronjob:
+          suspend: true
+          schedule: "0 5 * * *"
+          concurrencyPolicy: Forbid
+          successfulJobsHistory: 1
+          failedJobsHistory: 3
+          backoffLimit: 0
+        containers:
+          app:
+            <<: *container
+            command:
+              - /bin/sh
+              - -c
+              - beet import -q /music
+    persistence:
+      config:
+        existingClaim: beets
+        globalMounts:
+          - path: /config
+      config-file:
+        type: configMap
+        name: beets-config
+        globalMounts:
+          - path: /config/config.yaml
+            subPath: config.yaml
+            readOnly: true
+      music:
+        type: nfs
+        server: 10.100.50.10
+        path: /tank/music
+        globalMounts:
+          - path: /music
