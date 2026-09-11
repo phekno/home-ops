@@ -46,6 +46,12 @@ spec:
                   httpGet:
                     path: /api/healthcheck
                     port: 3000
+                    # kubelet probes dial the pod IP, which is not in
+                    # HOMEPAGE_ALLOWED_HOSTS and gets rejected. Sending the
+                    # real Host satisfies validation without widening it.
+                    httpHeaders:
+                      - name: Host
+                        value: homepage.phekno.io
                   initialDelaySeconds: 15
                   periodSeconds: 30
                   timeoutSeconds: 5

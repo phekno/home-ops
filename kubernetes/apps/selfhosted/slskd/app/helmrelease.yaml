@@ -35,6 +35,17 @@ spec:
         # Single replica: the peer LoadBalancer must land on one pod, and the
         # share index and transfer database are not safe to run concurrently.
         strategy: Recreate
+        initContainers:
+          # slskd validates that Downloads/Incomplete exist and refuses to
+          # start otherwise; it will not create them itself.
+          init-dirs:
+            image:
+              repository: docker.io/library/busybox
+              tag: 1.38.0
+            command:
+              - sh
+              - -c
+              - mkdir -p /music/_incoming
         containers:
           app:
             image:
