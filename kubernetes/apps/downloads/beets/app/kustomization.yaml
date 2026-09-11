@@ -7,6 +7,9 @@ configMapGenerator:
   - name: beets-config
     files:
       - config.yaml=./resources/config.yaml
+  - name: beets-worker
+    files:
+      - worker.py=./resources/worker.py
 generatorOptions:
   disableNameSuffixHash: true
 resources:
