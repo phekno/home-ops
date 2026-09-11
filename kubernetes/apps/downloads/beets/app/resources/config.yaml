@@ -21,7 +21,12 @@ paths:
   singleton: $artist/Non-Album/$title
   comp: Various Artists/$album%aunique{}/$track $title
 
-plugins: fetchart embedart scrub duplicates fromfilename
+# musicbrainz MUST be listed. As of beets 2.x it is a plugin rather than
+# built in, and beets' own config_default.yaml enables it via `plugins:
+# [musicbrainz]` - so setting this key at all replaces that default and
+# silently removes the only metadata source. The symptom is not an error:
+# every album reports "Evaluating 0 candidates" and is skipped.
+plugins: musicbrainz fetchart embedart scrub duplicates fromfilename
 
 fetchart:
   auto: yes
