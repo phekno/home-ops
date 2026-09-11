@@ -61,7 +61,11 @@ spec:
               SLSKD_SHARED_DIR: /music
               SLSKD_DOWNLOADS_DIR: /music/_incoming
               SLSKD_INCOMPLETE_DIR: /incomplete
-              SLSKD_APP_DIR: /config
+              # Deliberately not SLSKD_-prefixed: the app directory is the one
+              # setting that cannot live in the YAML config, and slskd reads it
+              # as bare APP_DIR. Getting this wrong falls back to
+              # $HOME/.local/share/slskd, and HOME is / for this uid.
+              APP_DIR: /config
             envFrom:
               - secretRef:
                   name: slskd-secret
