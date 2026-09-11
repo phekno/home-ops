@@ -9,10 +9,17 @@ general:
 server:
   # secret_key is injected by the SEARXNG_SECRET env var, which takes
   # precedence over anything set here.
-  limiter: true
+  #
+  # The limiter's bot detection needs a real client IP and rejects every
+  # request with "Too Many Requests" when it cannot find one ("X-Forwarded-For
+  # nor X-Real-IP header is set!"). It also wants a limiter.toml we do not
+  # ship. Authelia already gates this instance, so the limiter only adds a
+  # failure mode.
+  limiter: false
   image_proxy: true
   method: "GET"
-redis:
+# Renamed upstream; `redis:` still works but logs a DeprecationWarning.
+valkey:
   url: redis://dragonfly.db.svc.cluster.local:6379/1
 search:
   safe_search: 0
@@ -20,6 +27,13 @@ search:
   formats:
     - html
     - json
+engines:
+  # Onion engines; they cannot load without a Tor proxy and log an error on
+  # every worker start.
+  - name: ahmia
+    disabled: true
+  - name: torch
+    disabled: true
 ui:
   default_theme: simple
   theme_args:

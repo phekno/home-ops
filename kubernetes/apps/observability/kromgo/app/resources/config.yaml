@@ -1,40 +1,45 @@
 ---
-defaults:
-  badge:
-    style: flat
-
-badges:
-  - id: nodes
+metrics:
+  - name: cluster_node_count
     title: nodes
     query: count(kube_node_info)
-    valueExpr: string(result)
-    colorExpr: '"blue"'
-    icon: si:kubernetes
+    suffix: " nodes"
+    colors:
+      - { color: "green", min: 3, max: 99 }
+      - { color: "orange", min: 0, max: 2 }
 
-  - id: pods
+  - name: cluster_pod_count
     title: pods
     query: count(kube_pod_info)
-    valueExpr: string(result)
-    colorExpr: '"blue"'
+    suffix: " pods"
+    colors:
+      - { color: "blue", min: 0, max: 9999 }
 
-  - id: cpu
+  - name: cluster_cpu_usage
     title: cpu
     query: >-
       round(sum(1 - rate(node_cpu_seconds_total{mode="idle"}[5m])) /
       count(node_cpu_seconds_total{mode="idle"}) * 100, 0.1)
-    valueExpr: string(result) + "%"
-    colorExpr: 'result < 60.0 ? "green" : (result < 85.0 ? "orange" : "red")'
+    suffix: "%"
+    colors:
+      - { color: "green", min: 0, max: 60 }
+      - { color: "orange", min: 60, max: 85 }
+      - { color: "red", min: 85, max: 100 }
 
-  - id: memory
+  - name: cluster_memory_usage
     title: memory
     query: >-
       round(sum(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) /
       sum(node_memory_MemTotal_bytes) * 100, 0.1)
-    valueExpr: string(result) + "%"
-    colorExpr: 'result < 70.0 ? "green" : (result < 90.0 ? "orange" : "red")'
+    suffix: "%"
+    colors:
+      - { color: "green", min: 0, max: 70 }
+      - { color: "orange", min: 70, max: 90 }
+      - { color: "red", min: 90, max: 100 }
 
-  - id: age
+  - name: cluster_age_days
     title: cluster age
     query: round((time() - min(kube_node_created)) / 86400)
-    valueExpr: string(result) + " days"
-    colorExpr: '"blue"'
+    suffix: " days"
+    colors:
+      - { color: "blue", min: 0, max: 9999 }
