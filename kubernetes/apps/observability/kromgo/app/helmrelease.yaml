@@ -39,12 +39,13 @@ spec:
               tag: v0.10.0
             env:
               TZ: "America/Chicago"
-              KROMGO_PROMETHEUS_URL: http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
-              KROMGO_SERVER_PORT: &port 8080
-              # The /metrics listener would need its own service and port; the
-              # badges themselves are the point here.
-              KROMGO_METRICS_ENABLED: "false"
-              KROMGO_LOG_FORMAT: json
+              PROMETHEUS_URL: http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
+              SERVER_PORT: &port 8080
+              # /healthz and /readyz are served by a second listener on their
+              # own port, NOT by the main server. Probing them on 8080 is what
+              # restart-looped this app.
+              HEALTH_PORT: &healthPort 8888
+              LOG_FORMAT: json
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
@@ -56,7 +57,7 @@ spec:
                 spec:
                   httpGet:
                     path: /healthz
-                    port: *port
+                    port: *healthPort
                   initialDelaySeconds: 10
                   periodSeconds: 30
                   timeoutSeconds: 5
@@ -67,7 +68,7 @@ spec:
                 spec:
                   httpGet:
                     path: /readyz
-                    port: *port
+                    port: *healthPort
                   initialDelaySeconds: 10
                   periodSeconds: 30
                   timeoutSeconds: 5
@@ -95,6 +96,6 @@ spec:
         type: configMap
         name: kromgo-config
         globalMounts:
-          - path: /config/config.yaml
+          - path: /kromgo/config.yaml
             subPath: config.yaml
             readOnly: true
