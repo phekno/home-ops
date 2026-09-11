@@ -97,6 +97,10 @@ access_control:
         - 'prometheus.phekno.io'
         - 'alertmanager.phekno.io'
         - 'longhorn.phekno.io'
+        # Headlamp's ServiceAccount is bound to cluster-admin, so a single
+        # factor would be the only thing between the internal gateway and
+        # full cluster access.
+        - 'headlamp.phekno.io'
       policy: two_factor
       subject:
         - 'group:admins'
