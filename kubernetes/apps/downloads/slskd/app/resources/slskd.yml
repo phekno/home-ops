@@ -1,0 +1,17 @@
+---
+# Only the options that cannot be expressed as SLSKD_* environment variables
+# live here; everything else stays in the HelmRelease. YAML sits above
+# environment variables in slskd's precedence chain, so anything added here
+# silently wins over an env var of the same name.
+integrations:
+  webhooks:
+    beets:
+      on:
+        # Fires once per completed album with its local path, which is what
+        # beets wants - DownloadFileComplete would fire per track.
+        - DownloadDirectoryComplete
+      call:
+        url: http://beets.downloads.svc.cluster.local:8337/event
+      timeout: 5000
+      retry:
+        attempts: 3

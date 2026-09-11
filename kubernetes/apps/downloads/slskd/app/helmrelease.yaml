@@ -53,6 +53,9 @@ spec:
               tag: 0.26.0
             env:
               TZ: "America/Chicago"
+              # Keeps the managed config out of /app, which is slskd's own
+              # data directory and gets written to at runtime.
+              SLSKD_CONFIG: /config/slskd.yml
               SLSKD_HTTP_PORT: &webPort 5030
               SLSKD_NO_HTTPS: "true"
               # Must match the LoadBalancer port below and the router's
@@ -134,3 +137,10 @@ spec:
         type: emptyDir
         globalMounts:
           - path: /incomplete
+      config-file:
+        type: configMap
+        name: slskd-config
+        globalMounts:
+          - path: /config/slskd.yml
+            subPath: slskd.yml
+            readOnly: true

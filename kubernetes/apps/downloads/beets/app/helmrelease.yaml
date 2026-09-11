@@ -28,46 +28,42 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
-      restartPolicy: OnFailure
     controllers:
-      # Routine pass over new downloads.
-      beets:
-        type: cronjob
+      # The only thing that runs beets. It owns the ReadWriteOnce library
+      # volume, so nothing else can contend for it - the jobs below just ask it
+      # to do work over HTTP.
+      worker:
         annotations:
           reloader.stakater.com/auto: "true"
-        cronjob:
-          schedule: "*/15 * * * *"
-          # /music is NFS, so inotify never fires - polling is the only option
-          # that works here, not a fallback.
-          concurrencyPolicy: Forbid
-          successfulJobsHistory: 1
-          failedJobsHistory: 3
-          backoffLimit: 1
-          ttlSecondsAfterFinished: 3600
+        strategy: Recreate
         containers:
-          app: &container
+          app:
             image:
               repository: ghcr.io/linuxserver/beets
               tag: 2.14.0
-            # The image is s6-overlay based; giving it a command bypasses the
-            # init that would otherwise start the beets web UI and never exit.
-            command:
-              - /bin/sh
-              - -c
-              # slskd writes an album a track at a time, so a folder touched in
-              # the last 30 minutes may still be arriving. Importing it then
-              # would file a partial album under a name beets then considers
-              # settled.
-              - |
-                set -eu
-                find /music/_incoming -mindepth 1 -maxdepth 1 -mmin +30 -print0 \
-                  | xargs -0 -r -n1 beet import -q
+            # s6-overlay would otherwise start the beets web UI and never exit.
+            command: ["/usr/bin/python3", "/worker/worker.py"]
             env:
               TZ: "America/Chicago"
               BEETSDIR: /config
+              WORKER_PORT: &port 8337
+              SWEEP_MIN_AGE_SECONDS: "1800"
             securityContext:
               allowPrivilegeEscalation: false
               capabilities: { drop: ["ALL"] }
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: *port
+                  initialDelaySeconds: 10
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *probes
             resources:
               requests:
                 cpu: 50m
@@ -75,14 +71,43 @@ spec:
               limits:
                 memory: 2Gi
 
-      # One-off normalisation of the whole library. Suspended: trigger it with
-      #   kubectl create job -n downloads --from=cronjob/beets-beets-library <name>
-      # Suspend the beets cronjob first - both mount the same ReadWriteOnce
-      # volume and cannot run at the same time.
-      beets-library:
+      # Backstop for anything the webhook missed - a restart during a transfer,
+      # or a folder dropped in by hand.
+      sweep:
         type: cronjob
-        annotations:
-          reloader.stakater.com/auto: "true"
+        cronjob:
+          schedule: "*/15 * * * *"
+          concurrencyPolicy: Forbid
+          successfulJobsHistory: 1
+          failedJobsHistory: 3
+          backoffLimit: 1
+          ttlSecondsAfterFinished: 3600
+        containers:
+          app: &caller
+            image:
+              repository: docker.io/library/busybox
+              tag: 1.38.0
+            command:
+              - sh
+              - -c
+              - wget -q -O- --post-data='' http://beets.downloads.svc.cluster.local:8337/sweep
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 10m
+                memory: 16Mi
+              limits:
+                memory: 64Mi
+
+      # Whole-library normalisation, on demand:
+      #   kubectl create job -n downloads --from=cronjob/beets-library <name>
+      # No need to suspend anything first - the worker runs one import at a
+      # time, so this simply queues behind whatever is in flight.
+      library:
+        type: cronjob
         cronjob:
           suspend: true
           schedule: "0 5 * * *"
@@ -92,26 +117,47 @@ spec:
           backoffLimit: 0
         containers:
           app:
-            <<: *container
+            <<: *caller
             command:
-              - /bin/sh
+              - sh
               - -c
-              - beet import -q /music
+              - wget -q -O- --post-data='' http://beets.downloads.svc.cluster.local:8337/library
+    service:
+      worker:
+        controller: worker
+        ports:
+          http:
+            port: *port
     persistence:
       config:
         existingClaim: beets
-        globalMounts:
-          - path: /config
+        advancedMounts:
+          worker:
+            app:
+              - path: /config
       config-file:
         type: configMap
         name: beets-config
-        globalMounts:
-          - path: /config/config.yaml
-            subPath: config.yaml
-            readOnly: true
+        advancedMounts:
+          worker:
+            app:
+              - path: /config/config.yaml
+                subPath: config.yaml
+                readOnly: true
+      worker-script:
+        type: configMap
+        name: beets-worker
+        defaultMode: 0555
+        advancedMounts:
+          worker:
+            app:
+              - path: /worker
+                readOnly: true
       music:
         type: nfs
         server: 10.100.50.10
         path: /tank/music
-        globalMounts:
-          - path: /music
+        advancedMounts:
+          worker:
+            app:
+              - path: /music
