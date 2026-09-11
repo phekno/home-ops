@@ -17,6 +17,9 @@ spec:
       namespace: selfhosted
     - group: gateway.envoyproxy.io
       kind: SecurityPolicy
+      namespace: downloads
+    - group: gateway.envoyproxy.io
+      kind: SecurityPolicy
       namespace: observability
   to:
     - group: ""

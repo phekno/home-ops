@@ -43,7 +43,7 @@ spec:
           app:
             image:
               repository: ghcr.io/gethomepage/homepage
-              tag: v1.4.5
+              tag: v2.3.0
             env:
               TZ: "America/Chicago"
               HOMEPAGE_ALLOWED_HOSTS: homepage.phekno.io
