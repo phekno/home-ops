@@ -31,7 +31,7 @@ spec:
           app:
             image:
               repository: ghcr.io/authelia/authelia
-              tag: 4.39.23
+              tag: 4.39.26
             command:
               - authelia
             args:
