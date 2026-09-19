@@ -40,7 +40,7 @@ spec:
           app:
             image:
               repository: ghcr.io/linuxserver/beets
-              tag: 2.14.0
+              tag: 2.14.1
             # s6-overlay would otherwise start the beets web UI and never exit.
             command: ["/usr/bin/python3", "/worker/worker.py"]
             env:
