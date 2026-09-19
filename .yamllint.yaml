@@ -11,3 +11,7 @@ rules:
     indent-sequences: true
   truthy:
     allowed-values: ['true', 'false', 'on', 'off']
+
+# Vendored upstream CRD - not ours to reformat
+ignore: |
+  kubernetes/apps/db/dragonfly/app/crd.yaml

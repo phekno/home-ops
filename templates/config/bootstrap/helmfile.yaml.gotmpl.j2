@@ -1,0 +1,73 @@
+---
+# Values are read from each app's HelmRelease so there is a single source of truth.
+# This file is a Go template (helmfile v1 requires the .gotmpl extension for that),
+# so the helmfile JSON schema modeline does not apply.
+
+helmDefaults:
+  cleanupOnFail: true
+  wait: true
+  waitForJobs: true
+
+repositories:
+  - name: cilium
+    url: https://helm.cilium.io
+
+releases:
+  - name: cilium
+    namespace: kube-system
+    atomic: true
+    chart: cilium/cilium
+    version: 1.20.2
+    values:
+      - {{ readFile (printf "%s/kubernetes/apps/kube-system/cilium/app/helmrelease.yaml" (requiredEnv "ROOT_DIR")) | fromYaml | get "spec.values" | toYaml | nindent 8 }}
+
+  - name: coredns
+    namespace: kube-system
+    atomic: true
+    chart: oci://ghcr.io/coredns/charts/coredns
+    version: 1.47.1
+    values:
+      - {{ readFile (printf "%s/kubernetes/apps/kube-system/coredns/app/helmrelease.yaml" (requiredEnv "ROOT_DIR")) | fromYaml | get "spec.values" | toYaml | nindent 8 }}
+    needs: ['kube-system/cilium']
+
+  #% if spegel_enabled %#
+  - name: spegel
+    namespace: kube-system
+    atomic: true
+    chart: oci://ghcr.io/spegel-org/helm-charts/spegel
+    version: 0.7.4
+    values:
+      - {{ readFile (printf "%s/kubernetes/apps/kube-system/spegel/app/helmrelease.yaml" (requiredEnv "ROOT_DIR")) | fromYaml | get "spec.values" | toYaml | nindent 8 }}
+    needs: ['kube-system/coredns']
+  #% endif %#
+
+  - name: cert-manager
+    namespace: cert-manager
+    atomic: true
+    chart: oci://quay.io/jetstack/charts/cert-manager
+    version: v1.21.2
+    values:
+      - {{ readFile (printf "%s/kubernetes/apps/cert-manager/cert-manager/app/helmrelease.yaml" (requiredEnv "ROOT_DIR")) | fromYaml | get "spec.values" | toYaml | nindent 8 }}
+    #% if spegel_enabled %#
+    needs: ['kube-system/spegel']
+    #% else %#
+    needs: ['kube-system/coredns']
+    #% endif %#
+
+  - name: flux-operator
+    namespace: flux-system
+    atomic: true
+    chart: oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator
+    version: 0.60.0
+    values:
+      - {{ readFile (printf "%s/kubernetes/apps/flux-system/flux-operator/app/helmrelease.yaml" (requiredEnv "ROOT_DIR")) | fromYaml | get "spec.values" | toYaml | nindent 8 }}
+    needs: ['cert-manager/cert-manager']
+
+  - name: flux-instance
+    namespace: flux-system
+    atomic: true
+    chart: oci://ghcr.io/controlplaneio-fluxcd/charts/flux-instance
+    version: 0.60.0
+    values:
+      - {{ readFile (printf "%s/kubernetes/apps/flux-system/flux-instance/app/helmrelease.yaml" (requiredEnv "ROOT_DIR")) | fromYaml | get "spec.values" | toYaml | nindent 8 }}
+    needs: ['flux-system/flux-operator']
