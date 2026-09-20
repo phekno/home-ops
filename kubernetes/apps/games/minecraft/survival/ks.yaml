@@ -10,8 +10,9 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   targetNamespace: *namespace
-  components: []
-    # - ../../../../components/gatus/external
+  components:
+    # Checks the playit tunnel, i.e. the address the kids actually type.
+    - ../../../../components/gatus/tcp
     # - ../../../../components/volsync
   dependsOn:
     - name: onepassword-store
@@ -22,6 +23,8 @@ spec:
   postBuild:
     substitute:
       APP: *app
+      GATUS_TCP_GROUP: minecraft
+      GATUS_TCP_ENDPOINT: phekno.playit.plus:14897
       VOLSYNC_CAPACITY: 1Gi
   prune: true
   sourceRef:
