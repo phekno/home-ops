@@ -43,6 +43,23 @@ spec:
     # address instead of its declared one.
     serviceAnnotations:
       io.cilium/lb-ipam-ips: 10.100.50.159
+      # gatus-sidecar watches annotated Services, so the check lives here
+      # rather than in a ConfigMap. playit reassigns the port whenever a
+      # tunnel's region changes, so this value has to be updated by hand --
+      # players follow the SRV record and are not affected.
+      #
+      # A TCP connect only proves playit's edge is accepting. mc-monitor is
+      # the real health signal; this catches DNS and tunnel-shaped failures
+      # that are invisible from inside the cluster.
+      gatus.home-operations.com/enabled: "true"
+      gatus.home-operations.com/endpoint: |-
+        name: minecraft-skyblock-tunnel
+        group: external
+        url: "tcp://phekno-skyblock.playit.plus:30951"
+        interval: 1m
+        conditions: ["[CONNECTED] == true"]
+        ui:
+          hide-hostname: true
     minecraftServer:
       eula: true
       # Required, not redundant. The chart always renders TYPE and VERSION as
