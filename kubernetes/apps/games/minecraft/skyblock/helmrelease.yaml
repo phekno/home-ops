@@ -1,0 +1,74 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app minecraft-skyblock
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: minecraft
+  dependsOn: []
+  interval: 15m
+  values:
+    fullnameOverride: *app
+    image:
+      repository: ghcr.io/phekno/minecraft-skyblock
+      tag: 26.2-f98747f@sha256:052b5242d35a2f736d5e779054cf804d5d228e242ad68433a81989d887d47109
+    resources:
+      requests:
+        cpu: 500m
+      limits:
+        memory: 6Gi
+    securityContext:
+      runAsUser: 1000
+      fsGroup: 100
+    livenessProbe:
+      initialDelaySeconds: 30
+    readinessProbe:
+      initialDelaySeconds: 30
+    startupProbe:
+      enabled: true
+    extraEnv:
+      TZ: America/Chicago
+    persistence:
+      storageClass: longhorn
+      dataDir:
+        enabled: true
+        Size: 10Gi
+        existingClaim: minecraft-skyblock-datadir
+    # The chart renders top-level serviceAnnotations onto the Minecraft service.
+    # minecraftServer.serviceAnnotations is deprecated and silently ignored --
+    # putting the Cilium annotation there is why survival ended up on a pool
+    # address instead of its declared one.
+    serviceAnnotations:
+      io.cilium/lb-ipam-ips: 10.100.50.159
+    minecraftServer:
+      eula: true
+      # Required, not redundant. The chart always renders TYPE and VERSION as
+      # explicit env vars (defaulting to VANILLA/LATEST), which override the
+      # ENV baked into the image. Omit these and the server boots vanilla with
+      # no BentoBox at all.
+      type: PAPER
+      # 26.2 is the newest release BentoBox 3.23.0 lists as tested. Keep this in
+      # step with the image; bump both together.
+      version: "26.2"
+      overrideServerProperties: true
+      jvmXXOpts: "-XX:MaxRAMPercentage=75"
+      difficulty: normal
+      spawnProtection: 0
+      gameMode: survival
+      pvp: false
+      ops: "phekno,quinnyf13"
+      whitelist: "phekno,quinnyf13,harpyf13,LivParrot,abbykinz2013"
+      motd: "Phekno's Skyblock Server"
+      viewDistance: 12
+      modUrls: []
+      rcon:
+        enabled: true
+      serviceType: LoadBalancer
+  valuesFrom:
+    - kind: Secret
+      name: *app
+      valuesKey: RCON_PASSWORD
+      targetPath: minecraftServer.rcon.password
