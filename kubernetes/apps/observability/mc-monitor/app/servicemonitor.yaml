@@ -1,0 +1,21 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/servicemonitor_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mc-monitor
+spec:
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 1m
+      # mc-monitor pings each server on scrape, so a slow or unreachable
+      # server stalls the whole scrape. Keep this under the interval.
+      scrapeTimeout: 30s
+  jobLabel: mc-monitor
+  namespaceSelector:
+    matchNames:
+      - observability
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mc-monitor

@@ -1,0 +1,160 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: minecraft
+spec:
+  allowCrossNamespaceImport: true
+  instanceSelector:
+    matchLabels:
+      grafana.internal/instance: grafana
+  folder: games
+  datasources:
+    - datasourceName: prometheus
+      inputName: DS_PROMETHEUS
+  # mc-monitor labels every series with the full cluster DNS name, which is
+  # unreadable in a legend, so each query rewrites it down to the short server
+  # name with label_replace.
+  json: |
+    {
+      "title": "Minecraft",
+      "uid": "minecraft",
+      "tags": ["minecraft", "games"],
+      "timezone": "browser",
+      "schemaVersion": 39,
+      "editable": true,
+      "refresh": "1m",
+      "time": {"from": "now-24h", "to": "now"},
+      "templating": {
+        "list": [
+          {
+            "name": "DS_PROMETHEUS",
+            "type": "datasource",
+            "query": "prometheus",
+            "current": {"text": "Prometheus", "value": "Prometheus"},
+            "hide": 0
+          }
+        ]
+      },
+      "panels": [
+        {
+          "id": 1, "type": "stat", "title": "Servers Up",
+          "gridPos": {"h": 4, "w": 4, "x": 0, "y": 0},
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "targets": [{"expr": "sum(minecraft_status_healthy{job=\"mc-monitor\"})", "instant": true}],
+          "fieldConfig": {"defaults": {
+            "unit": "short",
+            "color": {"mode": "thresholds"},
+            "thresholds": {"mode": "absolute", "steps": [
+              {"color": "red", "value": null},
+              {"color": "orange", "value": 1},
+              {"color": "green", "value": 3}
+            ]}
+          }},
+          "options": {"colorMode": "background", "graphMode": "none", "textMode": "value"}
+        },
+        {
+          "id": 2, "type": "stat", "title": "Players Online",
+          "gridPos": {"h": 4, "w": 5, "x": 4, "y": 0},
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "targets": [{"expr": "sum(minecraft_status_players_online_count{job=\"mc-monitor\"})", "instant": true}],
+          "fieldConfig": {"defaults": {"unit": "short", "color": {"mode": "fixed", "fixedColor": "blue"}}},
+          "options": {"colorMode": "value", "graphMode": "area", "textMode": "value"}
+        },
+        {
+          "id": 3, "type": "stat", "title": "Per Server",
+          "gridPos": {"h": 4, "w": 15, "x": 9, "y": 0},
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "targets": [{
+            "expr": "label_replace(minecraft_status_healthy{job=\"mc-monitor\"}, \"server\", \"$1\", \"server_host\", \"minecraft-([a-z]+)\\\\..*\")",
+            "legendFormat": "{{server}}", "instant": true
+          }],
+          "fieldConfig": {"defaults": {
+            "mappings": [{"type": "value", "options": {
+              "0": {"text": "DOWN", "color": "red"},
+              "1": {"text": "UP", "color": "green"}
+            }}],
+            "color": {"mode": "thresholds"},
+            "thresholds": {"mode": "absolute", "steps": [{"color": "green", "value": null}]}
+          }},
+          "options": {"colorMode": "background", "graphMode": "none", "textMode": "value_and_name"}
+        },
+        {
+          "id": 10, "type": "timeseries", "title": "Players Online",
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4},
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "targets": [{
+            "expr": "label_replace(minecraft_status_players_online_count{job=\"mc-monitor\"}, \"server\", \"$1\", \"server_host\", \"minecraft-([a-z]+)\\\\..*\")",
+            "legendFormat": "{{server}}"
+          }],
+          "fieldConfig": {"defaults": {
+            "unit": "short", "min": 0,
+            "custom": {"drawStyle": "line", "lineInterpolation": "stepAfter", "fillOpacity": 20, "showPoints": "never"}
+          }}
+        },
+        {
+          "id": 11, "type": "timeseries", "title": "Status Response Time",
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4},
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "targets": [{
+            "expr": "label_replace(minecraft_status_response_time_seconds{job=\"mc-monitor\"}, \"server\", \"$1\", \"server_host\", \"minecraft-([a-z]+)\\\\..*\")",
+            "legendFormat": "{{server}}"
+          }],
+          "description": "A rising ping time is the earliest sign the server is struggling, before it ever goes down.",
+          "fieldConfig": {"defaults": {"unit": "s", "min": 0, "custom": {"drawStyle": "line", "fillOpacity": 10, "showPoints": "never"}}}
+        },
+        {
+          "id": 20, "type": "timeseries", "title": "Memory Used vs Limit",
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12},
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "targets": [
+            {
+              "expr": "sum by (pod) (container_memory_working_set_bytes{namespace=\"games\", pod=~\"minecraft-.*\", container!=\"\"})",
+              "legendFormat": "{{pod}} used"
+            },
+            {
+              "expr": "sum by (pod) (kube_pod_container_resource_limits{namespace=\"games\", pod=~\"minecraft-.*\", resource=\"memory\"})",
+              "legendFormat": "{{pod}} limit"
+            }
+          ],
+          "description": "OOMKills during a world save are how island progress gets lost.",
+          "fieldConfig": {"defaults": {"unit": "bytes", "min": 0, "custom": {"drawStyle": "line", "fillOpacity": 10, "showPoints": "never"}}}
+        },
+        {
+          "id": 21, "type": "timeseries", "title": "World Volume Used",
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12},
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "targets": [{
+            "expr": "kubelet_volume_stats_used_bytes{persistentvolumeclaim=~\"minecraft-.*-datadir\"} / kubelet_volume_stats_capacity_bytes{persistentvolumeclaim=~\"minecraft-.*-datadir\"}",
+            "legendFormat": "{{persistentvolumeclaim}}"
+          }],
+          "description": "Worlds only grow. A full volume means saves start failing.",
+          "fieldConfig": {"defaults": {
+            "unit": "percentunit", "min": 0, "max": 1,
+            "custom": {"drawStyle": "line", "fillOpacity": 10, "showPoints": "never"},
+            "thresholds": {"mode": "absolute", "steps": [
+              {"color": "green", "value": null},
+              {"color": "orange", "value": 0.8},
+              {"color": "red", "value": 0.9}
+            ]}
+          }}
+        },
+        {
+          "id": 30, "type": "table", "title": "Server Versions",
+          "gridPos": {"h": 6, "w": 24, "x": 0, "y": 20},
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "description": "Clients must match the server version. OneBlock and Skyblock run 26.2 because that is what BentoBox is tested against; survival floats on latest.",
+          "targets": [{
+            "expr": "minecraft_status_healthy{job=\"mc-monitor\"}",
+            "instant": true, "format": "table"
+          }],
+          "transformations": [
+            {"id": "organize", "options": {
+              "excludeByName": {"Time": true, "Value": true, "job": true, "__name__": true, "instance": true, "container": true, "endpoint": true, "namespace": true, "pod": true, "service": true, "server_edition": true},
+              "renameByName": {"server_host": "Server", "server_port": "Port", "server_version": "Version"}
+            }}
+          ]
+        }
+      ]
+    }
