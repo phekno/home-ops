@@ -1,0 +1,94 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: mc-monitor-rules
+spec:
+  groups:
+    - name: minecraft.rules
+      rules:
+        # The one that actually matters: a kid tried to log in and could not.
+        - alert: MinecraftServerDown
+          expr: |-
+            minecraft_status_healthy{job="mc-monitor"} == 0
+          for: 5m
+          labels:
+            severity: critical
+            service: minecraft
+          annotations:
+            summary: >-
+              Minecraft server {{ $labels.server_host }} is not responding
+            description: >-
+              mc-monitor has failed to get a status response from
+              {{ $labels.server_host }}:{{ $labels.server_port }} for 5
+              minutes. Players cannot connect.
+
+        # Without this, every alert above goes quiet and looks like health.
+        - alert: MinecraftMonitorDown
+          expr: |-
+            up{job="mc-monitor"} == 0
+          for: 15m
+          labels:
+            severity: warning
+            service: minecraft
+          annotations:
+            summary: >-
+              mc-monitor is not being scraped
+            description: >-
+              The Minecraft exporter has been unreachable for 15 minutes, so
+              server availability is unobservable. The servers may be fine.
+
+        - alert: MinecraftContainerRestarting
+          expr: |-
+            increase(
+              kube_pod_container_status_restarts_total{namespace="games", pod=~"minecraft-.*"}[30m]
+            ) > 2
+          for: 5m
+          labels:
+            severity: warning
+            service: minecraft
+          annotations:
+            summary: >-
+              {{ $labels.pod }} has restarted repeatedly
+            description: >-
+              {{ $labels.pod }} restarted more than twice in 30 minutes.
+              Usually a crash on world load or the JVM being squeezed against
+              its memory limit.
+
+        - alert: MinecraftContainerOOMKilled
+          expr: |-
+            kube_pod_container_status_last_terminated_reason{
+              namespace="games", pod=~"minecraft-.*", reason="OOMKilled"
+            } == 1
+          for: 1m
+          labels:
+            severity: critical
+            service: minecraft
+          annotations:
+            summary: >-
+              {{ $labels.pod }} was OOMKilled
+            description: >-
+              The container exceeded its memory limit and was killed. A kill
+              mid-save is how island progress gets lost, so raise the limit or
+              lower MaxRAMPercentage rather than leaving this to recur.
+
+        # Worlds only ever grow, and OneBlock worlds grow quickly. Filling the
+        # PVC stops saves, which is the same as losing the kids' progress.
+        - alert: MinecraftVolumeFillingUp
+          expr: |-
+            kubelet_volume_stats_used_bytes{persistentvolumeclaim=~"minecraft-.*-datadir"}
+              /
+            kubelet_volume_stats_capacity_bytes{persistentvolumeclaim=~"minecraft-.*-datadir"}
+              > 0.80
+          for: 30m
+          labels:
+            severity: warning
+            service: minecraft
+          annotations:
+            summary: >-
+              {{ $labels.persistentvolumeclaim }} is
+              {{ $value | humanizePercentage }} full
+            description: >-
+              The world volume is over 80% used. Minecraft cannot save a world
+              onto a full volume. Expand the Longhorn volume before it fills.

@@ -30,6 +30,7 @@ resources:
   - ./headlamp/ks.yaml
   - ./kromgo/ks.yaml
   - ./kube-prometheus-stack/ks.yaml
+  - ./mc-monitor/ks.yaml
   - ./snmp-exporter/ks.yaml
   - ./tautulli/ks.yaml
   - ./unpoller/ks.yaml
