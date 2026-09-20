@@ -128,7 +128,7 @@ My home Kubernetes cluster running on Talos Linux, managed declaratively with Fl
 - Home Assistant
 
 **Gaming:**
-- Minecraft (survival server with mc-router)
+- Minecraft (survival, OneBlock and Skyblock servers, exposed via playit.gg)
 
 **Utilities:**
 - PgAdmin (PostgreSQL management)

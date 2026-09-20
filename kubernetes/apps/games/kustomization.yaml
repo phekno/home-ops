@@ -8,6 +8,8 @@ components:
   - ../../components/repos/app-template
 resources:
   # - ./minecraft/mc-router/ks.yaml
+  - ./minecraft/oneblock/ks.yaml
+  - ./minecraft/skyblock/ks.yaml
   - ./minecraft/survival/ks.yaml
   - ./playit/ks.yaml
   - ./romm/ks.yaml
