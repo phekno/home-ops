@@ -51,8 +51,14 @@ spec:
         enabled: true
         Size: 10Gi
         existingClaim: minecraft-survival-datadir
-    # serviceAnnotations:
-    #   mc-router.itzg.me/externalServerName: mc.phekno.io
+    # The chart renders THIS top-level key onto the Minecraft service.
+    # minecraftServer.serviceAnnotations is deprecated and silently ignored,
+    # which is why the annotation below never took effect and Cilium handed out
+    # a pool address instead. Set to .153 -- the address already in use -- so
+    # declared and actual agree without moving a working server.
+    serviceAnnotations:
+      io.cilium/lb-ipam-ips: 10.100.50.153
+      # mc-router.itzg.me/externalServerName: mc.phekno.io
     minecraftServer:
       eula: true
       # version: 1.21.1
@@ -73,8 +79,6 @@ spec:
       rcon:
         enabled: true
       serviceType: LoadBalancer
-      serviceAnnotations:
-        io.cilium/lb-ipam-ips: 10.100.50.156
   valuesFrom:
     - kind: Secret
       name: *app
