@@ -49,6 +49,11 @@ kind: Gateway
 metadata:
   name: envoy-external
   annotations:
+    # gatus-sidecar merges a parent's endpoint template into every child
+    # route, so these two lines group all of this gateway's routes. A route
+    # can still override any field with its own annotation.
+    gatus.home-operations.com/endpoint: |-
+      group: external
     external-dns.alpha.kubernetes.io/target: &hostname external.phekno.io
 spec:
   gatewayClassName: envoy
@@ -80,6 +85,11 @@ kind: Gateway
 metadata:
   name: envoy-internal
   annotations:
+    # gatus-sidecar merges a parent's endpoint template into every child
+    # route, so these two lines group all of this gateway's routes. A route
+    # can still override any field with its own annotation.
+    gatus.home-operations.com/endpoint: |-
+      group: internal
     external-dns.alpha.kubernetes.io/target: &hostname internal.phekno.io
 spec:
   gatewayClassName: envoy

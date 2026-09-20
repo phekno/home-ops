@@ -12,8 +12,7 @@ spec:
   # No ext-auth: Authelia's redirect-to-login breaks the Android/iOS apps and
   # `curl -d` publishing, neither of which can follow an SSO flow. ntfy's own
   # user/ACL database guards it instead, with default access denied.
-  components:
-    - ../../../../components/gatus/external
+  components: []
   dependsOn:
     - name: longhorn
       namespace: longhorn-system

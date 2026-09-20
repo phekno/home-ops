@@ -58,6 +58,23 @@ spec:
     # declared and actual agree without moving a working server.
     serviceAnnotations:
       io.cilium/lb-ipam-ips: 10.100.50.153
+      # gatus-sidecar watches annotated Services, so the check lives here
+      # rather than in a ConfigMap. playit reassigns the port whenever a
+      # tunnel's region changes, so this value has to be updated by hand --
+      # players follow the SRV record and are not affected.
+      #
+      # A TCP connect only proves playit's edge is accepting. mc-monitor is
+      # the real health signal; this catches DNS and tunnel-shaped failures
+      # that are invisible from inside the cluster.
+      gatus.home-operations.com/enabled: "true"
+      gatus.home-operations.com/endpoint: |-
+        name: minecraft-survival-tunnel
+        group: external
+        url: "tcp://phekno.playit.plus:30973"
+        interval: 1m
+        conditions: ["[CONNECTED] == true"]
+        ui:
+          hide-hostname: true
       # mc-router.itzg.me/externalServerName: mc.phekno.io
     minecraftServer:
       eula: true

@@ -11,8 +11,6 @@ spec:
       app.kubernetes.io/name: *app
   targetNamespace: *namespace
   components:
-    # Checks the playit tunnel, i.e. the address the kids actually type.
-    - ../../../../components/gatus/tcp
     # - ../../../../components/volsync
   dependsOn:
     - name: onepassword-store

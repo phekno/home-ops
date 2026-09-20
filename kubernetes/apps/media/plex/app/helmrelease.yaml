@@ -78,8 +78,12 @@ spec:
     route:
       app:
         annotations:
+          # Plex answers 404 at / without a token; it used to answer 401. If Plex
+          # were down Envoy would return 503, so this still distinguishes up from
+          # down -- but probing a path Plex serves unauthenticated would be a
+          # stronger check than matching its error code.
           gatus.home-operations.com/endpoint: |-
-            conditions: ["[STATUS] == 401"]
+            conditions: ["[STATUS] == 404"]
         hostnames:
           - "{{ .Release.Name }}.phekno.io"
         parentRefs:

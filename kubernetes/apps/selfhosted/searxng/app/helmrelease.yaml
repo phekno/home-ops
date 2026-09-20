@@ -80,6 +80,13 @@ spec:
             port: *port
     route:
       app:
+        annotations:
+          # Behind Authelia via the ext-auth component. An unauthenticated probe
+          # gets 401, which is the correct answer: it proves the route resolves
+          # AND that auth is being enforced. Asserting 200 here was checking for
+          # something that should never happen.
+          gatus.home-operations.com/endpoint: |-
+            conditions: ["[STATUS] == 401"]
         hostnames: ["search.phekno.io"]
         parentRefs:
           - name: envoy-internal

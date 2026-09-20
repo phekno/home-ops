@@ -10,9 +10,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   targetNamespace: *namespace
-  components:
-    # Checks the playit tunnel, i.e. the address the kids actually type.
-    - ../../../../components/gatus/tcp
+  components: []
   dependsOn:
     - name: onepassword-store
       namespace: external-secrets
