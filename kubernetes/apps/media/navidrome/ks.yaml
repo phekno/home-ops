@@ -12,8 +12,7 @@ spec:
   # No ext-auth: Subsonic clients (Symfonium, play:Sub, Feishin) authenticate
   # with the Subsonic token scheme and cannot follow an SSO redirect.
   # Navidrome's own user database guards it.
-  components:
-    - ../../../../components/gatus/guarded
+  components: []
   dependsOn:
     - name: longhorn
       namespace: longhorn-system
