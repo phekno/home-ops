@@ -24,7 +24,11 @@ spec:
     substitute:
       APP: *app
       GATUS_TCP_GROUP: minecraft
-      GATUS_TCP_ENDPOINT: phekno.playit.plus:14897
+      # playit reassigns the port whenever a tunnel's region changes or it is
+      # recreated -- all three moved when they were switched to chicago-illinois.
+      # The SRV record _minecraft._tcp.phekno.playit.plus is the source of
+      # truth; players follow it automatically, this check does not.
+      GATUS_TCP_ENDPOINT: phekno.playit.plus:30973
       VOLSYNC_CAPACITY: 1Gi
   prune: true
   sourceRef:
