@@ -54,12 +54,12 @@ metadata:
     # can still override any field with its own annotation.
     gatus.home-operations.com/endpoint: |-
       group: external
-    external-dns.alpha.kubernetes.io/target: &hostname external.phekno.io
+    external-dns.kubernetes.io/target: &hostname external.phekno.io
 spec:
   gatewayClassName: envoy
   infrastructure:
     annotations:
-      external-dns.alpha.kubernetes.io/hostname: *hostname
+      external-dns.kubernetes.io/hostname: *hostname
       lbipam.cilium.io/ips: 10.100.50.151
   listeners:
     - name: http
@@ -90,12 +90,12 @@ metadata:
     # can still override any field with its own annotation.
     gatus.home-operations.com/endpoint: |-
       group: internal
-    external-dns.alpha.kubernetes.io/target: &hostname internal.phekno.io
+    external-dns.kubernetes.io/target: &hostname internal.phekno.io
 spec:
   gatewayClassName: envoy
   infrastructure:
     annotations:
-      external-dns.alpha.kubernetes.io/hostname: *hostname
+      external-dns.kubernetes.io/hostname: *hostname
       lbipam.cilium.io/ips: 10.100.50.152
   listeners:
     - name: http
@@ -163,7 +163,7 @@ kind: HTTPRoute
 metadata:
   name: https-redirect
   annotations:
-    external-dns.alpha.kubernetes.io/controller: none
+    external-dns.kubernetes.io/controller: none
 spec:
   parentRefs:
     - name: envoy-external
