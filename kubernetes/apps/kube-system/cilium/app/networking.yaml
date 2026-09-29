@@ -63,7 +63,7 @@ kind: Service
 metadata:
   name: kube-api
   annotations:
-    external-dns.alpha.kubernetes.io/hostname: k8s.phekno.io
+    external-dns.kubernetes.io/hostname: k8s.phekno.io
     lbipam.cilium.io/ips: 10.100.50.150
 spec:
   type: LoadBalancer
