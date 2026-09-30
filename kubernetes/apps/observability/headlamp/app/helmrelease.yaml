@@ -45,6 +45,13 @@ spec:
               TZ: "America/Chicago"
               HEADLAMP_CONFIG_TRACING_ENABLED: "false"
               HEADLAMP_CONFIG_METRICS_ENABLED: "false"
+              HEADLAMP_CONFIG_OIDC_IDP_ISSUER_URL: https://id.phekno.io
+              HEADLAMP_CONFIG_OIDC_CALLBACK_URL: https://headlamp.phekno.io/oidc-callback
+              HEADLAMP_CONFIG_OIDC_SCOPES: openid,profile,email,groups
+              HEADLAMP_CONFIG_OIDC_USE_PKCE: "true"
+            envFrom:
+              - secretRef:
+                  name: headlamp-secret
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
@@ -78,12 +85,10 @@ spec:
     route:
       app:
         annotations:
-          # Behind Authelia via the ext-auth component. An unauthenticated probe
-          # gets 401, which is the correct answer: it proves the route resolves
-          # AND that auth is being enforced. Asserting 200 here was checking for
-          # something that should never happen.
+          # No proxy auth: the UI shell loads for anyone and every API call is
+          # authorized by the API server against the Pocket-ID token.
           gatus.home-operations.com/endpoint: |-
-            conditions: ["[STATUS] == 401"]
+            conditions: ["[STATUS] == 200"]
         hostnames: ["headlamp.phekno.io"]
         parentRefs:
           - name: envoy-internal
