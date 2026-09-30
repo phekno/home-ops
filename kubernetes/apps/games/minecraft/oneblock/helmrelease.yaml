@@ -14,7 +14,11 @@ spec:
     fullnameOverride: *app
     image:
       repository: ghcr.io/phekno/minecraft-oneblock
-      tag: 26.2-f98747f@sha256:d6560b74ce517722c1279385179a9cbd933cd6bbe560e20d4fc4827e9f0ffa8d
+      # minecraft-bentobox tags each build <mc>-<short-sha>, which Renovate
+      # can neither order nor match across builds, so it never offered one.
+      # Track latest instead: the digest pin keeps Flux deterministic and
+      # Renovate opens a digest PR each time latest moves.
+      tag: latest@sha256:067471f23f483e2a67ed65d2a85d0d6c2d403502c9d4302b254e9a7b7b49b8e7
     resources:
       requests:
         cpu: 500m
