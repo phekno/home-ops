@@ -18,7 +18,7 @@ spec:
       # can neither order nor match across builds, so it never offered one.
       # Track latest instead: the digest pin keeps Flux deterministic and
       # Renovate opens a digest PR each time latest moves.
-      tag: latest@sha256:067471f23f483e2a67ed65d2a85d0d6c2d403502c9d4302b254e9a7b7b49b8e7
+      tag: latest@sha256:fc5370115ecd5066523ec1393e110874c94dc22a7da2240d2f2bbee77ca8fe91
     resources:
       requests:
         cpu: 500m
