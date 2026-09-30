@@ -12,6 +12,17 @@ cluster:
     extraArgs:
       # https://kubernetes.io/docs/tasks/extend-kubernetes/configure-aggregation-layer/
       enable-aggregator-routing: true
+      # Pocket-ID logins for Headlamp. Tokens are validated against the
+      # issuer's JWKS; SA tokens and the admin kubeconfig are unaffected.
+      # The oidc: prefixes keep OIDC users/groups from colliding with
+      # built-in names (system:*, admins bound elsewhere).
+      oidc-issuer-url: https://id.phekno.io
+      oidc-client-id: 4eb66c8c-c78d-4786-8f82-09b5da66f6f7
+      oidc-username-claim: email
+      oidc-username-prefix: "oidc:"
+      oidc-groups-claim: groups
+      oidc-groups-prefix: "oidc:"
+      oidc-signing-algs: RS256
   controllerManager:
     extraArgs:
       bind-address: 0.0.0.0
