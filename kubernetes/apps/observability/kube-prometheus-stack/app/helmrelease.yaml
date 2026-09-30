@@ -74,20 +74,26 @@ spec:
         walCompression: true
         enableFeatures:
           - memory-snapshot-on-shutdown
-        retention: 14d
-        retentionSize: 50GB
+        retention: 90d
+        # About 0.95GB/day at ~317k series, so 90d is ~85GB. retentionSize is
+        # the backstop and must stay below the PVC size, or it trims first.
+        retentionSize: 100GB
         resources:
           requests:
             cpu: 100m
           limits:
-            memory: 2000Mi
+            # The 7d working-set peak was 1988Mi against the old 2000Mi limit.
+            memory: 4000Mi
         storageSpec:
           volumeClaimTemplate:
             spec:
               storageClassName: longhorn
               resources:
                 requests:
-                  storage: 50Gi
+                  # volumeClaimTemplates are immutable on an existing
+                  # StatefulSet, so this only affects fresh installs. Resize
+                  # the live PVC with kubectl patch as well.
+                  storage: 120Gi
     prometheus-node-exporter:
       fullnameOverride: node-exporter
       prometheus:
