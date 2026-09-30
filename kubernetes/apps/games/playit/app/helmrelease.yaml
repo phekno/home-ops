@@ -18,7 +18,7 @@ spec:
           app:
             image:
               repository: ghcr.io/playit-cloud/playit-agent
-              tag: "0.17"
+              tag: "1.0"
             env:
               SECRET_KEY:
                 valueFrom:
@@ -41,3 +41,10 @@ spec:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
               capabilities: { drop: ["ALL"] }
+    persistence:
+      # playitd 1.0 binds its IPC socket at /run/playit/playitd.sock and exits
+      # on startup if it can't, which readOnlyRootFilesystem guarantees.
+      run:
+        type: emptyDir
+        globalMounts:
+          - path: /run/playit
