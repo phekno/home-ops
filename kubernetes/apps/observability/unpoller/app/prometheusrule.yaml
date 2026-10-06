@@ -25,3 +25,21 @@ spec:
               Expect the UniFi API to slow down and unifi-dns to crashloop.
               Confirm with `top -H -p $(pgrep -f lib/unifi/lib/unifi)` on the
               UDM, then `systemctl restart unifi` (routing/Wi-Fi stay up).
+
+        - alert: UnifiGatewayHighMemory
+          expr: |-
+            avg_over_time(max by (name) (unpoller_device_memory_utilization_ratio{type="udm"})[6h:5m]) > 0.68
+          for: 30m
+          labels:
+            severity: warning
+            device: udm
+          annotations:
+            summary: >-
+              UniFi gateway {{ $labels.name }} memory averaging above 68% over 6h
+              ({{ $value | humanizePercentage }})
+            description: >-
+              Normal 6h average is 58-66%. A sustained climb is usually
+              unifi-core leaking (UniFi OS 5.1.33), which pushes the Network
+              app into swap and GC thrash. Check `ps -o rss=,cmd= -C unifi-core`
+              on the UDM (~200MB after boot) and `systemctl restart unifi-core`
+              if it is bloated (routing/Wi-Fi stay up).
