@@ -1,0 +1,27 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: unpoller-rules
+spec:
+  groups:
+    - name: unifi-gateway.rules
+      rules:
+        - alert: UnifiGatewayHighCpu
+          expr: |-
+            max by (name) (unpoller_device_cpu_utilization_ratio{type="udm"}) > 0.7
+          for: 1h
+          labels:
+            severity: warning
+            device: udm
+          annotations:
+            summary: >-
+              UniFi gateway {{ $labels.name }} CPU above 70% for 1h
+              ({{ $value | humanizePercentage }})
+            description: >-
+              Sustained high CPU on the UDM is usually the Network app
+              (/usr/lib/unifi/lib/unifi) stuck in GC with a full 512MB heap.
+              Expect the UniFi API to slow down and unifi-dns to crashloop.
+              Confirm with `top -H -p $(pgrep -f lib/unifi/lib/unifi)` on the
+              UDM, then `systemctl restart unifi` (routing/Wi-Fi stay up).
