@@ -12,8 +12,9 @@ spec:
   values:
     instance:
       distribution:
-        artifact: oci://ghcr.io/controlplaneio-fluxcd/flux-operator-manifests:v0.30.0
-        version: 2.x
+        artifact: oci://ghcr.io/controlplaneio-fluxcd/flux-operator-manifests:latest
+        # renovate: datasource=github-releases depName=controlplaneio-fluxcd/distribution
+        version: 2.9.6
       cluster:
         networkPolicy: false
       components:
