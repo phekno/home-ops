@@ -1,0 +1,30 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cloudnative-pg-rules
+spec:
+  groups:
+    - name: cloudnative-pg.rules
+      rules:
+        - alert: CNPGVolumeFillingUp
+          expr: |-
+            kubelet_volume_stats_available_bytes{namespace="db",persistentvolumeclaim=~"postgres-[0-9]+"}
+              / kubelet_volume_stats_capacity_bytes{namespace="db",persistentvolumeclaim=~"postgres-[0-9]+"} < 0.25
+          for: 15m
+          annotations:
+            summary: >-
+              Postgres volume {{ $labels.persistentvolumeclaim }} has less than 25% free space
+          labels:
+            severity: warning
+        - alert: CNPGReplicationSlotLagging
+          expr: |-
+            max by (pod, slot_name) (cnpg_pg_replication_slots_pg_wal_lsn_diff) > 1e9
+          for: 30m
+          annotations:
+            summary: >-
+              Replication slot {{ $labels.slot_name }} on {{ $labels.pod }} is retaining over 1 GB of WAL;
+              the replica behind it has likely stopped consuming
+          labels:
+            severity: warning
