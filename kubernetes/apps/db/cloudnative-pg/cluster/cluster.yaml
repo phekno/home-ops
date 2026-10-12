@@ -36,7 +36,10 @@ spec:
     # instance waits until it returns or the cluster is scaled down.
     podAntiAffinityType: required
   storage:
-    size: 10Gi
+    # Was 10Gi. On 2026-10-09 a stuck replica's replication slot pinned ~9 GB
+    # of WAL on the primary, filled the volume, and Postgres refused to start.
+    # max_slot_wal_keep_size below is the real guard; this is headroom.
+    size: 20Gi
     storageClass: longhorn
   superuserSecret:
     name: cloudnative-pg-secret
@@ -45,6 +48,11 @@ spec:
     parameters:
       max_connections: "200"
       shared_buffers: 256MB
+      # Without a cap, a replica that stops consuming its slot makes the
+      # primary keep every WAL segment forever, until the disk fills and the
+      # whole cluster goes down. With it, Postgres invalidates the slot past
+      # 4GB; that one replica then needs re-cloning, but the primary survives.
+      max_slot_wal_keep_size: 4GB
   resources:
     requests:
       cpu: 500m
