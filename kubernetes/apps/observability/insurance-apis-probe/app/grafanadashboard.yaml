@@ -1,0 +1,295 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/grafana.integreatly.org/grafanadashboard_v1beta1.json
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: insurance-apis-dr
+spec:
+  allowCrossNamespaceImport: true
+  instanceSelector:
+    matchLabels:
+      grafana.internal/instance: grafana
+  folder: observability
+  datasources:
+    - datasourceName: prometheus
+      inputName: DS_PROMETHEUS
+  # Dashboard for the insurance-apis DR failover drill. Row 1 is the "did
+  # it fail over?" view: current served region on the public endpoint
+  # plus a per-target up gauge. Row 2 shows latency from Minneapolis to
+  # each region, which is the Minneapolis-equidistant-to-both-regions
+  # observation that motivated the probe. Row 3 shows OFAC list freshness
+  # per region (reads from DynamoDB, so Global Table replication is
+  # implicitly tested). Row 4 is the failover timeline with annotations.
+  json: |
+    {
+      "annotations": {
+        "list": [
+          {
+            "name": "Served-region transitions",
+            "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+            "enable": true,
+            "iconColor": "orange",
+            "expr": "changes(probe_served_region{target=\"public\"}[1m]) > 0",
+            "titleFormat": "public flipped to {{served_region}}",
+            "step": "15s"
+          }
+        ]
+      },
+      "editable": true,
+      "fiscalYearStartMonth": 0,
+      "graphTooltip": 1,
+      "liveNow": false,
+      "panels": [
+        {
+          "type": "row",
+          "title": "Status",
+          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 0},
+          "collapsed": false
+        },
+        {
+          "type": "stat",
+          "title": "Public endpoint currently served from",
+          "description": "Which region answered the last probe hit on api.insurance-apis.nevado.nevado.ai. Flips during a DR failover.",
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "gridPos": {"h": 5, "w": 8, "x": 0, "y": 1},
+          "targets": [
+            {
+              "expr": "label_replace(probe_served_region{target=\"public\"} == 1, \"region\", \"$1\", \"served_region\", \"(.*)\")",
+              "legendFormat": "{{region}}",
+              "refId": "A",
+              "instant": true
+            }
+          ],
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false},
+            "textMode": "name"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "mappings": [
+                {"type": "value", "options": {"us-east-1": {"color": "blue", "index": 0, "text": "us-east-1 (primary)"}}},
+                {"type": "value", "options": {"us-west-2": {"color": "orange", "index": 1, "text": "us-west-2 (DR)"}}}
+              ],
+              "color": {"mode": "thresholds"},
+              "thresholds": {"mode": "absolute", "steps": [{"color": "red", "value": null}]}
+            }
+          }
+        },
+        {
+          "type": "stat",
+          "title": "Minutes since last failover",
+          "description": "Time since the public endpoint's served region changed. During the drill, resets to 0 when the flip happens.",
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "gridPos": {"h": 5, "w": 8, "x": 8, "y": 1},
+          "targets": [
+            {
+              "expr": "(time() - max(timestamp(changes(probe_served_region{target=\"public\"}[2h]) > 0))) / 60",
+              "legendFormat": "minutes",
+              "refId": "A"
+            }
+          ],
+          "options": {
+            "colorMode": "value",
+            "graphMode": "area",
+            "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": false}
+          },
+          "fieldConfig": {
+            "defaults": {
+              "unit": "m",
+              "decimals": 1,
+              "color": {"mode": "thresholds"},
+              "thresholds": {"mode": "absolute", "steps": [
+                {"color": "red", "value": null},
+                {"color": "yellow", "value": 1},
+                {"color": "green", "value": 10}
+              ]}
+            }
+          }
+        },
+        {
+          "type": "stat",
+          "title": "Probe up",
+          "description": "0/1 per target. All three must be 1 before starting a drill.",
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "gridPos": {"h": 5, "w": 8, "x": 16, "y": 1},
+          "targets": [{"expr": "probe_up", "legendFormat": "{{target}}", "refId": "A", "instant": true}],
+          "options": {
+            "colorMode": "background",
+            "graphMode": "none",
+            "reduceOptions": {"calcs": ["lastNotNull"], "fields": "", "values": true},
+            "textMode": "value_and_name",
+            "orientation": "horizontal"
+          },
+          "fieldConfig": {
+            "defaults": {
+              "mappings": [
+                {"type": "value", "options": {"0": {"color": "red", "text": "DOWN"}}},
+                {"type": "value", "options": {"1": {"color": "green", "text": "UP"}}}
+              ],
+              "color": {"mode": "thresholds"},
+              "thresholds": {"mode": "absolute", "steps": [{"color": "red"}]}
+            }
+          }
+        },
+
+        {
+          "type": "row",
+          "title": "Latency from Minneapolis",
+          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 6},
+          "collapsed": false
+        },
+        {
+          "type": "timeseries",
+          "title": "Total latency (p95)",
+          "description": "95th-percentile total request time per target. Primary vs secondary difference ≈ Minneapolis->us-east-1 vs ->us-west-2 round trip. Public target shows whichever region DNS currently points at.",
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 7},
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, sum by (le, target) (rate(probe_duration_seconds_bucket{phase=\"total\"}[2m])))",
+              "legendFormat": "{{target}}",
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 10, "pointSize": 4, "showPoints": "never"}
+            }
+          },
+          "options": {"legend": {"displayMode": "list", "placement": "bottom", "showLegend": true}, "tooltip": {"mode": "multi"}}
+        },
+        {
+          "type": "timeseries",
+          "title": "DNS lookup time (public target)",
+          "description": "DNS lookup per request. Spikes during a Route 53 failover because resolvers refresh the record and new IPs cold-cache.",
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 7},
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, sum by (le, target) (rate(probe_duration_seconds_bucket{phase=\"dns\"}[1m])))",
+              "legendFormat": "{{target}}",
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "s",
+              "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 10, "showPoints": "never"}
+            }
+          }
+        },
+        {
+          "type": "timeseries",
+          "title": "TLS handshake",
+          "description": "TLS handshake per target. One RTT to the region.",
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 15},
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, sum by (le, target) (rate(probe_duration_seconds_bucket{phase=\"tls\"}[1m])))",
+              "legendFormat": "{{target}}",
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {"defaults": {"unit": "s", "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 10, "showPoints": "never"}}}
+        },
+        {
+          "type": "timeseries",
+          "title": "Time to first byte (server-side latency)",
+          "description": "TTFB is request-written-to-first-byte-back. Pure server-side latency + one RTT. Shows regional Lambda cold-start spikes.",
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 15},
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, sum by (le, target) (rate(probe_duration_seconds_bucket{phase=\"ttfb\"}[1m])))",
+              "legendFormat": "{{target}}",
+              "refId": "A"
+            }
+          ],
+          "fieldConfig": {"defaults": {"unit": "s", "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 10, "showPoints": "never"}}}
+        },
+
+        {
+          "type": "row",
+          "title": "Data-path health",
+          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 23},
+          "collapsed": false
+        },
+        {
+          "type": "timeseries",
+          "title": "HTTP status by target",
+          "description": "Any value other than 200 indicates a problem. Target `public` going to 0 while primary/secondary stay at 200 means a DNS resolution issue.",
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "gridPos": {"h": 7, "w": 12, "x": 0, "y": 24},
+          "targets": [{"expr": "probe_http_status", "legendFormat": "{{target}}", "refId": "A"}],
+          "fieldConfig": {
+            "defaults": {
+              "custom": {"drawStyle": "line", "lineWidth": 2, "fillOpacity": 20, "showPoints": "always"},
+              "thresholds": {"mode": "absolute", "steps": [
+                {"color": "red", "value": null},
+                {"color": "yellow", "value": 300},
+                {"color": "green", "value": 200},
+                {"color": "yellow", "value": 300}
+              ]}
+            }
+          }
+        },
+        {
+          "type": "timeseries",
+          "title": "OFAC list age reported by each region",
+          "description": "Hours since the current OFAC list was published upstream. Primary and secondary should track within <1h (Global Table replication). A split means one region's ingest is broken.",
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "gridPos": {"h": 7, "w": 12, "x": 12, "y": 24},
+          "targets": [{"expr": "probe_ofac_list_age_seconds / 3600", "legendFormat": "{{target}}", "refId": "A"}],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "h",
+              "custom": {"drawStyle": "line", "lineWidth": 2, "showPoints": "never"},
+              "thresholds": {"mode": "absolute", "steps": [
+                {"color": "green", "value": null},
+                {"color": "yellow", "value": 10},
+                {"color": "red", "value": 13}
+              ]}
+            }
+          }
+        },
+
+        {
+          "type": "row",
+          "title": "Served-region history",
+          "gridPos": {"h": 1, "w": 24, "x": 0, "y": 31},
+          "collapsed": false
+        },
+        {
+          "type": "timeseries",
+          "title": "Served region on each target (step signal)",
+          "description": "Reads 1 for whichever region answered the last probe on that target. The `public` series is the DR failover signal; `primary`/`secondary` should always read 1 for their own region (if they don't, that region's APIGW routing is broken independent of DNS).",
+          "datasource": {"type": "prometheus", "uid": "${DS_PROMETHEUS}"},
+          "gridPos": {"h": 10, "w": 24, "x": 0, "y": 32},
+          "targets": [
+            {"expr": "probe_served_region", "legendFormat": "{{target}} → {{served_region}}", "refId": "A"}
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "custom": {"drawStyle": "line", "lineWidth": 2, "lineInterpolation": "stepAfter", "fillOpacity": 15, "showPoints": "never"},
+              "min": 0,
+              "max": 1.1
+            }
+          },
+          "options": {"legend": {"displayMode": "table", "placement": "right", "showLegend": true, "calcs": ["mean", "lastNotNull"]}, "tooltip": {"mode": "multi"}}
+        }
+      ],
+      "refresh": "10s",
+      "schemaVersion": 39,
+      "tags": ["insurance-apis", "dr"],
+      "templating": {"list": []},
+      "time": {"from": "now-30m", "to": "now"},
+      "timepicker": {"refresh_intervals": ["5s", "10s", "30s", "1m", "5m", "15m", "1h"]},
+      "timezone": "browser",
+      "title": "insurance-apis — DR failover",
+      "uid": "insurance-apis-dr",
+      "version": 1
+    }

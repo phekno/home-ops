@@ -28,6 +28,7 @@ resources:
   - ./gatus/ks.yaml
   - ./grafana/ks.yaml
   - ./headlamp/ks.yaml
+  - ./insurance-apis-probe/ks.yaml
   - ./kromgo/ks.yaml
   - ./kube-prometheus-stack/ks.yaml
   - ./mc-monitor/ks.yaml

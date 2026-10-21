@@ -1,0 +1,16 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/servicemonitor_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: insurance-apis-probe
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: insurance-apis-probe
+  endpoints:
+    - port: http
+      # Match the probe's own sweep cadence (5s). Scraping faster than the
+      # probe runs wastes work; slower blurs latency curves during a flip.
+      interval: 15s
+      scrapeTimeout: 10s
