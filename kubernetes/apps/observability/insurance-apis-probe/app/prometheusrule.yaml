@@ -1,0 +1,46 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: insurance-apis-probe
+spec:
+  groups:
+    - name: insurance-apis-probe
+      rules:
+        # The probe itself is down (crashed, OOMed, image pull failing).
+        # The DR drill fails silently without this.
+        - alert: InsuranceApisProbeDown
+          expr: absent(probe_up) or (max(up{job="insurance-apis-probe/insurance-apis-probe"}) == 0)
+          for: 5m
+          labels:
+            severity: warning
+            service: insurance-apis-dr
+          annotations:
+            summary: insurance-apis probe is not reporting metrics
+            description: >-
+              The Minneapolis-based probe for the insurance-apis DR failover
+              drill has not scraped successfully for 5 minutes. See
+              https://github.com/phekno/insurance-apis-probe
+
+        # Primary and secondary diverging on OFAC list freshness — e.g. one
+        # region's scheduled ingest is broken. Only an alert if both are
+        # reachable but disagree (so DR failover doesn't fire this).
+        - alert: InsuranceApisRegionalOFACSplit
+          expr: |
+            abs(
+              probe_ofac_list_age_seconds{target="primary"}
+              - probe_ofac_list_age_seconds{target="secondary"}
+            ) > 86400
+            and probe_up{target="primary"} == 1
+            and probe_up{target="secondary"} == 1
+          for: 1h
+          labels:
+            severity: warning
+            service: insurance-apis-dr
+          annotations:
+            summary: OFAC list age differs by >24h between regions
+            description: >-
+              us-east-1 reports {{ $labels.primary }}s, us-west-2 reports
+              {{ $labels.secondary }}s. Scheduled ingest may be broken in
+              one region, or Global Table replication is lagging.

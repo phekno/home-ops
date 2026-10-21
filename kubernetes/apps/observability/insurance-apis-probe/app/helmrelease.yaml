@@ -1,0 +1,68 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s-labs/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: insurance-apis-probe
+spec:
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  values:
+    controllers:
+      insurance-apis-probe:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/phekno/insurance-apis-probe
+              # Rolling `main` tag. Renovate will pin by digest once it
+              # notices the new image. For the DR drill a rolling tag is
+              # fine; after the drill, pin to a semver release.
+              tag: main
+            env:
+              # Defaults match prod. Overridable per-env if we ever add dev probes.
+              PUBLIC_URL: &health_path https://api.insurance-apis.nevado.nevado.ai/v1/health
+              PRIMARY_URL: https://d-y3puyjgig3.execute-api.us-east-1.amazonaws.com/v1/health
+              SECONDARY_URL: https://d-vkjykdwoqe.execute-api.us-west-2.amazonaws.com/v1/health
+              HOST_HEADER: api.insurance-apis.nevado.nevado.ai
+              INTERVAL: 5s
+              TIMEOUT: 10s
+              LISTEN: :8080
+              LOG_LEVEL: info
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: &port 8080
+                  initialDelaySeconds: 5
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: {drop: ["ALL"]}
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                memory: 128Mi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+    service:
+      app:
+        controller: insurance-apis-probe
+        ports:
+          http:
+            port: *port
