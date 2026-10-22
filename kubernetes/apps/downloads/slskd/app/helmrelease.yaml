@@ -50,7 +50,7 @@ spec:
           app:
             image:
               repository: ghcr.io/slskd/slskd
-              tag: 0.26.0
+              tag: 0.26.1
             env:
               TZ: "America/Chicago"
               # Keeps the managed config out of /app, which is slskd's own
