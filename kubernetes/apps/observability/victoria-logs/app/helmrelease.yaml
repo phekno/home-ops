@@ -19,6 +19,14 @@ spec:
         size: 20Gi
       serviceMonitor:
         enabled: true
+      # Non-root pod can't bind :514; exposed as 514 via service-syslog.yaml
+      syslog:
+        tcp:
+          - name: syslog-tcp
+            value: :5514
+        udp:
+          - name: syslog-udp
+            value: :5514
     dashboards:
       # Disable default dashboards (includes unwanted Vector dashboard)
       # We only need the VictoriaLogs dashboard which we'll create manually
