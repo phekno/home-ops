@@ -1,0 +1,16 @@
+# Defaults that the 1.14 contract turns on, pinned to what the nodes have run
+# with since before 1.14. Don't flip either without testing on one node first.
+#
+# workloadIsolation runs the container plane in a sandbox namespace; the
+# sandboxed kubelet can't reach the host's iscsid, which Longhorn needs.
+apiVersion: v1alpha1
+kind: SecurityProfileConfig
+workloadIsolation: false
+---
+# secure: true mounts /var with nosuid,nodev. nodev breaks the device nodes
+# kubelet bind-mounts under /var/lib/kubelet for block-mode CSI volumes.
+apiVersion: v1alpha1
+kind: VolumeConfig
+name: EPHEMERAL
+mount:
+  secure: false

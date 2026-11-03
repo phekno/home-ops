@@ -59,11 +59,33 @@ written to an older contract, so the order is:
 2. Later, raise `talosContract`, run `generate-config`, and fix any conflicts.
 3. Check each node with `apply-node ... DRY_RUN=true`, then apply.
 
-Moving the contract to `v1.14` is known to need patch changes first. 1.14 emits
-separate documents for settings the patches still set in the v1alpha1 config:
-`machine.network.nameservers` → `ResolverConfig`, `cluster.apiServer` →
-`KubeAPIServerConfig`, `cluster.controllerManager`, `cluster.scheduler`, and
-`cluster.proxy` → `KubeProxyConfig`.
+### The v1.14 contract
+
+Since v1.14 nearly all configuration lives in separate documents (`kind: ...`);
+the v1alpha1 document keeps only `machine.*` basics (certSANs, disks, sysctls,
+time, features) and `cluster.etcd`. Setting a field in v1alpha1 that a document
+now owns makes `generate-config` fail with "already set in v1alpha1 config", so
+patches must target the document:
+
+| Old v1alpha1 field | Document |
+|---|---|
+| `machine.network.nameservers`, `disableSearchDomain` | `ResolverConfig` |
+| `machine.kubelet` (`extraConfig`, `nodeIP`) | `KubeletConfig` (`config`), `KubeNodeConfig` (`nodeIP`) |
+| `machine.files` (CRI part) | `CRICustomizationConfig` |
+| `cluster.network` (subnets) / `cni: none` | `KubeNetworkConfig` / delete `KubeFlannelCNIConfig` |
+| `cluster.apiServer` | `KubeAPIServerConfig`; OIDC flags → `KubeAuthenticationConfig` |
+| `cluster.controllerManager`, `cluster.scheduler` | `KubeControllerManagerConfig`, `KubeSchedulerConfig` |
+| `cluster.proxy.disabled`, `cluster.coreDNS.disabled` | `KubeProxyConfig`, `KubeCoreDNSConfig` (`enabled: false`) |
+| `cluster.allowSchedulingOnControlPlanes` | delete the control-plane taint in `KubeNodeConfig` |
+
+Delete a whole generated document with `$patch: delete` next to its
+`apiVersion`/`kind`, or a single map key with `<key>: {$patch: delete}`.
+
+`patches/global/security.yaml` pins two defaults that the 1.14 contract turns on,
+`SecurityProfileConfig.workloadIsolation` and EPHEMERAL `mount.secure` (nosuid,nodev
+on `/var`), to off. Isolation breaks Longhorn's access to the host's iscsid, and
+nodev on `/var` breaks block-mode CSI volumes. Test either one on a single node
+before enabling it.
 
 ## Adding a node
 

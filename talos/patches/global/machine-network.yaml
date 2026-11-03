@@ -1,6 +1,9 @@
-machine:
-  network:
-    disableSearchDomain: true
-    nameservers:
-      - 1.1.1.1
-      - 1.0.0.1
+# Host DNS. Talos 1.14 moved machine.network.nameservers / disableSearchDomain
+# into the ResolverConfig document.
+apiVersion: v1alpha1
+kind: ResolverConfig
+nameservers:
+  - address: 1.1.1.1
+  - address: 1.0.0.1
+searchDomains:
+  disableDefault: true
