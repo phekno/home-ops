@@ -8,16 +8,31 @@ tasks:
     desc: Bootstrap the Talos cluster
     dir: '{{.TALOS_DIR}}'
     cmds:
-      - '[ -f talsecret.sops.yaml ] || talhelper gensecret | sops --filename-override talos/talsecret.sops.yaml --encrypt /dev/stdin > talsecret.sops.yaml'
-      - talhelper genconfig
-      - talhelper gencommand apply --extra-flags="--insecure" | bash
-      - until talhelper gencommand bootstrap | bash; do sleep 10; done
-      - until talhelper gencommand kubeconfig --extra-flags="{{.ROOT_DIR}} --force" | bash; do sleep 10; done
+      # The secrets bundle is generated once and never regenerated: it holds the
+      # cluster CAs, so a new one would orphan every existing node.
+      - '[ -f talsecret.sops.yaml ] || talosctl gen secrets --force -o /dev/stdout | sops --filename-override talos/talsecret.sops.yaml --encrypt /dev/stdin > talsecret.sops.yaml'
+      - task: :talos:generate-config
+      # Nodes are in maintenance mode, so apply without TLS (--insecure).
+      - for: { var: NODE_HOSTS }
+        cmd: >-
+          talosctl apply-config --insecure
+          --nodes $(yq -N -r 'select(.kind == "LinkConfig") | .addresses[0].address | split("/") | .[0]' nodes/{{.ITEM}}.yaml)
+          --file clusterconfig/{{.CLUSTER_NAME}}-{{.ITEM}}.yaml
+      - until talosctl bootstrap --nodes {{.FIRST_NODE_IP}}; do sleep 10; done
+      - until talosctl kubeconfig --nodes {{.FIRST_NODE_IP}} {{.ROOT_DIR}} --force; do sleep 10; done
+    vars:
+      NODE_HOSTS:
+        sh: for f in {{.TALOS_DIR}}/nodes/*.yaml; do basename "$f" .yaml; done
+      FIRST_NODE_IP:
+        sh: yq -N -r 'select(.kind == "LinkConfig") | .addresses[0].address | split("/") | .[0]' {{.TALOS_DIR}}/nodes/*.yaml | head -n1
+      CLUSTER_NAME:
+        sh: yq -r '.clusterName' {{.TALOS_DIR}}/talenv.yaml
     preconditions:
       - test -f {{.ROOT_DIR}}/.sops.yaml
       - test -f {{.SOPS_AGE_KEY_FILE}}
-      - test -f {{.TALOS_DIR}}/talconfig.yaml
-      - which talhelper talosctl sops
+      - test -f {{.TALOS_DIR}}/talenv.yaml
+      - ls {{.TALOS_DIR}}/nodes/*.yaml
+      - which talosctl sops yq
 
   crds:
     desc: Apply CRDs that ship with charts, sourced from their Flux OCIRepository

@@ -1,0 +1,10 @@
+# Pod/service CIDRs and CNI. Cilium is installed by bootstrap/helmfile, so
+# Talos must not deploy its default CNI (Flannel).
+cluster:
+  network:
+    cni:
+      name: none
+    podSubnets:
+      - 10.42.0.0/16
+    serviceSubnets:
+      - 10.43.0.0/16

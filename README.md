@@ -174,7 +174,6 @@ Ensure you have the following tools installed locally:
 
 # Trust and install tools
 mise trust
-pip install pipx
 mise install
 ```
 
@@ -305,35 +304,39 @@ task talos:reset
 
 ## 🛠️ Talos and Kubernetes Maintenance
 
+Talos configs are rendered with plain `talosctl gen config` from the inputs in [`talos/`](./talos/README.md): `talenv.yaml`, the SOPS-encrypted secrets bundle, `patches/` and `nodes/`. Output goes to the gitignored `talos/clusterconfig/`. See [talos/README.md](./talos/README.md) for the layout, patch order and how to add a node.
+
 ### ⚙️ Updating Talos node configuration
 
-> [!TIP]
-> Ensure you have updated `talconfig.yaml` and any patches with your updated configuration. In some cases you **not only need to apply the configuration but also upgrade talos** to apply new configuration.
+Edit a patch under `talos/patches/`, or a node file under `talos/nodes/`, then preview and apply one node at a time:
 
 ```sh
-# (Re)generate the Talos config
-task talos:generate-config
-# Apply the config to the node
-task talos:apply-node IP=? MODE=?
-# e.g. task talos:apply-node IP=10.10.10.10 MODE=auto
+# Render configs and show what would change on the node (applies nothing)
+task talos:apply-node IP=10.100.50.29 DRY_RUN=true
+# Apply it (MODE defaults to auto; Talos reboots only if the change requires it)
+task talos:apply-node IP=10.100.50.29
 ```
+
+`apply-node` re-renders `talos/clusterconfig/` first. To render without applying, run `task talos:generate-config`.
 
 ### ⬆️ Updating Talos and Kubernetes versions
 
-> [!TIP]
-> Ensure the `talosVersion` and `kubernetesVersion` in `talenv.yaml` are up-to-date with the version you wish to upgrade to.
+Renovate bumps `talosVersion` and `kubernetesVersion` in `talos/talenv.yaml`. Minor versions wait for approval on the Dependency Dashboard. Kubernetes is capped by the running Talos minor (1.13 → 1.36.x, 1.14 → 1.37.x), so upgrade Talos first.
 
 ```sh
-# Upgrade node to a newer Talos version
-task talos:upgrade-node IP=?
-# e.g. task talos:upgrade-node IP=10.10.10.10
+# One node at a time. Between nodes, wait for every Longhorn volume to be
+# healthy, CNPG to be 3/3, and `flux get ks -A` to be all Ready.
+# Upgrade the node running the CNPG primary last, after a switchover.
+task talos:upgrade-node IP=10.100.50.29
 ```
 
 ```sh
-# Upgrade cluster to a newer Kubernetes version
+# After every node runs the new Talos
 task talos:upgrade-k8s
-# e.g. task talos:upgrade-k8s
 ```
+
+> [!NOTE]
+> `talosContract` in `talenv.yaml` is the machine-config version contract, and it is kept separate from `talosVersion` on purpose. Upgrade the OS first, then raise the contract and check every node with `DRY_RUN=true`. See [talos/README.md](./talos/README.md#version-contract).
 
 ## 🤖 Renovate
 

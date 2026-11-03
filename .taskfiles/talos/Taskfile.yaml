@@ -1,66 +1,101 @@
----
 # yaml-language-server: $schema=https://taskfile.dev/schema.json
 version: '3'
+
+# Plain-talosctl workflow. Configs are rendered by scripts/talos-genconfig.sh
+# from talos/{talenv.yaml,talsecret.sops.yaml,patches/,nodes/} into the
+# gitignored talos/clusterconfig/. A node is addressed by IP=; the matching
+# talos/nodes/<host>.yaml is the one whose LinkConfig carries that address.
+
+vars:
+  NODE_IPS:
+    sh: yq -N -r 'select(.kind == "LinkConfig") | .addresses[0].address | split("/") | .[0]' {{.TALOS_DIR}}/nodes/*.yaml
+  # First control plane node; bootstrap and upgrade-k8s talk to a single node.
+  FIRST_NODE_IP:
+    sh: yq -N -r 'select(.kind == "LinkConfig") | .addresses[0].address | split("/") | .[0]' {{.TALOS_DIR}}/nodes/*.yaml | head -n1
+  CLUSTER_NAME:
+    sh: yq -r '.clusterName' {{.TALOS_DIR}}/talenv.yaml
 
 tasks:
 
   generate-config:
-    desc: Generate Talos configuration
-    dir: '{{.TALOS_DIR}}'
-    cmd: talhelper genconfig
+    desc: Generate Talos configuration into talos/clusterconfig/
+    cmd: bash {{.SCRIPTS_DIR}}/talos-genconfig.sh
+    sources:
+      - '{{.TALOS_DIR}}/talenv.yaml'
+      - '{{.TALOS_DIR}}/talsecret.sops.yaml'
+      - '{{.TALOS_DIR}}/nodes/*.yaml'
+      - '{{.TALOS_DIR}}/patches/**/*.yaml'
+      - '{{.SCRIPTS_DIR}}/talos-genconfig.sh'
+    generates:
+      - '{{.TALOS_DIR}}/clusterconfig/*.yaml'
+      - '{{.TALOS_DIR}}/clusterconfig/talosconfig'
     preconditions:
-      - test -f {{.TALOS_DIR}}/talconfig.yaml
+      - test -f {{.TALOS_DIR}}/talenv.yaml
+      - test -f {{.TALOS_DIR}}/talsecret.sops.yaml
       - test -f {{.ROOT_DIR}}/.sops.yaml
       - test -f {{.SOPS_AGE_KEY_FILE}}
-      - which talhelper
+      - which sops talosctl yq
 
   apply-node:
-    desc: Apply Talos config to a node [IP=required]
-    dir: '{{.TALOS_DIR}}'
-    cmd: talhelper gencommand apply --node {{.IP}} --extra-flags '--mode={{.MODE}}' | bash
+    desc: Apply Talos config to a node [IP=required] [MODE=auto] [DRY_RUN=false]
+    deps: [generate-config]
+    cmd: >-
+      talosctl apply-config
+      --nodes {{.IP}}
+      --file {{.NODE_CONFIG}}
+      --mode={{.MODE}}
+      {{if eq .DRY_RUN "true"}}--dry-run{{end}}
     vars:
       MODE: '{{.MODE | default "auto"}}'
+      DRY_RUN: '{{.DRY_RUN | default "false"}}'
+      NODE_CONFIG:
+        sh: >-
+          f=$(grep -lF "address: {{.IP}}/" {{.TALOS_DIR}}/nodes/*.yaml | head -n1);
+          [ -n "$f" ] && echo "{{.TALOS_DIR}}/clusterconfig/{{.CLUSTER_NAME}}-$(basename "$f" .yaml).yaml"
     requires:
       vars: [IP]
     preconditions:
-      - talosctl --nodes {{.IP}} get machineconfig
-      - talosctl config info
+      - msg: 'No node file in talos/nodes/ has address {{.IP}}'
+        sh: 'grep -qF "address: {{.IP}}/" {{.TALOS_DIR}}/nodes/*.yaml'
       - test -f {{.TALOSCONFIG}}
-      - which talhelper talosctl yq
+      - talosctl --nodes {{.IP}} get machineconfig
+      - which talosctl yq
 
   upgrade-node:
     desc: Upgrade Talos on a single node [IP=required]
-    dir: '{{.TALOS_DIR}}'
-    cmd: talhelper gencommand upgrade --node {{.IP}} --extra-flags "--image='{{.TALOS_IMAGE}}:{{.TALOS_VERSION}}' --timeout=10m" | bash
+    cmd: talosctl upgrade --nodes {{.IP}} --image {{.TALOS_IMAGE}} --timeout=10m
     vars:
       TALOS_IMAGE:
-        sh: yq '.nodes[] | select(.ipAddress == "{{.IP}}") | .talosImageURL' {{.TALOS_DIR}}/talconfig.yaml
-      TALOS_VERSION:
-        sh: yq '.talosVersion' {{.TALOS_DIR}}/talenv.yaml
+        sh: yq -r '.installerImage + ":" + .talosVersion' {{.TALOS_DIR}}/talenv.yaml
     requires:
       vars: [IP]
     preconditions:
-      - talosctl --nodes {{.IP}} get machineconfig
-      - talosctl config info
+      - msg: 'No node file in talos/nodes/ has address {{.IP}}'
+        sh: 'grep -qF "address: {{.IP}}/" {{.TALOS_DIR}}/nodes/*.yaml'
       - test -f {{.TALOSCONFIG}}
-      - which kubectl talhelper talosctl yq
+      - talosctl --nodes {{.IP}} get machineconfig
+      - which kubectl talosctl yq
 
   upgrade-k8s:
     desc: Upgrade Kubernetes
-    dir: '{{.TALOS_DIR}}'
-    cmd: talhelper gencommand upgrade-k8s --extra-flags "--to '{{.KUBERNETES_VERSION}}'" | bash
+    cmd: talosctl upgrade-k8s --nodes {{.FIRST_NODE_IP}} --to {{.KUBERNETES_VERSION}}
     vars:
       KUBERNETES_VERSION:
-        sh: yq '.kubernetesVersion' {{.TALOS_DIR}}/talenv.yaml
+        sh: yq -r '.kubernetesVersion' {{.TALOS_DIR}}/talenv.yaml
     preconditions:
-      - talosctl config info
       - test -f {{.TALOSCONFIG}}
-      - which talhelper talosctl yq
+      - talosctl config info
+      - which talosctl yq
 
   reset:
     desc: Resets nodes back to maintenance mode
-    dir: '{{.TALOS_DIR}}'
     prompt: This will destroy your cluster and reset the nodes back to maintenance mode... continue?
-    cmd: talhelper gencommand reset --extra-flags="--reboot {{- if eq .CLI_FORCE false }} --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL{{ end }} --graceful=false --wait=false" | bash
+    cmds:
+      - for: { var: NODE_IPS }
+        cmd: >-
+          talosctl reset --nodes {{.ITEM}} --reboot
+          {{- if eq .CLI_FORCE false }} --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL{{ end }}
+          --graceful=false --wait=false
     preconditions:
-      - which talhelper
+      - test -f {{.TALOSCONFIG}}
+      - which talosctl yq

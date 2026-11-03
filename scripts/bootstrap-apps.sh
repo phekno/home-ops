@@ -131,7 +131,7 @@ function apply_helm_releases() {
 }
 
 function main() {
-    check_cli helm helmfile kubectl kustomize sops talhelper yq
+    check_cli helm helmfile kubectl kustomize sops yq
 
     # Apply resources and Helm releases
     wait_for_nodes
