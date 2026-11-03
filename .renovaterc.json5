@@ -108,13 +108,20 @@
       //
       // Dashboard approval keeps both visible without opening a PR that cannot
       // be merged yet. Patches inside the current minor stay automatic.
+      //
+      // installer-base, not installer: from 1.14 Talos stopped publishing
+      // ghcr.io/siderolabs/installer (the default installer is now the Image
+      // Factory one, which is what talconfig.yaml's talosImageURL points at).
+      // Tracking the old image made 1.13.x look like the newest release, so
+      // the 1.14 minor never appeared. installer-base is cut with every
+      // release and is only used here as a version signal.
       description: 'Talos and Kubernetes minors need deliberate sequencing',
       matchDatasources: [
         'docker',
       ],
       matchPackageNames: [
         'ghcr.io/siderolabs/kubelet',
-        'ghcr.io/siderolabs/installer',
+        'ghcr.io/siderolabs/installer-base',
       ],
       matchUpdateTypes: [
         'major',
