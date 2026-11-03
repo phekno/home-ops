@@ -3,7 +3,7 @@
 # that shapes the machine config is a patch under patches/.
 
 # renovate: datasource=docker depName=ghcr.io/siderolabs/installer-base
-talosVersion: v1.13.12
+talosVersion: v1.14.5
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
 kubernetesVersion: v1.36.4
 
