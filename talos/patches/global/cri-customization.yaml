@@ -1,0 +1,8 @@
+# Keep unpacked layers' compressed blobs (machine.files is deprecated in 1.14;
+# CRICustomizationConfig is its replacement). Changing this restarts CRI.
+apiVersion: v1alpha1
+kind: CRICustomizationConfig
+name: discard-unpacked-layers
+content: |-
+  [plugins."io.containerd.cri.v1.images"]
+    discard_unpacked_layers = false

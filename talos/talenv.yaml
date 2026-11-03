@@ -11,10 +11,9 @@ kubernetesVersion: v1.37.2
 # It decides which defaults and document kinds the generated config uses, and is
 # deliberately decoupled from talosVersion: a node running a newer Talos accepts
 # a config written to an older contract, so the OS can be upgraded first and the
-# config migrated afterwards. Raising it can change generated output -- diff
-# `task talos:generate-config` before applying (1.14 moves apiServer, scheduler,
-# controllerManager, proxy and nameservers into separate documents).
-talosContract: v1.13
+# config migrated afterwards. Raising it can change generated output: run
+# `task talos:apply-node IP=... DRY_RUN=true` on every node before applying.
+talosContract: v1.14
 
 clusterName: kubernetes
 clusterEndpoint: https://10.100.50.150:6443

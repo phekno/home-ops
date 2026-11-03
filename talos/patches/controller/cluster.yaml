@@ -1,43 +1,74 @@
+# Control plane settings. Talos 1.14 split most of the old v1alpha1
+# `cluster:` block into one document per component; only etcd stays here.
+#
+# PodSecurity admission is ACTIVE, enforcing the baseline level and exempting
+# only kube-system -- that is Talos's default (the generated
+# KubeAdmissionControlConfig document) and it is not overridden here.
+# Namespaces needing privileged pods carry pod-security.kubernetes.io labels
+# instead (see kubernetes/apps/{longhorn-system,observability}/kustomization.yaml),
+# which need no machine config change and survive config drift.
 cluster:
-  allowSchedulingOnControlPlanes: true
-  apiServer:
-    # PodSecurity admission is ACTIVE, enforcing the baseline level and exempting
-    # only kube-system -- that is Talos's default and it is not overridden here.
-    # An `admissionControl: []` line used to sit here claiming to disable it, but
-    # an empty list does not clear a default in a strategic merge, so it was a
-    # no-op; `talosctl gen config` emits the stock PodSecurity plugin either way. Namespaces
-    # needing privileged pods carry pod-security.kubernetes.io labels instead
-    # (see kubernetes/apps/{longhorn-system,observability}/kustomization.yaml),
-    # which need no machine config change and survive config drift.
-    certSANs:
-      - 127.0.0.1
-      - 10.100.50.150
-    extraArgs:
-      # https://kubernetes.io/docs/tasks/extend-kubernetes/configure-aggregation-layer/
-      enable-aggregator-routing: true
-      # Pocket-ID logins for Headlamp. Tokens are validated against the
-      # issuer's JWKS; SA tokens and the admin kubeconfig are unaffected.
-      # The oidc: prefixes keep OIDC users/groups from colliding with
-      # built-in names (system:*, admins bound elsewhere).
-      oidc-issuer-url: https://id.phekno.io
-      oidc-client-id: 4eb66c8c-c78d-4786-8f82-09b5da66f6f7
-      oidc-username-claim: email
-      oidc-username-prefix: "oidc:"
-      oidc-groups-claim: groups
-      oidc-groups-prefix: "oidc:"
-      oidc-signing-algs: RS256
-  controllerManager:
-    extraArgs:
-      bind-address: 0.0.0.0
-  coreDNS:
-    disabled: true
   etcd:
     extraArgs:
       listen-metrics-urls: http://0.0.0.0:2381
     advertisedSubnets:
       - 10.100.50.0/24
-  proxy:
-    disabled: true
-  scheduler:
-    extraArgs:
-      bind-address: 0.0.0.0
+---
+# Every node is a control plane node, so workloads must schedule on them.
+# This replaces v1alpha1 `cluster.allowSchedulingOnControlPlanes: true`.
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+taints:
+  node-role.kubernetes.io/control-plane:
+    $patch: delete
+---
+apiVersion: v1alpha1
+kind: KubeAPIServerConfig
+certExtraSANs:
+  - 127.0.0.1
+  - 10.100.50.150
+extraArgs:
+  # https://kubernetes.io/docs/tasks/extend-kubernetes/configure-aggregation-layer/
+  enable-aggregator-routing: true
+---
+# Pocket-ID logins for Headlamp, as structured authentication config (the
+# --oidc-* flags are rejected in 1.14). Tokens are validated against the
+# issuer's JWKS; SA tokens and the admin kubeconfig are unaffected. The oidc:
+# prefixes keep OIDC users/groups from colliding with built-in names
+# (system:*, admins bound elsewhere). The old --oidc-signing-algs=RS256 has no
+# equivalent: any asymmetric RFC 7518 algorithm the issuer publishes is accepted.
+apiVersion: v1alpha1
+kind: KubeAuthenticationConfig
+configuration:
+  jwt:
+    - issuer:
+        url: https://id.phekno.io
+        audiences:
+          - 4eb66c8c-c78d-4786-8f82-09b5da66f6f7
+      claimMappings:
+        username:
+          claim: email
+          prefix: "oidc:"
+        groups:
+          claim: groups
+          prefix: "oidc:"
+---
+apiVersion: v1alpha1
+kind: KubeControllerManagerConfig
+extraArgs:
+  bind-address: 0.0.0.0
+---
+apiVersion: v1alpha1
+kind: KubeSchedulerConfig
+extraArgs:
+  bind-address: 0.0.0.0
+---
+# CoreDNS is deployed by Flux (kubernetes/apps/kube-system/coredns).
+apiVersion: v1alpha1
+kind: KubeCoreDNSConfig
+enabled: false
+---
+# Cilium replaces kube-proxy.
+apiVersion: v1alpha1
+kind: KubeProxyConfig
+enabled: false

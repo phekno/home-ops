@@ -1,10 +1,13 @@
-# Pod/service CIDRs and CNI. Cilium is installed by bootstrap/helmfile, so
-# Talos must not deploy its default CNI (Flannel).
-cluster:
-  network:
-    cni:
-      name: none
-    podSubnets:
-      - 10.42.0.0/16
-    serviceSubnets:
-      - 10.43.0.0/16
+# Pod/service CIDRs (KubeNetworkConfig since Talos 1.14).
+apiVersion: v1alpha1
+kind: KubeNetworkConfig
+podSubnets:
+  - 10.42.0.0/16
+serviceSubnets:
+  - 10.43.0.0/16
+---
+# No CNI from Talos: Cilium is installed by bootstrap/helmfile. Deleting the
+# generated KubeFlannelCNIConfig document is the 1.14 equivalent of `cni: none`.
+apiVersion: v1alpha1
+kind: KubeFlannelCNIConfig
+$patch: delete
