@@ -5,7 +5,7 @@
 # renovate: datasource=docker depName=ghcr.io/siderolabs/installer-base
 talosVersion: v1.14.5
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
-kubernetesVersion: v1.36.4
+kubernetesVersion: v1.37.2
 
 # Machine config version contract passed to `talosctl gen config --talos-version`.
 # It decides which defaults and document kinds the generated config uses, and is
