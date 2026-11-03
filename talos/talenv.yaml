@@ -1,6 +1,25 @@
+# Inputs to scripts/talos-genconfig.sh (run via `task talos:generate-config`).
+# Everything node-specific lives in nodes/<hostname>.yaml; everything else
+# that shapes the machine config is a patch under patches/.
+
 # renovate: datasource=docker depName=ghcr.io/siderolabs/installer-base
 talosVersion: v1.13.12
 # renovate: datasource=docker depName=ghcr.io/siderolabs/kubelet
 kubernetesVersion: v1.36.4
-# renovate: datasource=github-releases depName=prometheus-operator/prometheus-operator
-prometheusOperatorVersion: v0.94.2
+
+# Machine config version contract passed to `talosctl gen config --talos-version`.
+# It decides which defaults and document kinds the generated config uses, and is
+# deliberately decoupled from talosVersion: a node running a newer Talos accepts
+# a config written to an older contract, so the OS can be upgraded first and the
+# config migrated afterwards. Raising it can change generated output -- diff
+# `task talos:generate-config` before applying (1.14 moves apiServer, scheduler,
+# controllerManager, proxy and nameservers into separate documents).
+talosContract: v1.13
+
+clusterName: kubernetes
+clusterEndpoint: https://10.100.50.150:6443
+
+# Image Factory installer shared by every node (schematic ID from
+# https://factory.talos.dev); talosVersion is appended as the tag.
+installerImage: factory.talos.dev/installer/88d1f7a5c4f1d3aba7df787c448c1d3d008ed29cfb34af53fa0df4336a56040b
+installDisk: /dev/sda

@@ -1,0 +1,6 @@
+# Extra SANs on the Talos API certificate: loopback and the control plane VIP.
+# The kube-apiserver equivalents live in patches/controller/cluster.yaml.
+machine:
+  certSANs:
+    - 127.0.0.1
+    - 10.100.50.150
