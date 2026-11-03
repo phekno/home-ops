@@ -111,7 +111,7 @@
       //
       // installer-base, not installer: from 1.14 Talos stopped publishing
       // ghcr.io/siderolabs/installer (the default installer is now the Image
-      // Factory one, which is what talconfig.yaml's talosImageURL points at).
+      // Factory one, which is what installerImage in talos/talenv.yaml points at).
       // Tracking the old image made 1.13.x look like the newest release, so
       // the 1.14 minor never appeared. installer-base is cut with every
       // release and is only used here as a version signal.
