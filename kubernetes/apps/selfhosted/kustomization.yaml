@@ -8,5 +8,4 @@ components:
   - ../../components/repos/app-template
 resources:
   - ./homepage/ks.yaml
-  - ./ntfy/ks.yaml
   - ./searxng/ks.yaml
