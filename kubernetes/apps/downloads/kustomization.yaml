@@ -8,7 +8,6 @@ components:
   - ../../components/repos/app-template
 resources:
   - ./beets/ks.yaml
-  - ./lidarr/ks.yaml
   - ./prowlarr/ks.yaml
   - ./radarr/ks.yaml
   - ./recyclarr/ks.yaml
