@@ -78,8 +78,8 @@ spec:
     route:
       app:
         hostnames:
-         - "status.phekno.io"
-         - "{{ .Release.Name }}.phekno.io"
+          - "status.phekno.io"
+          - "{{ .Release.Name }}.phekno.io"
         parentRefs:
           - name: envoy-internal
             namespace: network

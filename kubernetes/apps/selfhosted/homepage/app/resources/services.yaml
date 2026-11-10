@@ -82,7 +82,3 @@
         href: https://search.phekno.io
         icon: searxng.png
         description: Search
-    - ntfy:
-        href: https://ntfy.phekno.io
-        icon: ntfy.png
-        description: Notifications
