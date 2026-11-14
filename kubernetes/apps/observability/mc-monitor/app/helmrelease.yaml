@@ -18,7 +18,7 @@ spec:
           app:
             image:
               repository: docker.io/itzg/mc-monitor
-              tag: 1.18.3
+              tag: 1.21.0
             args: ["export-for-prometheus"]
             env:
               # Cluster DNS rather than the LoadBalancer IPs: this is a
